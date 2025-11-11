@@ -1,0 +1,141 @@
+<!-- 
+/********* Edited By - Nitish Kumar *********/
+/********* Date 	 - 06 June, 2021 ********/
+-->
+<apex:page standardController="Contract" extensions="ContractSummaryForHOD_Controller" lightningStylesheets="true" sidebar="false"  >
+    <head>
+        <style>
+            #customers {
+            font-family: Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            }
+            
+            #customers td, #customers th {
+            border: 1px solid #ddd;
+            padding: 8px;
+            }
+            
+            #customers tr:nth-child(even){background-color: #f2f2f2;}
+            
+            #customers tr:hover {background-color: #ddd;}
+            
+            #customers th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #4CAF50;
+            color: white;
+            }
+            #customers td label{margin-right: 0;}
+        </style>
+    </head>
+    
+    <apex:form >
+        
+        <apex:pageBlock >
+            <apex:pageBlockSection >
+                <span style="font-weight: bold;font-size: 15px;">Hello, {!objUserdata.name}</span><br/><br/>
+                <span style="font-weight: bold;font-size: 15px;">Contract Summary : {!qt.name}</span>
+                <br/>
+                <br/>
+            </apex:pageBlockSection>
+            
+            <table  width="100%" id="customers"> 
+                <thead>
+                    <tr>
+                        <td style="font-weight: bold;font-size: 12px;"><apex:outputText value="Name "/></td>
+                        <td style="font-weight: bold;font-size: 12px;"><apex:outputText value="Quantity "/></td>
+                        <td style="font-weight: bold;font-size: 12px;"><apex:outputText value="List Price (Unit Price)"/></td>
+                        <td style="font-weight: bold;font-size: 12px;"><apex:outputText value="Discount "/></td>
+                        <td style="font-weight: bold;font-size: 12px;"><apex:outputText value="Discounted Price (Unit Price)"/></td>
+                        <td style="font-weight: bold;font-size: 12px;"><apex:outputText value="Sales Price"/></td>                     
+                        <td style="font-weight: bold;font-size: 12px;"><apex:outputText value="Discount Allowed "/></td>
+                        <td style="font-weight: bold;font-size: 12px;"><apex:outputText value="Is Manual Option "/></td>
+                        <!--<td ><apex:outputText value="Discount Approval Note "/></td>-->
+                    </tr>
+                    <br/>
+                </thead>
+                <tbody>
+                    <apex:repeat value="{!QlineItm}" var="e1" id="therepeat">
+                        <tr>
+                            <td style="font-weight: bold;"><apex:outputlabel value="{!e1.Product_Name__c}"></apex:outputlabel>  </td>
+                             <!--<td><apex:outputlabel value="{!e1.Quantity__c}"></apex:outputlabel>  </td>-->
+                            <td>
+                                <apex:outputText value="{0, number, 0.00}">
+                                    <apex:param value="{!e1.Quantity__c}" />
+                                </apex:outputText>
+                            </td>
+                            <td>INR&nbsp;
+                                <apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                    <apex:param value="{!e1.List_Price__c}"></apex:param>
+                                </apex:outputText>
+                                <!--<apex:outputlabel value="{!e1.List_Price__c}"></apex:outputlabel>-->
+                            </td>
+                            <td><apex:outputlabel value="{!e1.Discount__c}"/>%</td>
+                            <td>INR&nbsp;
+                                <apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                    <apex:param value="{!(e1.List_Price__c) - ((e1.List_Price__c) * (e1.Discount__c)/100)}"></apex:param>
+                                </apex:outputText>
+                            </td>
+                            <td>INR&nbsp;
+                                <apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                    <apex:param value="{!e1.Total_Price__c}"></apex:param>
+                                </apex:outputText>
+                                <!--<apex:outputlabel value="{!e1.Total_Price__c}"/>-->
+                            </td>
+                            <td><apex:outputlabel value="{!e1.Discount_Allowed__c}">%</apex:outputlabel></td>
+                            <!--<td><apex:inputfield value="{!e1.Discount_Approval_Note__c}"/></td>-->
+                        </tr>
+                        <apex:repeat value="{!e1.Contract_Line_Option__r}" var="QLOpt">
+                            <tr>
+                                <td><li style="list-style-type: square;padding-left:24px;">
+                                    <apex:outputlabel value="{!QLOpt.Option_Name__c}"></apex:outputlabel> </li> </td>
+                                 <!--<td><apex:outputlabel value="{!QLOpt.Quantity__c}"></apex:outputlabel>  </td>-->
+                                <td>
+                                    <apex:outputText value="{0, number, 0.00}">
+                                        <apex:param value="{!QLOpt.Quantity__c}" />
+                                    </apex:outputText>
+                                </td>
+                                <td>INR&nbsp;
+                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                        <apex:param value="{!QLOpt.Manual_Option_List_Price_Clone__c}"></apex:param>
+                                    </apex:outputText>
+                                    <!--<apex:outputlabel value="{!QLOpt.Manual_Option_List_Price_Clone__c}"></apex:outputlabel>  -->
+                                </td>
+                                <td><apex:outputlabel value="{!QLOpt.Discount__c}"/>%</td>
+                                <td>INR&nbsp;
+                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                        <apex:param value="{!(QLOpt.Manual_Option_List_Price_Clone__c) - ((QLOpt.Manual_Option_List_Price_Clone__c) * (QLOpt.Discount__c)/100)}"></apex:param>
+                                    </apex:outputText>
+                                </td>
+                                <td>INR&nbsp;
+                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                        <apex:param value="{!QLOpt.Total_Base_Price__c}"></apex:param>
+                                    </apex:outputText>
+                                    <!--<apex:outputlabel value="{!QLOpt.Total_Base_Price__c}"></apex:outputlabel>  -->
+                                </td>
+                                <td><apex:outputlabel value="{!QLOpt.Discount_Allowed__c}">%</apex:outputlabel></td>
+                                 <!--<td><apex:outputlabel value="{!QLOpt.Select_Option__c}"></apex:outputlabel></td>-->
+                                <td><apex:inputCheckbox value="{!QLOpt.Select_Option__c}" disabled="true"></apex:inputCheckbox></td>
+                                <!--<td><apex:inputfield value="{!QLOpt.Discount_Description__c}"/></td>-->
+                                
+                            </tr>
+                        </apex:repeat>
+                    </apex:repeat>
+                </tbody>
+                
+            </table>
+            
+            <!--</apex:pageBlockSection> -->
+        </apex:pageBlock>
+        <apex:outputPanel rendered="{!ShowpageBlockFlag}">
+            
+            <div style="text-align:center ;">
+                <apex:commandbutton value="Go Back" action="{!APPROVED}"/>
+                 
+            </div>
+        </apex:outputPanel>
+    </apex:form>
+    
+</apex:page>

@@ -1,0 +1,10 @@
+.THIS .btn-color{
+  background-color:rgb(1, 118, 211);
+  border:none;
+
+}
+.THIS .btn-color:hover{
+  background-color:rgb(11, 87, 163);
+  border:none;
+  
+}

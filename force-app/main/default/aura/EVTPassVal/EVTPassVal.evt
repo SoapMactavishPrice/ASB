@@ -1,0 +1,3 @@
+<aura:event type="COMPONENT" description="Event to pass method reference"> 
+    <aura:attribute name="passval" type="string" default="" /> 
+</aura:event>

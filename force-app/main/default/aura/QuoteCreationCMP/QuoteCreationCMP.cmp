@@ -1,0 +1,275 @@
+<aura:component controller="QuoteCreationCMPController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <!--Declare Attributes-->
+    <aura:import library="lightning:alert" property="LightningAlert" />
+    <aura:attribute name="OpptyName" type="String" />
+    <aura:attribute name="OpptyCurrencyCode" type="String" />
+    <aura:attribute name="aname" type="Opportunity" default="{'sObjectType':'Opportunity'}"/>
+    <aura:attribute name="picvalue" type="List"/>
+    <aura:attribute name="currentProdType" type="String" />
+    <aura:attribute name="LstExistingQuotes" type="List" /> 
+    <aura:attribute name="AccountName" type="String" />
+    <aura:attribute name="QuoteName" type="String" />
+    <aura:attribute name="AddionalMargin" type="String" />
+    <aura:attribute name="QuoteConversionRate" type="String"/>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isQuoteVerified" type="Boolean" default="false"/>
+    <aura:attribute name="filetype" type="List" default="['.png', '.jpg', '.jpeg']" />
+    <aura:attribute name="cloneQuoteOptions" type="List" />
+    <aura:attribute name="showSpinner" type="boolean" default="false" />
+    <aura:attribute name="selectedCloneQuote" type="String" default="" description="Selected value in single Select" />
+    <aura:attribute name="shipTo" type="String" default="" description="Selected value in single Select" />
+    <aura:attribute name="soldTo" type="String" default="" description="Selected value in single Select" />
+    <aura:attribute name="AllowExchangeRate" type="boolean" default="false" />
+    <aura:attribute name="AllowAdditionalMargin" type="boolean" default="false" />
+    <aura:attribute name="displayExchangeRate" type="boolean" default="false" />
+    <aura:attribute name="displayAdditionalMargin" type="boolean" default="false" />
+    
+    <aura:attribute name="AllowQuoteToCreate" type="Boolean" default="false"/>
+
+    <!--Aura Libraries/Components-->
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    <lightning:navigation aura:id="navService"/>
+    
+    <aura:if isTrue="{!v.showSpinner}">
+            <lightning:spinner alternativeText="Loading" size="large" />
+    </aura:if>
+    
+    <!--Declare Event Handlers-->
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:if isTrue="{!v.AllowQuoteToCreate}">
+    <aura:html tag="style">
+        .slds-modal__container {
+        color: #2f2f2f;
+        max-width: 90% !important;
+        width: 90% !important;
+        }
+        .modal-footer.slds-modal__footer {
+        display: none;
+        }
+        .slds-modal__header{
+        background-color: #B22222 !important;
+        color: white;
+        }
+        .slds-modal__content{height: 700px !important; max-height: 700px !important; position: relative;}
+        .slds-modal__footer.slds-theme--default{position: absolute; width: 100%; bottom: 0; left: 0; right: 0;}
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content{padding: 0 !important;}
+        .modal-body.scrollable.slds-modal__content.slds-p-around--none{height: auto !important;}
+         @media only screen and (max-width: 480px){
+        .slds-modal__container {max-width: auto !important; width: auto !important;}
+        .slds-modal__content{height: 100% !important; max-height: 100% !important;}
+        .slds-modal__footer.slds-theme--default{bottom: inherit}
+        }
+    </aura:html>
+    
+
+    <div style="min-width: 768px; height: 700px;">
+        <div class="slds-modal__content slds-p-around--x-small slds-size_1-of-1  slds-is-relative" aura:id="modalbody" id="modalbody">
+            <div style="border-radius:5px;" class="slds-border_top slds-border_right slds-border_bottom slds-border_left">
+                <article class="slds-card">
+                    <div class="slds-page-header">
+                        <div class="slds-page-header__row">
+                            <div class="slds-page-header__col-title">
+                                <div class="slds-media slds-media__figure">
+                                    <div class="slds-media__body">
+                                        <div class="slds-page-header__name">
+                                            <div class="slds-page-header__name-title">
+                                                <h6>
+                                                    <span class="font-weight-bold slds-page-header__title slds-truncate">
+                                                        Quotation Creation Page 
+                                                    </span>
+                                                </h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            <br/>
+            <div style="border-radius:5px;" class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-p-around_medium">
+                <article class="slds-card">
+                    <div class="slds-page-header">
+                        <div class="slds-page-header__row">
+                            <div class="slds-page-header__col-title">
+                                <div class="slds-media slds-media__figure">
+                                    <div class="slds-media__body">
+                                        <div class="slds-page-header__name">
+                                            <div class="slds-page-header__name-title">
+                                                <h6>
+                                                    <span class="font-weight-bold slds-page-header__title slds-truncate">
+                                                        Create a Blank Quote
+                                                    </span>
+                                                </h6>
+                                            </div>
+                                        </div> 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-m-top_medium slds-grid slds-gutters slds-wrap slds-p-horizontal_medium">
+                        <lightning:input disabled='true' aura:id="opptyName" class="slds-m-top_small slds-col slds-size_1-of-2" type="text" value="{!v.OpptyName}" Name="Opportunity Name" label ="Opportunity Name"/>
+                        <lightning:input disabled='true' aura:id="accName" class="slds-m-top_small slds-col slds-size_1-of-2" type="text" value="{!v.AccountName}" Name="Account Name" label ="Account Name"/>
+                        <lightning:input aura:id="qtName" class="slds-m-top_small slds-size_1-of-2 slds-col" type="text" name="Quote Name" label="Quote Name" value="{!v.QuoteName}" />
+						<div class="slds-col slds-size_1-of-2 slds-m-top_small">
+                        <!--<lightning:select value="{!v.aname.CurrencyISOCode}" label="Currency" aura:id="CurrenId" onchange ="{!c.OnCurrencySelect}">       
+            <option value="">Choose one...</option> 
+            <aura:iteration items="{!v.picvalue}" var="s">
+                <option value="{!s}" text="{!s}"/>             
+            </aura:iteration> 
+           </lightning:select>-->
+                        
+
+                            <lightning:recordEditForm  objectApiName="Opportunity">
+                                <label>Currency</label>
+                                            <lightning:inputField fieldName="CurrencyIsoCode" disabled="true" onchange ="{!c.OnCurrencySelect}" 
+                                                                  value="{!v.OpptyCurrencyCode}" variant="label-hidden" />
+                            </lightning:recordEditForm>
+
+                           
+                        </div>
+                        
+                        
+                        <aura:if isTrue="{!v.AllowExchangeRate}">
+                        <aura:if isTrue="{!v.AllowExchangeRate}">
+                            <lightning:input aura:id="qtERate" class="slds-m-top_small slds-size_1-of-2 slds-col" type="text" name="Conversion Rate" label="*Conversion Rate" value="{!v.QuoteConversionRate}" />
+                            <aura:set attribute="else">
+                                <lightning:input disabled='true' aura:id="qtERate" class="slds-m-top_small slds-size_1-of-2 slds-col" type="text" name="Conversion Rate" label="*Conversion Rate" value="{!v.QuoteConversionRate}" />
+                            </aura:set>
+                        </aura:if>
+                        </aura:if>
+                        <aura:if isTrue="{!v.AllowAdditionalMargin}">
+
+                        <aura:if isTrue="{!v.AllowAdditionalMargin}">
+                            <lightning:input aura:id="aMargin" class="slds-m-top_small slds-size_1-of-2 slds-col" type="text" name="Additional Margin" label="*Additional Margin" value="{!v.AddionalMargin}" />
+                            <aura:set attribute="else">
+                                <lightning:input disabled='true' aura:id="aMargin" class="slds-m-top_small slds-size_1-of-2 slds-col" type="text" name="Additional Margin" label="*Additional Margin" value="{!v.AddionalMargin}" />
+                            </aura:set>
+                        </aura:if>
+                        </aura:if>
+                    	                        
+                    </div>
+                    <div class="slds-m-around_medium slds-grid slds-grid_align-center">
+                        <aura:if isTrue="{!not(v.isQuoteVerified)}">
+                            <lightning:button aura:id="verifyQuote" class="slds-col" type="text" name="Verify Quote" label="Verify Quote" onclick="{!c.checkForDuplicates}" />
+                        </aura:if>
+                        <aura:if isTrue="{!v.isQuoteVerified}">
+                            <lightning:button aura:id="createQuote" class="slds-col" type="text" name="Create Blank Quote" label="Create Blank Quote" onclick="{!c.createBlankQuote}" />
+                        </aura:if>
+                        
+                    </div>
+                </article>
+            </div>
+            <div style="border-radius:5px;" class="slds-m-top_medium slds-border_top slds-border_right slds-border_bottom slds-border_left slds-p-around_medium">
+                <article class="slds-card">
+                    <div class="slds-page-header">
+                        <div class="slds-page-header__row">
+                            <div class="slds-page-header__col-title">
+                                <div class="slds-media slds-media__figure">
+                                    <div class="slds-media__body">
+                                        <div class="slds-page-header__name">
+                                            <div class="slds-page-header__name-title">
+                                                <h6>
+                                                    <span class="font-weight-bold slds-page-header__title slds-truncate">
+                                                        Clone Existing Quote
+                                                    </span>
+                                                </h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-m-around_medium slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col">
+                            <c:MultiselectCombobox searchOnVal="true" options="{!v.cloneQuoteOptions}" value="{!v.selectedCloneQuote}" label="Clone From" cloneQuoteEvent="{!c.handleSelectedCloneQuote}"/>
+                        </div>
+                        <lightning:input aura:id="cloneQtName" class="slds-col slds-size_1-of-2" type="text" name="Quote Name" label="Quote Name" />
+						<div class="slds-col slds-size_1-of-2 slds-m-top_small">
+                        		<lightning:recordEditForm  objectApiName="Opportunity">
+                                     <label>Currency</label>
+                                     <lightning:inputField fieldName="CurrencyIsoCode" value="{!v.OpptyCurrencyCode}" disabled="true" onchange ="{!c.OnCurrencySelect}" variant="label-hidden" />
+                            </lightning:recordEditForm>
+                        </div>
+                        <aura:if isTrue="{!v.AllowExchangeRate}">
+                        <aura:if isTrue="{!v.AllowExchangeRate}">
+                            <lightning:input aura:id="cloneqtERate" class="slds-m-top_small slds-size_1-of-2 slds-col" type="text" name="Conversion Rate" label="*Conversion Rate" value="{!v.QuoteConversionRate}" />
+                            <aura:set attribute="else">
+                                <lightning:input disabled='true' aura:id="cloneqtERate" class="slds-m-top_small slds-size_1-of-2 slds-col" type="text" name="Conversion Rate" label="*Conversion Rate" value="{!v.QuoteConversionRate}" />
+                            </aura:set>
+                        </aura:if>  
+                        </aura:if>
+                        
+                        <div class="slds-col slds-size_1-of-2"> 
+                        <lightning:recordEditForm 
+                                                  objectApiName="Quote" 
+                                                  recordId="{!v.selectedCloneQuote}" 
+                                                  onsuccess="{!c.handleSuccess}">
+                            <div style="display:flex">
+                            <lightning:inputField fieldName="SOLD_TO__c" value="{!v.soldTo}" class="slds-m-bottom_small"  onchange="{!c.handleSoldToChange}"/>
+                            
+                            <lightning:inputField fieldName="SHIP_TO__c" value="{!v.shipTo}" onchange="{!c.handleShipToChange}"/>
+                            </div>
+                            
+                        </lightning:recordEditForm>
+                        </div>
+							
+                        <aura:if isTrue="{!v.AllowAdditionalMargin}">
+                        <aura:if isTrue="{!v.AllowAdditionalMargin}">
+                            <lightning:input aura:id="aMargin" class="slds-m-top_small slds-size_1-of-2 slds-col" type="text" name="Additional Margin" label="*Additional Margin" value="{!v.AddionalMargin}" />
+                            <aura:set attribute="else">
+                                <lightning:input disabled='true' aura:id="aMargin" class="slds-m-top_small slds-size_1-of-2 slds-col" type="text" name="Additional Margin" label="*Additional Margin" value="{!v.AddionalMargin}" />
+                            </aura:set>
+                        </aura:if>
+                        </aura:if>
+                        
+                    </div>
+                    <div class="slds-grid slds-grid_align-center">
+                        <lightning:button aura:id="cloneQtCreate" class="slds-col" name="Create Cloned Quote" label="Create Cloned Quote" onclick="{!c.createCloneQuote}" />
+                    </div>
+                </article>
+            </div>
+            <div style="border-radius:5px;" class="slds-m-top_medium slds-border_top slds-border_right slds-border_bottom slds-border_left slds-p-around_medium">
+                <article class="slds-card">
+                    <div class="slds-page-header">
+                        <div class="slds-page-header__row">
+                            <div class="slds-page-header__col-title">
+                                <div class="slds-media slds-media__figure">
+                                    <div class="slds-media__body">
+                                        <div class="slds-page-header__name">
+                                            <div class="slds-page-header__name-title">
+                                                <h6>
+                                                    <span class="font-weight-bold slds-page-header__title slds-truncate">
+                                                        Import Quote
+                                                    </span>
+                                                </h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-m-around_medium slds-grid slds-grid_align-center">
+                        <lightning:input aura:id="csvToImport" name="csvToImport" type="file" label="Attachment" multiple="false" accept="text/csv"/> 
+                    </div>
+                    <div class="slds-m-around_medium slds-grid slds-grid_align-center">
+                        <lightning:button aura:id="contactField" class="slds-col" type="text" name="Import Quote" label="Import Quote" onclick="{!c.importQuotesFromCSV}" />
+                    </div>
+
+                </article>
+            </div>
+        </div>
+    </div>
+    </aura:if>
+    
+    
+    
+    
+    
+    
+    
+</aura:component>

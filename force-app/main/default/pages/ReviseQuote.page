@@ -1,0 +1,82 @@
+<apex:page standardController="Quote" extensions="ReviseQuoteController"  >
+    <style>
+        /* Spinner container */
+        .spinner {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            z-index: 9999;
+            margin-left: -25px;
+            margin-top: -25px;
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+        }
+
+        /* Keyframes for spinner animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Overlay background */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            z-index: 9998;
+            display: none;
+        }
+    </style>
+    
+    <apex:form >
+        
+        <apex:slds />
+        <apex:pageMessages />
+          <div class="overlay" id="spinner-overlay">
+        <div class="spinner"></div>
+    </div>
+        <apex:outputPanel rendered="{!showPopup}">
+            
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Revise Quote</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <p>Are you sure you want to Revise Quote?</p>
+                        
+                    </div>
+                    <footer class="slds-modal__footer slds-modal__footer_directional">
+                        <apex:commandButton styleClass="slds-button slds-button_brand" value="Yes" action="{!ReviseQuotation}"  onclick="showSpinner();"/>
+                        <apex:commandButton styleClass="slds-button slds-button_neutral" value="No" action="{!CloseModal}" />
+                        
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </apex:outputPanel>
+    </apex:form>
+    
+     <script>
+       
+    function showSpinner() {
+            document.getElementById("spinner-overlay").style.display = "block";
+            // Simulate loading time (e.g., fetching data, API calls)
+            setTimeout(function() {
+                document.getElementById("spinner-overlay").style.display = "none";
+                alert("Data Loaded!");
+            }, 3000); // Simulate 3 seconds loading time
+        }
+    </script>
+    
+</apex:page>

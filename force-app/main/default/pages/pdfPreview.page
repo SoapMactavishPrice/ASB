@@ -1,0 +1,789 @@
+<apex:page standardController="Quote" extensions="SaveQuoteAsPdf" renderAs="pdf" showHeader="false" action="{!CreateQuote}" standardStylesheets="false" >
+
+
+<head>
+        <title>{!ObjAccount.name} R{!ObjQuote.QU_REVISION_NUMBER__c}</title>
+        <style type="text/css">
+            td > span > p {
+            margin:0 !important;
+            }
+        </style>
+    </head>
+    
+    <apex:form >   
+        <apex:stylesheet value="{!$Resource.CustomCSS}"/>
+        
+        <head>
+            <title>{!ObjAccount.name} R{!ObjQuote.QU_REVISION_NUMBER__c}</title>
+        </head>
+        <body class="{!IF(Quote.status == 'CREATED' , 'watermark', '')} font_PDF">
+            <div style="">
+                <!-- page:1 Start -->
+                <div class="page1" rendered="{!IF(quoteTemplate.Cover_Page_Required__c == true, true, false)}">
+                    <apex:outputPanel rendered="{!IF(quoteTemplate.Cover_Page_Required__c == true, true, false)}">
+                        <div class="pageone" style="margin-top:10px;width:100%;">
+                            <div>
+                                <apex:image value="{!quoteTemplate.Cover_Page__c}" width="720px" height="950px"/>
+                                <div class="on_img_div">
+                                    <p><br/><br/><br/>
+                                        <span style="font-size:18px;font-weight:900 !important;font-family:Verdana, Geneva, Tahoma, sans-serif;">
+                                            <label>{!quoteTemplate.Company_Name_Label__c}{!ObjAccount.Legal_Name__c}</label>
+                                        </span><br/><br/>
+                                        <span style="font-size:16px;font-weight:700px !important;font-family:Arial Unicode MS;">{!quoteTemplate.Quotation_No_Label__c}ASB-{!ObjQuote.Quote_Number__c}-R{!ObjQuote.QU_REVISION_NUMBER__c}</span> <br/>
+                                        <span style="font-size:14px;font-weight:700px !important;font-family:Arial Unicode MS;">{!quoteTemplate.Quotation_Date_Label__c}{!TodayDate_string}
+                                            <!--<apex:outputText value="{0,date,dd.MMM.yyyy}" >
+<apex:param value="{!ObjQuote.Quote_Release_Date__c}"/>
+
+</apex:outputText>-->
+                                            <!--{!ObjQuote.Quote_Release_Date__c}-->
+                                        </span><br/>
+                                        <span style="font-size:14px;font-family:Arial Unicode MS;">{!quoteTemplate.Sales_Engineer_Label__c}{!ObjQuote.Owner.Name}</span>
+                                    </p>
+                                </div>
+                            </div>             
+                        </div>
+                        <div style="page-break-before:always;"></div>
+                    </apex:outputPanel>
+                </div>
+                <!-- page:2 Start -->
+                <div class="{!IF(quoteTemplate.Footer_Image_Required__c && quoteTemplate.Footer_Text_Required__c, 'page2_Both_Check',
+                            IF(quoteTemplate.Footer_Image_Required__c || quoteTemplate.Footer_Text_Required__c, 'page2_Img-Text_Check','page2'))}">
+                    <!--IF(quoteTemplate.Cover_Page_Required__c, 'page2','page2_a')))}">-->
+                    <div class="footer">
+                        <apex:outputPanel rendered="{!IF(quoteTemplate.Footer_Image_Required__c == true, true, false)}">
+                            <div style="width: 100%;">
+                                <apex:image value="{!quoteTemplate.Footer_Image__c}" style="width:720px;height:90px; align-content: center;"/> 
+                            </div>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!IF(quoteTemplate.Footer_Text_Required__c == true, true, false)}">
+                            <div style="width: 100%;height:95px;" class="richText_ftr">
+                                <apex:outputField value="{!quoteTemplate.Footer_Text__c}"/>
+                            </div>
+                        </apex:outputPanel>
+                        <table style="width: 100%;border-top: 1px solid Black;">
+                            <tr>
+                                <td style="width: 33%">
+                                    <!--{!quoteTemplate.Sales_Engineer_Label__c}{!ObjQuote.Owner.Name} <br/>
+{!ObjQuote.Owner.Email}-->
+                                    
+                                    <span style="font-size:13px;font-weight:900 !important;font-family:Verdana, Geneva, Tahoma, sans-serif;">
+                                        {!quoteTemplate.Sales_Engineer_Label__c}{!ObjQuote.Owner.Name} <br/>
+                                    </span>
+                                    {!ObjQuote.Owner.Email}
+                                </td>
+                                <td style="width: 33%; text-align: center"><div>{!quoteTemplate.Label_for_Page_No__c} <span class="pagenumber"/> {!quoteTemplate.Label_for_Page_No_2__c} <span class="pagecount"/></div></td>
+                                <td style="width: 33%; text-align: right;">
+                                    <span>{!quoteTemplate.ISO_Code_Label__c} {!quoteTemplate.ISO_Code_Text__c}</span>
+                                </td>
+                            </tr>
+                            
+                        </table>
+                    </div> 
+                    <!-- Section 2 -->
+                    
+                    <apex:outputPanel rendered="{!IF(quoteTemplate.Section_2_Required__c == true, true, false)}">
+                        <div class="header" style="display: block;">
+                            <apex:outputPanel rendered="{!IF(showSaveQuote == true, true, false)}"> 
+                                <apex:image value="{!quoteTemplate.Header_Image__c}" style="width:720px;height:90px;position: relative;"/>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(showSaveQuote == false, true, false)}">
+                                <apex:image value="{!quoteTemplate.Draft_Image__c}" style="width:200px;height:90px;position: relative;"/>
+                            </apex:outputPanel>
+                        </div>
+                        <table width="100%">
+                            <tbody>
+                                <tr>
+                                    <td colspan="2" style="font-size: 17px;text-align:center;" class="section-4 section-2">
+                                        <apex:outputField value="{!quoteTemplate.S2_Title__c}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-top: 20px;font-size: 14px; text-align:left;">
+                                        <span class="txt-bold" style="text-align:center;">{!quoteTemplate.Label_For_Ref_No__c}</span>
+                                        ASB-{!ObjQuote.Quote_Number__c}-R{!ObjQuote.QU_REVISION_NUMBER__c}</td>
+                                    <td align="right" style="padding-top: 20px;font-size: 14px;">  <span class="txt-bold">{!quoteTemplate.Label_for_Date__c}&nbsp;{!TodayDate_string} </span>
+                                        <!-- <apex:outputText value="{0,date,dd.MMM.yyyy}" >
+<apex:param value="{!ObjQuote.Quote_Release_Date__c}"/>
+</apex:outputText>-->
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="padding-top: 20px;">{!quoteTemplate.Label_For_TO__c} </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><span class="txt-bold" style="font-size:13px;font-weight:900 !important;font-family:Verdana, Geneva, Tahoma, sans-serif;">{!ObjAccount.Legal_Name__c}</span> </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="section-4">
+                                        <apex:outputText escape="false" value="{!address}" ></apex:outputText>
+                                        
+                                        <!--<label style="{IF(!ObjQuote.ADDRESS_LINE_1__c != ''),'block','none'}">{!ObjQuote.ADDRESS_LINE_1__c}</label><br/>
+<label style="{IF(!ObjQuote.ADDRESS_LINE_2__c != ''),'block','none'}">{!ObjQuote.ADDRESS_LINE_2__c}</label><br/>
+<label style="{IF(!ObjQuote.ADDRESS_LINE_3__c != ''),'block','none'}">{!ObjQuote.ADDRESS_LINE_3__c}</label>
+<label style="{IF(!ObjQuote.CityCustom__c != ''),'block','none'}">{!ObjQuote.CityCustom__c},</label>
+<label style="{IF(!ObjQuote.StateCustom__c != ''),'block','none'}">{!ObjQuote.StateCustom__c}</label>
+<label style="{IF(!ObjQuote.POSTAL_CODE__c != ''),'block','none'}">{!ObjQuote.POSTAL_CODE__c},</label>
+<label style="{IF(!ObjQuote.CountryCustom__c != ''),'block','none'}">{!ObjQuote.CountryCustom__c}</label>
+-->
+                                    </td>
+                                </tr>
+                                <br/>
+                               
+                                <!--<tr style="{IF(!ObjQuote.ADDRESS_LINE_2__c != '' || !ObjQuote.ADDRESS_LINE_2__c != null),'display: table-row;,display: none;'}">
+<td colspan="2" class="section-4">{!ObjQuote.ADDRESS_LINE_2__c}</td>
+</tr>
+<tr style="{IF(!ObjQuote.ADDRESS_LINE_3__c != ''),'display: table-row;,display: none;'}">
+<td colspan="2" class="section-4">{!ObjQuote.ADDRESS_LINE_3__c}</td>
+</tr>-->
+                                <!-- <tr>
+<td colspan="2" class="section-4">
+
+<label style="{IF(!ObjQuote.CityCustom__c != ''),'block','none'}">{!ObjQuote.CityCustom__c},</label>
+<label style="{IF(!ObjQuote.StateCustom__c != ''),'block','none'}">{!ObjQuote.StateCustom__c}</label>
+<label style="{IF(!ObjQuote.POSTAL_CODE__c != ''),'block','none'}">{!ObjQuote.POSTAL_CODE__c},</label>
+<label style="{IF(!ObjQuote.CountryCustom__c != ''),'block','none'}">{!ObjQuote.CountryCustom__c}</label>
+</td>
+</tr>-->
+                                <!--<tr style="margin: 0 !important;">
+<td colspan="2">
+<div align="center">
+<apex:outputPanel rendered="{!ObjQuote.Is_DTA_Quote__c}">
+<label style="font-weight:900 !important;font-family:Verdana, Geneva, Tahoma, sans-serif;" >Kind Attention: {!ObjQuote.Contact_Name__c}
+</label>
+</apex:outputPanel>
+</div>
+</td>
+
+</tr>
+<br/>-->
+                                <tr style="margin: 0 !important;">
+                                    <td colspan="2" style="margin: 0 !important;" > {!quoteTemplate.Salutation__c} {!ObjQuote.Contact_Name__c},
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td colspan="2"  class="section-4">
+                                        <apex:outputField value="{!quoteTemplate.S2_Introduction__c}"/>
+                                        
+                                        
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table border="0" width="100%" style="margin-top: 2px;font-size: 12px; vertical-align:top;border-spacing:0px;">
+                            <tbody>
+                                <apex:repeat value="{!terms}" var="qTerms">
+                                    <tr>
+                                        <td class="section-4" style="text-align:justify;"><apex:outputField value="{!qTerms.Content_2__c}"/></td>
+                                    </tr>
+                                </apex:repeat>
+                            </tbody>
+                        </table>
+                        <!-- ASB & Customer Sign   -->
+                        <apex:outputPanel rendered="{!OR(quoteTemplate.ASB_Sign_Section2__c, quoteTemplate.Customer_Sign_Section2__c)}">
+                            <table width="100%" style="padding-top:0%;width: 100%; page-break-inside: always;" class="section-4">
+                                <tr>
+                        <!--<td style="padding-top: 10px;padding-bottom: 10px;">
+<div style="position:relative;top:0.42px;height: 70px;">
+<apex:outputPanel rendered="{!IF(quoteTemplate.ASB_Sign_Section3__c == true, true, false)}">
+<apex:outputField style="width: 140px;height: 60px;"  value="{!ObjUserSetup.Signature_Image__c}"/>
+</apex:outputPanel>
+</div>
+</td>-->
+                        
+                        <td style="padding-top: 10px;padding-bottom: 10px; width: 50%;height: 40px !important" class="signspace">
+                            <div style="position:relative;top:0.42px;" class="signspace" >
+                                <apex:outputPanel rendered="{!IF(quoteTemplate.ASB_Sign_Section2__c == true, true, false)}" >
+                                    <apex:outputField style="width: 140px;mix-height: 40px;"  value="{!ObjUserSetup.Signature_Image__c}"/>
+                                </apex:outputPanel>
+                            </div>
+                        </td>
+                        <td style="padding-top: 10px;padding-bottom: 10px; width: 50%;height: 40px !important" class="">
+                            <!--<div style="position:relative;top:0.42px;">
+<apex:outputPanel rendered="{!IF(quoteTemplate.ASB_Sign_Section3__c == true, true, false)}">
+<apex:outputField style="width: 130px;min-height: 40px;"  value="{!ObjUserSetup.Signature_Image__c}"/>
+</apex:outputPanel>
+</div>-->
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%">
+                            <apex:outputPanel rendered="{!IF(quoteTemplate.ASB_Sign_Section2__c == true, true, false)}">
+                                <!--<table>
+                                    <tbody>
+                                        <tr>
+                                            <td style="font-size:12px"><span class="txt-bold"> {!ObjQuote.Owner.Name}</span> </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size:12px">{!ObjQuote.Owner.title}</td> 
+                                            
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size:12px">{!quoteTemplate.Subsidiary__r.Name__c}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>-->
+                            </apex:outputPanel>
+                        </td>
+                        <td style="width: 50%">
+                            <apex:outputPanel rendered="{!IF(quoteTemplate.Customer_Sign_Section2__c == true, true, false)}">
+                                <table style="text-align:right;width: 100%">
+                                    <tbody>
+                                        <tr><td></td></tr>
+                                        <tr>
+                                            <td style="font-size:12px"><b>Authorised Signatory</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="word-wrap: break-word;font-size:12px;">{!ObjAccount.Legal_Name__c}</td>
+                                        </tr>
+                                        <tr style="">
+                                            <td style="font-size:12px;">
+                                                <apex:outputPanel rendered="{!ObjQuote.Is_DTA_Quote__c}">
+                                                    <label>{!ObjQuote.CityCustom__c}</label>
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </apex:outputPanel>
+                        </td>
+                    </tr>
+                            </table>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                </div>
+                
+                
+                <!-- page:3 Start Section:3-->
+                <div class="{!IF(quoteTemplate.Footer_Image_Required__c && quoteTemplate.Footer_Text_Required__c, 'page3_4_Both_Check',
+                            IF(quoteTemplate.Footer_Image_Required__c || quoteTemplate.Footer_Text_Required__c, 'page3_4_Img-Text_Check','page3_4'))}">
+                    <apex:outputPanel rendered="{!IF(showSaveQuote == true, true, false)}">
+                        <div class="header">
+                            <apex:image value="{!quoteTemplate.Header_Image__c}" style="width:720px;height:90px;position: relative;"/>
+                            <!--<apex:image value="{!quoteTemplate.Logo__c}" height="45" width="130" />-->
+                            <table border="0" style="border-spacing:0px;margin-top:20px" width="120%">
+                                <tbody>
+                                    <tr>
+                                        <td style="width:50%; word-wrap: break-word;vertical-align:top;"><span class="txt-bold" style="font-size:13px;font-weight:900 !important;font-family:Verdana, Geneva, Tahoma, sans-serif;">{!ObjAccount.Legal_Name__c} </span></td>
+                                        <td style="width:50%; word-wrap: break-word;vertical-align:top;"><span class="txt-bold">{!quoteTemplate.Label_For_Quotation_No__c}</span> ASB-{!ObjQuote.Quote_Number__c}-R{!ObjQuote.QU_REVISION_NUMBER__c} </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td style="width:50%; word-wrap: break-word;">{!ObjQuote.CityCustom__c}</td>
+                                        <td style="width:50%; word-wrap: break-word;">
+                                            <span class="txt-bold">{!quoteTemplate.Label_for_Date__c}&nbsp;{!TodayDate_string}</span> 
+                                            <!--<apex:outputText value="{0,date,dd.MMM.yyyy}" ><span class="txt-bold">{!quoteTemplate.Label_for_Date__c}</span> &nbsp;
+<apex:param value="{!ObjQuote.Quote_Release_Date__c}"/> 
+</apex:outputText>-->
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!IF(showSaveQuote == false, true, false)}">
+                        <div class="header">
+                            <apex:image value="{!quoteTemplate.Draft_Image__c}" height="60" width="130" />
+                            <!--<apex:image value="https://asbinternationalpvtltd.file.force.com/servlet/servlet.FileDownload?file=0152w000002WQLc" style="width:200px;height:90px;position: relative;"/>-->
+                            <table border="0" style="border-spacing:0px" width="120%">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 50%;word-wrap: break-word;vertical-align:top;"><span class="txt-bold">{!ObjAccount.Legal_Name__c} </span></td>
+                                        <td style="width: 50%;word-wrap: break-word;vertical-align:top;"><span class="txt-bold">{!quoteTemplate.Label_For_Quotation_No__c}</span> ASB-{!ObjQuote.Quote_Number__c}-R{!ObjQuote.QU_REVISION_NUMBER__c} </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td style="width:50%; word-wrap: break-word;">{!ObjQuote.CityCustom__c}</td>
+                                        <td style="width:50%; word-wrap: break-word;">
+                                            <span class="txt-bold">{!quoteTemplate.Label_for_Date__c} &nbsp;{!TodayDate_string}</span> 
+                                            <!-- <apex:outputText value="{0,date,dd.MMM.yyyy}" ><span class="txt-bold">{!quoteTemplate.Label_for_Date__c}</span> &nbsp;
+<apex:param value="{!ObjQuote.Quote_Release_Date__c}"/> 
+</apex:outputText>-->
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </apex:outputPanel>
+                    <!-- Section - 3 Scope Of Supply -->
+                    <table width="100%" border="0" style="border-collapse: collapse;font-size:12px" >
+                        <tbody >
+                            <tr style="text-align:center; width:100%;margin:0px !important" >
+                                <td class="section-3" style="font-size: 14px;" colspan="5"><span class="txt-bold">
+                                    <apex:outputField value="{!quoteTemplate.S3_title__c}"/></span>
+                                </td>
+                            </tr>
+                            <tr class="qlineitem">
+                                <td>
+                                    
+                                    <table style="border-collapse: collapse;-fs-table-paginate: paginate;" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <tr style="margin:0px !important; border:5px solid violet;"> 
+                                                    <th align="center" style="text-align: left; border-bottom: 1px solid #A9A9A9;width:13%;"><span style="font-weight:900 !important;font-family:Verdana, Geneva, Tahoma, sans-serif;">{!quoteTemplate.Label_For_Colum_1__c}</span></th>
+                                                    <th align="center" style="text-align: left; border-bottom: 1px solid #A9A9A9;width:43%;"><span style="font-weight:900 !important;font-family:Verdana, Geneva, Tahoma, sans-serif;">{!quoteTemplate.Label_For_Colum_2__c}</span></th>
+                                                    <th align="center" style="text-align: left; border-bottom: 1px solid #A9A9A9;width:9%;"><span style="font-weight:900 !important;font-family:Verdana, Geneva, Tahoma, sans-serif;">{!quoteTemplate.Label_For_Colum_3__c}</span></th>
+                                                    
+                                                    <th align="right" style="text-align: right; border-bottom: 1px solid #A9A9A9;width:15%;"><span style="font-weight:900 !important;font-family:Verdana, Geneva, Tahoma, sans-serif;">{!quoteTemplate.Label_For_Colum_4__c}&nbsp;({!ObjQuote.CurrencyIsoCode})</span></th>
+                                                    <th align="center" style="text-align: right; border-bottom: 1px solid #A9A9A9;width:20%;"><span style="font-weight:900 !important;font-family:Verdana, Geneva, Tahoma, sans-serif;">{!quoteTemplate.Label_For_Colum_5__c}&nbsp;({!ObjQuote.CurrencyIsoCode})</span></th>
+                                            </tr>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Main Product Line Items (Non-Tax) -->
+                                        <apex:repeat value="{!prodLineList}" var="qLine">
+                                            <tr style="display:{!IF(qLine.Is_Tax, 'none','table-row')}; margin: 0 !important;" class="qlineitem">
+                                                <td style="vertical-align:top; padding-left: 13px;">
+                                                    {!qLine.Line_Item_Id}
+                                                </td>
+                                                <td style="text-align: left; color: #000 !important; vertical-align:top;" class="section-4">
+                                                    <apex:outputPanel rendered="{!IF(qLine.Product_Description == '', true, false)}"> 
+                                                        {!qLine.Product_Name}<br/>
+                                                    </apex:outputPanel>
+                                                    <apex:outputText rendered="{!IF(qLine.Product_Description != '', true, false)}"
+                                                                    value="{!qLine.Product_Description}" escape="false"/>
+                                                </td>
+                                                <td style="text-align: left; color: #000 !important; vertical-align:top;">
+                                                    <span style="display:{!IF(qLine.isstartWith_Hash, 'none','inline')};">
+                                                        {!qLine.Quantity}&nbsp;{!qLine.UOM}
+                                                    </span>
+                                                    <span style="display:{!IF(qLine.isstartWith_Hash, 'inline', 'none')};">
+                                                        {!qLine.UOM}
+                                                    </span>
+                                                </td>
+                                                <td style="text-align: right; color: #000 !important; vertical-align:top;">
+                                                    {!qLine.totalValueString}
+                                                </td>
+                                                <td style="text-align: right; color: #000 !important; vertical-align:top;"> 
+                                                    {!qLine.Ceiling_Total_Sales_Pricestring}
+                                                </td>	
+                                            </tr>
+                                            
+                                            <!-- Child Products/Options -->
+                                            <apex:repeat value="{!qLine.childProd}" var="QLOpt">
+                                                <tr style="display:{!IF(QLOpt.isstartWith_a, 'none','table-row')};">
+                                                    <td></td>
+                                                    <td style="font-size: 12px; vertical-align:top;">
+                                                        <apex:outputPanel rendered="{!IF(QLOpt.Description == '' && !QLOpt.isstartWith_a, true, false)}"> 
+                                                            <li style="list-style-type: square; margin-bottom: 4px; padding: 0 !important; margin: 0 !important;">
+                                                                {!QLOpt.Manual_Product_Name}
+                                                            </li>
+                                                        </apex:outputPanel>
+                                                        
+                                                        <apex:outputPanel rendered="{!IF(QLOpt.Description != '' && !QLOpt.isstartWith_a, true, false)}">
+                                                            <li style="list-style-type: square; margin-bottom: 0px; padding: 0 !important; margin: 0 !important;">
+                                                                <apex:outputText value="{!QLOpt.Description}" escape="false"/>
+                                                            </li>
+                                                        </apex:outputPanel>
+                                                    </td>
+                                                    
+                                                    <td style="text-align: left; vertical-align:top;">
+                                                        <apex:outputPanel rendered="{!QLOpt.Pdf_Checked}">
+                                                            <span>{!IF(QLOpt.Quantity != null, QLOpt.Quantity, '')}</span>
+                                                        </apex:outputPanel>
+                                                    </td>
+                                                    <td style="text-align: right; vertical-align:top;">
+                                                        <apex:outputPanel rendered="{!QLOpt.Pdf_Checked}">
+                                                            {!IF(QLOpt.Manual_Option_List_Price != null, QLOpt.Manual_Option_List_Price, '')}
+                                                        </apex:outputPanel>
+                                                    </td>
+                                                    <td style="text-align: right; vertical-align:top;">
+                                                        <apex:outputPanel rendered="{!QLOpt.Pdf_Checked}">
+                                                            {!IF(QLOpt.Sales_Price != null, QLOpt.Sales_Price, '')}
+                                                        </apex:outputPanel>
+                                                    </td>
+                                                </tr>
+                                            </apex:repeat>
+                                        </apex:repeat>
+                                        
+                                        <!-- Subtotal Row -->
+                                        <tr>
+                                            <td colspan="3" style="border-top: 1px solid #A9A9A9; border-bottom: 1px solid #A9A9A9; padding: 8px; text-align: left;">
+                                                <apex:outputPanel rendered="{!quoteTemplate.Manufacture_Place__c != ''}">
+                                                    {!quoteTemplate.Manufacture_Place__c}
+                                                </apex:outputPanel>
+                                            </td>
+                                            <td colspan="2" style="border-top: 1px solid #A9A9A9; border-bottom: 1px solid #A9A9A9; padding: 8px; text-align: right;">
+                                                {!quoteTemplate.Label_For_Colum_5__c}&nbsp;({!ObjQuote.CurrencyIsoCode}):
+                                                {!getWithoutTaxGrandValueString}
+                                            </td>
+                                        </tr>
+                                        
+                                        <!-- Tax Line Items -->
+                                        <apex:repeat value="{!prodLineList}" var="qLine">
+                                            <tr style="display:{!IF(qLine.Is_Tax, 'table-row','none')};">
+                                                <td></td>
+                                                <td colspan="3" style="text-align: right; color: #000 !important; vertical-align:top;">
+                                                    <apex:outputPanel rendered="{!IF(qLine.Product_Description == '', true, false)}"> 
+                                                        {!qLine.Product_Name}
+                                                    </apex:outputPanel>
+                                                    <apex:outputText rendered="{!IF(qLine.Product_Description != '', true, false)}"
+                                                                    value="{!qLine.Product_Description}" escape="false"/> 
+                                                </td>
+                                                <td style="text-align: right; color: #000 !important; vertical-align:top;"> 
+                                                    <apex:outputPanel rendered="{!qLine.totalValue != 0}">
+                                                        {!qLine.totalValueString}
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!qLine.totalValue == 0}">
+                                                        <apex:outputPanel rendered="{!IF(qLine.Product_Description == '', true, false)}"> 
+                                                            {!qLine.Product_Name}
+                                                        </apex:outputPanel>
+                                                        <apex:outputPanel rendered="{!IF(qLine.Product_Description != '', true, false)}">
+                                                            <li style="list-style-type: square; margin-bottom: 4px; padding: 0 !important; margin: 0 !important;">
+                                                                <apex:outputText value="{!qLine.Product_Description}" escape="false"/>
+                                                            </li>
+                                                        </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                </td>
+                                            </tr>
+                                        </apex:repeat>
+                                    </tbody>
+                                </table>
+                            
+                            
+                            
+                            <tr>
+                                <td colspan="5" align="left" style="border: 1px solid #A9A9A9; border-left: 0; border-right: 0;">
+                                    <p style="display:{!IF(ObjQuote.Price_in_Word_Required__c, 'block','none')}">
+                                        {!quoteTemplate.Label_for_Price_in_Word__c} {!no2words}
+                                    </p>
+                                </td>
+                            </tr>
+                            <!-- <table style="border-collapse: collapse;-fs-table-paginate: paginate;" width="100%">
+<thead>
+<tr>
+<tr style="margin:0px !important; border:5px solid violet;"> 
+<th align="center" style="text-align: left; border-bottom: 1px solid #A9A9A9;width:13%;"><span class="txt-bold">{!quoteTemplate.Label_For_Colum_1__c}</span></th>
+<th align="center" style="text-align: left; border-bottom: 1px solid #A9A9A9;width:43%;"><span class="txt-bold">{!quoteTemplate.Label_For_Colum_2__c}</span></th>
+<th align="center" style="text-align: left; border-bottom: 1px solid #A9A9A9;width:9%;"><span class="txt-bold">{!quoteTemplate.Label_For_Colum_3__c}</span></th>
+
+<th align="right" style="text-align: right; border-bottom: 1px solid #A9A9A9;width:15%;"><span class="txt-bold">{!quoteTemplate.Label_For_Colum_4__c}&nbsp;({!ObjQuote.CurrencyIsoCode})</span></th>
+<th align="center" style="text-align: right; border-bottom: 1px solid #A9A9A9;width:20%;"><span class="txt-bold">{!quoteTemplate.Label_For_Colum_5__c}&nbsp;({!ObjQuote.CurrencyIsoCode})</span></th>
+</tr>
+</tr>
+</thead>
+<tbody>
+<apex:repeat value="{!prodLineList}" var="qLine">
+<tr style="display:{!IF(!qLine.Is_Tax, 'false','none')};margin: 0 !important; padding-left: 13px;" class="qlineitem">
+<td >{!qLine.Line_Item_Id}</td>
+<td style="text-align: centre; color: #000 !important;" class="">
+<apex:outputPanel rendered="{!if(qLine.Product_Description == '' , true ,false)}"> 
+{!qLine.Product_Name}<br/>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!if(qLine.Product_Description != '' , true ,false)}"> 
+{!qLine.Product_Description}<br/>
+</apex:outputPanel>
+</td>
+<td align="left" style="text-align: left; color: #000 !important;"><p style="margin: 0 !important; padding-left: 13px;"> 
+<span style="display:{!IF(qLine.isstartWith_Hash, 'none','block')};"> {!qLine.Quantity}&nbsp;{!qLine.UOM}</span>
+<span style="display:{!IF(qLine.isstartWith_Hash, 'block', 'none')};">{!qLine.UOM}</span></p>
+</td>
+<td align="right" style="text-align: right; color: #000 !important;">
+{!(qLine.totalValueString)}
+</td>
+<td align="left" style="text-align: right; color: #000 !important;"> 
+{!(qLine.Ceiling_Total_Sales_Pricestring)}
+</td>		
+</tr>
+<apex:repeat value="{!qLine.childProd}" var="QLOpt">
+<tr rendered="{!!QLOpt.isstartWith_a}">
+<td></td>
+<td align="left" class="qlineitemOptions" style="font-size: 12px;">
+
+<apex:outputPanel rendered="{!if(QLOpt.Description == '' &&  !QLOpt.isstartWith_a, true ,false)}"> 
+<li style="list-style-type: square;  margin-bottom: 4px; padding: 0 !important; margin: 0 !important;">{!QLOpt.Manual_Product_Name}</li>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!if(QLOpt.Description != ''  &&  !QLOpt.isstartWith_a, true ,false)}"> 
+<li style="list-style-type: square;  margin-bottom: 4px; padding: 0 !important; margin: 0 !important;">{!QLOpt.Description}</li>
+</apex:outputPanel>
+</td>
+</tr>
+</apex:repeat>
+</apex:repeat>
+<tr>
+<td colspan="5" align="right" style="border: 1px solid #A9A9A9; border-left: 0; border-right: 0;">
+{!quoteTemplate.Label_For_Colum_5__c}&nbsp;({!ObjQuote.CurrencyIsoCode}) :
+{!getWithoutTaxGrandValueString}
+</td>
+</tr>
+</tbody>
+</table> -->
+                        </td>
+                </tr>
+                
+                
+                
+                
+                
+                <tr>
+                    <td colspan="5" style="text-align: left; font-size : 13px;">
+                        <apex:outputField style="width: 120px;height: 50px;"  value="{!ObjQuote.Text_After_Total__c}"/> 
+                    </td>
+                </tr>                         
+                <tr>
+                    <td colspan="5" style="text-align: right; font-size : 13px;">End of this page. Continued on next page..</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- ASB & Customer Sign   -->
+        <apex:outputPanel rendered="{!OR(quoteTemplate.ASB_Sign_Section3__c, quoteTemplate.Customer_Sign_Section3__c)}">
+            <table width="100%" style="padding-top:0%;width: 100%; page-break-inside: avoid;" class="section-4">
+                <tbody style="font-size:12px">                                                       
+                    <tr>
+                        <!--<td style="padding-top: 10px;padding-bottom: 10px;">
+<div style="position:relative;top:0.42px;height: 70px;">
+<apex:outputPanel rendered="{!IF(quoteTemplate.ASB_Sign_Section3__c == true, true, false)}">
+<apex:outputField style="width: 140px;height: 60px;"  value="{!ObjUserSetup.Signature_Image__c}"/>
+</apex:outputPanel>
+</div>
+</td>-->
+                        
+                        <td style="padding-top: 10px;padding-bottom: 10px; width: 50%;height: 40px !important" class="signspace">
+                            <div style="position:relative;top:0.42px;" class="signspace" >
+                                <apex:outputPanel rendered="{!IF(quoteTemplate.ASB_Sign_Section3__c == true, true, false)}" >
+                                    <apex:outputField style="width: 140px;mix-height: 40px;"  value="{!ObjUserSetup.Signature_Image__c}"/>
+                                </apex:outputPanel>
+                            </div>
+                        </td>
+                        <td style="padding-top: 10px;padding-bottom: 10px; width: 50%;height: 40px !important" class="">
+                            <!--<div style="position:relative;top:0.42px;">
+<apex:outputPanel rendered="{!IF(quoteTemplate.ASB_Sign_Section3__c == true, true, false)}">
+<apex:outputField style="width: 130px;min-height: 40px;"  value="{!ObjUserSetup.Signature_Image__c}"/>
+</apex:outputPanel>
+</div>-->
+                        </td>
+                    </tr>Section_4_Required__c
+                    <tr>
+                        <td style="width: 50%">
+                            <apex:outputPanel rendered="{!IF(quoteTemplate.ASB_Sign_Section3__c == true, true, false)}">
+                                <!--<table>
+                                    <tbody>
+                                        <tr>
+                                            <td style="font-size:12px"><span class="txt-bold"> {!ObjQuote.Owner.Name}</span> </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size:12px">{!ObjQuote.Owner.title}</td> 
+                                            
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size:12px">{!quoteTemplate.Subsidiary__r.Name__c}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>-->
+                            </apex:outputPanel>
+                        </td>
+                        <td style="width: 50%">
+                            <apex:outputPanel rendered="{!IF(quoteTemplate.Customer_Sign_Section3__c == true, true, false)}">
+                                <table style="text-align:right;width: 100%">
+                                    <tbody>
+                                        <tr><td></td></tr>
+                                        <tr>
+                                            <td style="font-size:12px"><b>Authorised Signatory</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="word-wrap: break-word;font-size:12px;">{!ObjAccount.Legal_Name__c}</td>
+                                        </tr>
+                                        <tr style="">
+                                            <td style="font-size:12px;">
+                                                <apex:outputPanel rendered="{!ObjQuote.Is_DTA_Quote__c}">
+                                                    <label>{!ObjQuote.CityCustom__c}</label>
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </apex:outputPanel>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </apex:outputPanel>
+    </div>
+    <div style="page-break-before:{!IF(quoteTemplate.S4_Title__c != null, 'always;', '')}"/>
+    
+    <!-- page:4 Start Section:4-->
+    <apex:outputPanel rendered="{!IF(quoteTemplate.Section_4_Required__c == true, true, false)}">
+        <div class="{!IF(quoteTemplate.Footer_Image_Required__c && quoteTemplate.Footer_Text_Required__c, 'page3_4_Both_Check',
+                    IF(quoteTemplate.Footer_Image_Required__c || quoteTemplate.Footer_Text_Required__c, 'page3_4_Img-Text_Check','page3_4'))}">
+            <table width="100%" border="0" style="font-size:11.5px; position:relative;">
+                <tbody style="display:{!IF(quoteTemplate.S4_Title__c != null, '', 'none;')}">
+                    <tr>
+                        <td><span class="txt-bold" style="font-size:14px;">
+                            <apex:outputField value="{!quoteTemplate.S4_Title__c}"/>
+                            </span></td>
+                    </tr>
+                    <apex:repeat value="{!gRemark}" var="remark">
+                        <tr>
+                            <td class="section-4" style="text-align:justify;"><apex:outputField value="{!remark.Content_2__c}"/></td>
+                        </tr> 
+                    </apex:repeat>                            
+                </tbody>
+            </table>
+            <!-- ASB & Customer Sign   -->  
+            <apex:outputPanel rendered="{!OR(quoteTemplate.ASB_Sign_Section4__c, quoteTemplate.Customer_Sign_Section4__c)}">
+                <table width="100%" style="padding-top:0%;width: 100%; page-break-inside: avoid;" class="section-4">
+                    <tbody style="font-size:12px">                                                       
+                        <tr>
+                            <!--<td style="padding-top: 10px;padding-bottom: 10px;">
+<div style="position:relative;top:0.42px;height: 70px;">
+<apex:outputPanel rendered="{!IF(quoteTemplate.ASB_Sign_Section4__c == true, true, false)}">
+<apex:outputField style="width: 140px;height: 60px;"  value="{!ObjUserSetup.Signature_Image__c}"/>
+</apex:outputPanel>
+</div>
+</td>-->
+                            <td style="padding-top: 10px;padding-bottom: 10px; width: 50%;height: 40px !important" class="signspace">
+                                <div style="position:relative;top:0.42px;" class="signspace" >
+                                    <apex:outputPanel rendered="{!IF(quoteTemplate.ASB_Sign_Section4__c == true, true, false)}" >
+                                        <apex:outputField style="width: 140px;mix-height: 40px;"  value="{!ObjUserSetup.Signature_Image__c}"/>
+                                    </apex:outputPanel>
+                                </div>
+                            </td>
+                            <td style="padding-top: 10px;padding-bottom: 10px; width: 50%;height: 40px !important" class="">
+                                <!--<div style="position:relative;top:0.42px;">
+<apex:outputPanel rendered="{!IF(quoteTemplate.ASB_Sign_Section5__c == true, true, false)}">
+<apex:outputField style="width: 130px;min-height: 40px;"  value="{!ObjUserSetup.Signature_Image__c}"/>
+</apex:outputPanel>
+</div>-->
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%">
+                                <apex:outputPanel rendered="{!IF(quoteTemplate.ASB_Sign_Section4__c == true, true, false)}">
+                                   <!-- <table>
+                                        <tbody>
+                                            <tr>
+                                                <td style="font-size:12px"><span class="txt-bold"> {!ObjQuote.Owner.Name}</span> </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size:12px">{!ObjQuote.Owner.title}</td> 
+                                                
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size:12px">{!quoteTemplate.Subsidiary__r.Name__c}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>-->
+                                </apex:outputPanel>
+                            </td>
+                            <td style="width: 50%">
+                                <apex:outputPanel rendered="{!IF(quoteTemplate.Customer_Sign_Section4__c == true, true, false)}">
+                                    <table style="text-align:right;width: 100%">
+                                        <tbody>
+                                            <tr><td></td></tr>
+                                            <tr>
+                                                <td style="font-size:12px"><b>Authorised Signatory</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="word-wrap: break-word;font-size:12px;">{!ObjAccount.Legal_Name__c}</td>
+                                            </tr>
+                                            <tr style="">
+                                                <td style="font-size:12px;">
+                                                    <apex:outputPanel rendered="{!ObjQuote.Is_DTA_Quote__c}">
+                                                        <label>{!ObjQuote.CityCustom__c}</label>
+                                                    </apex:outputPanel>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </apex:outputPanel>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </apex:outputPanel>
+        </div>
+        <div style="page-break-before:{!IF(quoteTemplate.S5_Title__c != null, 'always;', '')}"/>
+    </apex:outputPanel>
+    
+    <!-- page:5 Start Section:5-->
+    <apex:outputPanel rendered="{!IF(quoteTemplate.Section_5_Required__c == true, true, false)}">
+        <div class="{!IF(quoteTemplate.Footer_Image_Required__c && quoteTemplate.Footer_Text_Required__c, 'page3_4_Both_Check',
+                    IF(quoteTemplate.Footer_Image_Required__c || quoteTemplate.Footer_Text_Required__c, 'page3_4_Img-Text_Check','page3_4'))}">   
+            <table width="100%" border="0" style="font-size:11.5px; position:relative;">  
+                <tbody style="display:{!IF(quoteTemplate.S5_Title__c != null, '', 'none;')}">
+                    <tr>
+                        <td><span class="txt-bold" style="font-size:14px;"><apex:outputField value="{!quoteTemplate.S5_Title__c}"/> </span></td>
+                    </tr>
+                    <apex:repeat value="{!gProvision}" var="provision">
+                        <tr>
+                            <td class="section-4" style="text-align:justify;"><apex:outputField value="{!provision.Content_2__c}"/></td>
+                        </tr>
+                    </apex:repeat>
+                </tbody>
+            </table>
+            <!-- ASB & Customer Sign   --> 
+            <apex:outputPanel rendered="{!OR(quoteTemplate.ASB_Sign_Section5__c, quoteTemplate.Customer_Sign_Section5__c)}">
+                <table width="100%" style="padding-top:0%;width: 100%; page-break-inside: avoid;" class="section-4">
+                    <tbody style="font-size:12px">                                                       
+                        <tr>
+                            <td style="padding-top: 10px;padding-bottom: 10px; width: 50%;height: 40px !important" class="signspace">
+                                <div style="position:relative;top:0.42px;" class="signspace" >
+                                    <apex:outputPanel rendered="{!IF(quoteTemplate.ASB_Sign_Section5__c == true, true, false)}" >
+                                        <apex:outputField style="width: 140px;mix-height: 40px;"  value="{!ObjUserSetup.Signature_Image__c}"/>
+                                    </apex:outputPanel>
+                                </div>
+                            </td>
+                            <td style="padding-top: 10px;padding-bottom: 10px; width: 50%;height: 40px !important" class="">
+                                <!--<div style="position:relative;top:0.42px;">
+<apex:outputPanel rendered="{!IF(quoteTemplate.ASB_Sign_Section5__c == true, true, false)}">
+<apex:outputField style="width: 130px;min-height: 40px;"  value="{!ObjUserSetup.Signature_Image__c}"/>
+</apex:outputPanel>
+</div>-->
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%">
+                                <apex:outputPanel rendered="{!IF(quoteTemplate.ASB_Sign_Section5__c == true, true, false)}">
+                                   <!--<table>
+                                        <tbody>
+                                            <tr>
+                                                <td style="font-size:12px"><span class="txt-bold"> {!ObjQuote.Owner.Name}</span> </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size:12px">{!ObjQuote.Owner.title}</td> 
+                                                
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size:12px">{!quoteTemplate.Subsidiary__r.Name__c}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>-->
+                                </apex:outputPanel>
+                            </td>
+                            <td style="width: 50%">
+                                <apex:outputPanel rendered="{!IF(quoteTemplate.Customer_Sign_Section5__c == true, true, false)}">
+                                    <table style="text-align:right;width: 100%">
+                                        <tbody>
+                                            <tr><td style=""></td></tr>
+                                            <tr>
+                                                <td style="font-size:12px"><b>Authorised Signatory</b></td>
+                                            </tr>
+                                            <tr style="">
+                                                <td style="word-wrap: break-word;font-size:12px;">{!ObjAccount.Legal_Name__c}</td>
+                                            </tr>
+                                            <tr>
+                                                
+                                                <td style="font-size:12px;">
+                                                    <apex:outputPanel rendered="{!ObjQuote.Is_DTA_Quote__c}">
+                                                        <label>{!ObjQuote.CityCustom__c}</label>
+                                                    </apex:outputPanel>
+                                                </td>
+                                                
+                                                
+                                                
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </apex:outputPanel>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </apex:outputPanel>
+        </div>
+    </apex:outputPanel>
+</div>
+</body>
+</apex:form>
+</apex:page>

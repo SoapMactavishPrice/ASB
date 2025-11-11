@@ -1,0 +1,2 @@
+<apex:page standardController="Contract_Line_Option__c" extensions="ActivateOptionController" action="{!ActivateOption}" lightningStylesheets="true">
+</apex:page>

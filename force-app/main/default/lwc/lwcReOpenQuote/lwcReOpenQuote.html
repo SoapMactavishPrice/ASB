@@ -1,0 +1,174 @@
+<template>
+
+    <lightning-quick-action-panel header='Re-Open Quote' if:true={isOpen}>
+
+
+
+        <template if:true={showSpinner}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+        <!-- <label if:true={allProject} style="font-size: medium;color:red">Note: Before Re-Open Quote Please Create
+            Project</label> -->
+        <table width="100%" id="customers">
+            <thead>
+                <tr style="height: 35px;">
+                    <th style="font-weight: bold;font-size: 12px;width: 5%;color:white" class="lineItemAlign">
+                        SQ No
+                    </th>
+                    <th style="font-weight: bold;font-size: 12px;width: 20%;color:white" class="lineItemAlign">
+                        Product Name
+                    </th>
+                    <th style="font-weight: bold;font-size: 12px;width: 12%;color:white" class="lineItemAlign">
+                        Project Number
+                    </th>
+                    <th style="font-weight: bold;font-size: 12px;width: 12%;color:white" class="lineItemAlign">
+                        Sales Price
+                    </th>
+                    <th style="font-weight: bold;font-size: 12px;width: 12%;color:white" class="lineItemAlign">
+                        Expected Sales Month
+                    </th>
+                    <th style="font-weight: bold;font-size: 12px;width: 12%;color:white" class="lineItemAlign">
+                        Your PO Number
+                    </th>
+                    <th style="font-weight: bold;font-size: 12px;width: 12%;color:white" class="lineItemAlign">
+                        Your PO Issue Date
+                    </th>
+                    <th style="font-weight: bold;font-size: 12px;width: 13%;color:white" class="lineItemAlign">
+                        Cancel?
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <template for:item="e1" for:each={wrapList} for:index="index">
+                    <tr key={e1.p_SrNO} style="height: 30px;">
+                        <td style="font-weight: bold;" class="lineItemAlign">
+                            {e1.p_SrNO}
+                        </td>
+                        <td style="font-weight: bold;" class="lineItemAlign">
+                            {e1.p_ProjectName}
+                        </td>
+                        <td style="font-weight: bold;" class="lineItemAlign">
+                            {e1.p_projNum}
+                        </td>
+                        <td class="lineItemAlign">
+
+                            <lightning-formatted-number value={e1.p_SalesPrice} format-style="currency"
+                                currency-code={e1.p_currency}></lightning-formatted-number>
+
+                        </td>
+
+                        <td><lightning-input type="date" disabled variant="label-hidden" data-id={e1.LineNumberIdClone} data-label="ExpectedSalesMonth" value={e1.ExpectedSalesMonth}  ></lightning-input></td>
+                            <td><lightning-input type="text" disabled variant="label-hidden" data-id={e1.LineNumberIdClone} data-label="YourPONumber" value={e1.YourPONumber}  ></lightning-input></td>
+                            <td><lightning-input type="date" disabled variant="label-hidden" data-id={e1.LineNumberIdClone} data-label="YourPOIssueDate" value={e1.YourPOIssueDate} ></lightning-input></td>
+                            
+
+
+                        <td class="lineItemAlign">
+                            <!--<apex:selectList size="1" style="display:{!if(e1.p_projNum !=null,'','none')}">
+                                <apex:selectOptions value="{!options}"></apex:selectOptions>
+                            </apex:selectList>-->
+
+                            <lightning-combobox name="progress" label="Status" value={e1.p_CancelType}
+                                if:true={e1.isShowCancel} placeholder="Select Status" data-id={e1.p_SrNO}
+                                data-index={e1.index} options={options} variant="label-hidden"
+                                onchange={handleConfirmChange}></lightning-combobox>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+
+        </table>
+
+        <div slot='footer'>
+
+
+            <div style="width:98%;" class="slds-m-top_small">
+                <div style="display:flex; width:97%">
+                    <div class="slds-align_absolute-center">
+                        <lightning-button onclick={closeAction} label="Cancel"></lightning-button>
+                        <lightning-button class="slds-m-left_small" variant="brand" onclick={saveProjects}
+                            label="Save"></lightning-button>
+
+                            
+                    </div>
+                    <lightning-button class="slds-m-left_small slds-float_right" variant="destructive" onclick={CancelAll}
+                            label="Amendment All"></lightning-button>
+                </div>
+            </div>
+        </div>
+
+
+    </lightning-quick-action-panel>
+
+
+    <template if:true={OpenPopUp}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-19" class="slds-modal slds-fade-in-open slds-modal_large">
+            <div class="slds-modal__container" style="width: 100% !important;
+            max-width: 40% !important;
+            margin-top: 20px;">
+                <!-- modal header start -->
+                <header class="slds-modal__header" style="background-color:rgb(29 91 125);;">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close" onclick={hideshowModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                            size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 style="text-align: center; color: white !important;"
+                        class="slds-text-heading_medium slds-hyphenate">
+                        Confirmation</h2>
+                </header>
+                <!-- modal body start -->
+                <div style="background-color: #0070D2;
+            padding: 0px 0px;">
+                    <div class="slds-modal__content slds-p-around_medium slds-modal_medium">
+                        <p class="slds-align_absolute-center">Cancelled project &nbsp;<b>{projectNumber}</b>
+                            &nbsp; cannot be retrieved back. Are you sure you want to continue?</p>
+                    </div>
+
+                </div>
+                <!-- modal footer start-->
+                <footer class="slds-modal__footer ">
+                    <div class="slds-align_absolute-center" style="display:flex">
+                        <p class="slds-button slds-button_neutral button-font-size" onclick={hideshowModal}>No</p>
+                        <lightning-button class="slds-m-left_small" variant="brand" onclick={handleOk}
+                             label="Yes"></lightning-button>
+                    </div>
+                </footer>
+            </div>
+        </section>
+        <!-- <div class="slds-backdrop slds-backdrop_open"></div> -->
+    </template>
+
+    <template if:true={closeConfirm}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="width: 60%;">
+                <!-- Modal Header -->
+                <header class="slds-modal__header" style="background-color:red">
+                    <h2 class="slds-text-heading_medium">!Info</h2>
+                </header>
+
+                <!-- Modal Body -->
+                <div class="slds-modal__content slds-p-around_medium">
+                    <label class="slds-align_absolute-center">Are you sure Amendment all project?</label>
+                </div>
+
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <div style="display:flex" class="slds-align_absolute-center">
+                    <lightning-button variant="neutral" label="Cancel" onclick={closeConfirmModal}></lightning-button>
+                    <lightning-button class="slds-m-left_small" variant="brand" label="Yes, Continue" onclick={CancelAllProceed}></lightning-button>
+                    </div>
+                </footer>
+            </div>
+        </section>
+
+        <!-- Backdrop to dim the background -->
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+
+
+
+</template>

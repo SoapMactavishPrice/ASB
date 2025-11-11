@@ -1,0 +1,369 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global"
+                controller="AddProducts">
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="aname" type="Product2" default="{'sObjectType':'Product2'}"/>
+    <aura:attribute name="picvalue" type="List"/>
+    <aura:attribute name="picvaluev2" type="List"/>
+    <aura:attribute name="dataNotFound" type="boolean"/>
+    <aura:attribute name="dataFound" type="boolean"/>
+    <aura:attribute name="tempSerialNumber" type="Integer"/>
+    <aura:attribute name="StatictempSerialNumber" type="Integer"/>
+    <aura:attribute name="manualndex" type="Integer"/>
+    
+    <aura:attribute name="selectedCount" type="integer" default="0"/>
+    <aura:attribute name = "data" type = "list"/>
+    <aura:attribute name="UnfilteredData" type="list" />     
+    <aura:attribute name="startPage" type="Integer" />
+    <aura:attribute name="pageSize" type="Integer" default="10"/>
+    <aura:attribute name="endPage" type="Integer"/>
+    <aura:attribute name="currentPage" type="integer" default="1"/>
+    <aura:attribute name="totalPagesCount" type="integer"/>
+    <aura:attribute name="totalRecordsCount" type="Integer"/>
+    <aura:attribute name="PaginationList" type="list"/> 
+    <aura:attribute name="SaveHit" type="Boolean" default='true'/>
+    <aura:attribute name="IsTaxableDisable" type="Boolean" default='false'/>
+    <aura:attribute name="SaveHitManual" type="Boolean" default='true'/>
+    <aura:attribute name="inBuiltProd" type="Boolean" default='false'/>
+    <aura:attribute name="manualProd" type="Boolean" default='false'/>
+    <aura:attribute name="loader" type="Boolean" default='true'/>
+    <aura:attribute name="isNull" type="Boolean" default='true'/>
+    <aura:attribute name="filter" type="String" />
+    <aura:attribute name="currentProdType" type="String" />
+    <aura:attribute name="ProdList" type="Quote_Line_Item_Custom__c[]" />  
+    <!--<aura:handler name="change" value="{!v.filter}" action="{!c.dorefresh}" />-->
+    <aura:attribute name="currencyCode" type="String" />
+    <aura:attribute name="QtyRestricted" type="integer" />   
+    <!--<lightning:input name="x" value="{!v.filter}" label="Filter" placeholder="Search Product Name or Product Code.... "/>  <br/>-->
+    
+    <aura:html tag="style">
+        
+        .slds-modal__container{
+        height : auto; width: 180%; max-width: 90%;
+        }
+        .modal-body{
+        height : 80vh !important;
+        max-height: 80vh !important;
+        }
+        .slds-modal__footer{
+        display:none;
+        }
+        .last{
+        text-align: left;
+        vertical-align: middle;
+        }
+        
+        .slds-modal__content{
+        height:auto;
+        }
+    </aura:html>
+    
+    <lightning:select name= "PicklistId" label="Product Type"  aura:id="PicklistId" onchange ="{!c.OnCheck}" >
+        <option value="null" text="-- CHOOSE YOUR PRODUCT TYPE FROM THE DROP DOWN --" />
+        <option value="In Built Products" text="In Built Products" />
+        <option value="Manual Products" text="Manual Products" />
+    </lightning:select>
+    
+    <aura:if isTrue="{!v.isNull}">
+    </aura:if>
+    <aura:if isTrue="{!v.loader}">
+        <div class="exampleHolder">
+        <lightning:spinner alternativeText="Loading" size="small" />
+    </div>
+	</aura:if>
+    <aura:if isTrue="{!v.inBuiltProd}">
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-size_3-of-12">
+            <lightning:select value="{!v.aname.Product_Type__c}" label="Product Type" aura:id="PicklistTypeIdv2" onchange ="{!c.OnProdTypeSelect}">       
+            <option value="">Choose one...</option> 
+            <aura:iteration items="{!v.picvalue}" var="s">
+                <option value="{!s.value}" text="{!s.label}"/>             
+            </aura:iteration> 
+           </lightning:select> 
+       </div>
+            
+  			<div class="slds-col slds-size_7-of-12">
+                <lightning:input name="x" value="{!v.filter}" label="Filter" placeholder="Search Product Name or Product Code or Product Description"/>  
+        
+  			</div>
+  			<div class="slds-col slds-size_2-of-12 slds-m-top_large">
+   				<lightning:button variant="brand" label="Search" onclick="{!c.doFilter }" /><br/>
+  			</div>
+       
+        </div>
+        <div class="slds-p-top_small">
+            <center>
+                <aura:if isTrue="{!v.SaveHit}">
+                    <lightning:button variant="brand" label="Save" onclick="{! c.doSave }" />
+                </aura:if>
+                <lightning:button variant="destructive" label="Cancel" onclick="{! c.Onclose }" />
+            </center>
+        </div>
+        <br/>
+        
+        <div class="slds-scrollable_x" style="width:240rem;">
+            <table id="myTable" class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered" >
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        
+                        <th class="" scope="col" style="width:6%">
+                            <div class="slds-truncate" title="Product"> </div>
+                        </th>
+                        <!--<th class="" scope="col" style="width:6%">
+                            <div class="slds-truncate" title="Product">Serial no</div>
+                        </th>-->
+                        <th class="" scope="col" style="width:37%">
+                            <div class="slds-truncate" title="Name">PRODUCT NAME</div>
+                        </th>
+                        <th class="" scope="col" style="width:12%">
+                            <div class="slds-truncate" title="PRODUCT TYPE">PRODUCT TYPE</div>
+                        </th>
+                        <th class="" scope="col" style="width:15%">
+                            <div class="slds-truncate" title="PRODUCT CODE">PRODUCT CODE</div>
+                        </th>
+                        <th class="" scope="col" style="width:20%">
+                            <div class="slds-truncate" title="LIST PRICE">LIST PRICE({!v.currencyCode})</div>
+                        </th>
+                        <th class="" scope="col" style="width:10%">
+                            <div class="slds-truncate" title="Quantity">Quantity</div>
+                        </th>
+                        <!-- <th class="" scope="col">
+                            <div class="slds-truncate" title="SCOPE OF MOLD">SCOPE OF MOLD</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="NUMBER OF CAVITY">NUMBER OF CAVITY</div>
+                        </th> -->
+                       <!-- <th class="" scope="col">
+                            <div class="slds-truncate" title="NUMBER OF CAVITY">PRODUCT DESCRIPTION</div>
+                        </th>
+                          <th scope="col">
+                            <div class="slds-truncate" title="PriceBookEntry">Discount</div>
+                        </th> -->
+                        
+                        <!--  <th scope="col">
+                    <div class="slds-truncate" title="PriceBookEntry">Quantity</div>
+                </th> -->
+                    </tr>
+                </thead>
+                
+                <aura:if isTrue="{!v.dataFound}">
+                   <tbody>
+                    <aura:iteration items = "{!v.PaginationList}" var = "prods" indexVar="index" >
+                        <tr aria-selected="false" class="slds-hint-parent">
+                            <td scope="row" style="width:6%">
+                                <ui:inputCheckbox value="{!prods.isChecked}" aura:id="selectAllId"
+                                                  name="{!index}" change="{!c.checkboxSelect}"/>
+                            </td>
+                           <!-- <td scope="row" style="width:6%">
+                                <lightning:input value="{!prods.serial_no}" disabled="true" data-row-index="{!index}" variant="label-hidden"/>
+                            </td>-->
+                            <td scope="row" style="width:37%">
+                                <div class="slds-truncate" title="{!prods.Product2.Name}">
+                                    {!prods.objprod.Product2.Name} </div>
+                            </td>
+                            <td scope="row" style="width:12%">
+                                <div class="slds-truncate" title="{!prods.Product2.Product_Type__c}">
+                                    {!prods.objprod.Product2.Product_Type__c} </div>
+                            </td>
+                            <td scope="row" style="width:15%">
+                                <div class="slds-truncate" title="{!prods.Product2.ProductCode}">
+                                    {!prods.objprod.Product2.ProductCode} </div>
+                            </td>
+                            <td scope="row" style="width:20%">
+                                <lightning:formattedNumber value="{!prods.objprod.UnitPrice}" style="currency" currencyCode="{!v.currencyCode}" minimumFractionDigits="2" maximumFractionDigits="2" ></lightning:formattedNumber>
+
+                            </td>
+                            <td scope="row" style="width:10%">
+                                <div class="slds-truncate" style="width:100px" title="{!prods.quantity}">
+                                    <lightning:input type="number" variant="label-hidden" 
+                                                     value="{!prods.quantity}" />
+                                </div>
+                            </td>
+                            <!-- <td scope="row">
+                                <div class="slds-truncate" title="{!prods.Product2.Scope_of_Mold__c}">
+                                    {!prods.objprod.Product2.Scope_of_Mold__c}</div>
+                            </td>
+                            <td scope="row">
+                                <div class="slds-truncate" title="{!prods.Product2.Number_Of_Cavity_Mould__c}">
+                                    {!prods.objprod.Product2.Number_Of_Cavity_Mould__c} </div>
+                            </td> -->
+                            <!--<td scope="row">
+                                <div class="slds-truncate" title="{!prods.objprod.Product2.Description}">
+                                    <lightning:input type="text" variant="label-hidden" 
+                                                     value="{!prods.objprod.Product2.Description}" />
+                                </div> 
+                            </td>-->
+                            <!--  <td > -->
+                            <!--<lightning:input  value=""  required="True" placeholder="Enter description here" /> required="{!v.discountDescription}"-->
+                            <!-- <lightning:input id="text-input-id-1 " name="{!index}" value="{!prods.objprod.Discount__c}" placeholder="Placeholder Text"/>
+                            </td> 
+                           
+                              <td scope="row">
+                               <div class="slds-truncate" title="{!prods.Quantity__c}">
+                            <lightning:input id="text-input-id-2 " name="{!index}" value="{!prods.Quantity__c}" />
+                        </div>
+                            </td>-->
+                        </tr>
+                    </aura:iteration>
+                   </tbody>
+              </aura:if>
+                 <aura:if isTrue="{!v.dataNotFound}">
+                <tr><td colspan="2"></td>
+                  <td colspan=""><label>Data not found</label></td>
+                </tr>
+                </aura:if>
+            </table>
+            
+        </div>
+        <!--<div class="slds-p-top_small">
+            <center>
+                <aura:if isTrue="{!v.SaveHit}">
+                    <lightning:button variant="brand" label="Save" onclick="{! c.doSave }" />
+                </aura:if>
+                <lightning:button variant="destructive" label="Cancel" onclick="{! c.Onclose }" />
+            </center>
+        </div>-->
+        
+        <div class="slds-p-top_small slds-align_absolute-center">         
+                <lightning:button label="Previous"
+                                  disabled="{!v.currentPage == 1}"  
+                                  onclick="{!c.navigation}"
+                                  variant="brand"
+                                  iconName="utility:back"
+                                  name="previous"/>
+                
+                <span class="slds-badge slds-badge_lightest"
+                      style="margin-right: 10px;margin-left: 10px;">
+                    Page {!v.currentPage} out of {!v.totalPagesCount}
+                    <!--<br/>
+                    Total Record count {!v.totalPagesCount} == {!v.endPage}-->
+                </span> 
+                
+                <lightning:button label="Next"
+                                  disabled="{!(v.currentPage) == v.totalPagesCount}" 
+                                  onclick="{!c.navigation}"
+                                  variant="brand"
+                                  iconName="utility:forward"
+                                  iconPosition="right"
+                                  name="next"/>
+            </div> 
+    </aura:if>
+    <aura:if isTrue="{!v.manualProd}">
+        <div class="slds-m-around--xx-large">
+            <h1 class="slds-page-header__title slds-m-bottom--x-small">Click To Add Manual Products
+                 <lightning:buttonIcon iconName="utility:add"  size="large" variant="brand" alternativeText="Add" onclick="{!c.addRow}"/>
+            </h1>
+            <div class="container-fluid">        
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                           <!-- <th scope="col">
+                                <div class="slds-truncate">S. NO.</div>
+                            </th>-->
+                            
+                            <th scope="col">
+                                <div class="slds-truncate">PRODUCT NAME</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate">PRODUCT TYPE</div>
+                            </th>
+                            <!-- <th scope="col">
+                                <div class="slds-truncate" title="Product Name">PRODUCT TYPE</div>
+                            </th>-->
+                            <th scope="col">
+                                <div class="slds-truncate" title="LIST PRICE">LIST PRICE</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="BASE PRICE">BASE PRICE</div>
+                            </th> 
+                            <th scope="col">
+                                <div class="slds-truncate" title="QUANTITY">QUANTITY</div>
+                            </th> 
+                            <th scope="col">
+                                <div class="slds-truncate">IS TAXABLE</div>
+                            </th>
+                            <!-- <th scope="col">
+                                <div class="slds-truncate" title="SCOPE OF MOLD">SCOPE OF MOLD</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="NUMBER OF CAVITY">NUMBER OF CAVITY</div>
+                            </th> -->
+                            <!--<th scope="col">
+                                <div class="slds-truncate" title="Discount">Discount </div>
+                            </th>  -->
+                            
+                            <th scope="col">
+                                <div class="slds-truncate" title="Action">Action</div>
+                            </th>
+                        </tr>
+                    </thead>   
+                    <tbody>      
+                        <aura:iteration items="{!v.ProdList}" var="acc" indexVar="index">
+                            <tr>
+                                <!-- <td> 
+                                    {!acc.sr_No__c}
+                                </td>-->
+                                <td>
+                                    <lightning:input  name="{!index}" required="true"
+                                                     type="text"  maxlength="50" label="" value="{!acc.Product_Name__c}" />
+                                </td>
+                                <td>
+                                    <div class="slds-grid slds-gutters">
+                                        
+                                            <lightning:select required="true" value="{!acc.Product_Type__c}" aura:id="PicklistTypeId"
+                                                              name="{!index}"
+                                                              onchange ="{!c.OnProdTypeSelectv2}">       
+                                                <option value="">Choose one...</option> 
+                                                <aura:iteration items="{!v.picvaluev2}" var="s">
+                                                    <option value="{!s.value}" text="{!s.label}"/>             
+                                                </aura:iteration> 
+                                            </lightning:select> 
+                                        </div></td>
+                                <!-- <td>
+                                    <lightning:input  id="text-input-id-3"  name="{!index}" type="text"  maxlength="10" label="" value="{!acc.Product_Type__c}" />
+                                </td> -->
+                                <td>
+                                    <lightning:input  id="text-input-id-2 " name="{!index}" type="phone" maxlength="10" label="" value="{!acc.List_Price__c}" />
+                                </td>
+                                <td>
+                                    <lightning:input name="{!index}"  maxlength="10" label="" value="{!acc.Base_Price__c}"  />
+                                </td>  
+                                <td>
+                                    <lightning:input name="{!index}"  maxlength="10" label="" value="{!acc.Quantity__c}"  />
+                                </td> 
+                                <td>
+                                    <ui:inputCheckbox name="{!index}" change="{!c.checkboxSelectOnTaxable}" disabled="{!v.IsTaxableDisable}"/>
+
+                                </td> 
+                                <!-- <td>
+                                    <lightning:input  name="{!index}" type="phone" maxlength="10" label="" value="{!acc.Scope_of_mould__c}"/>
+                                </td>
+                                <td>
+                                    <lightning:input  name="{!index}" type="phone" maxlength="10" label="" value="{!acc.Cavity__c}"/>
+                                </td>    -->
+                                <!--<td>
+                                    <lightning:input  name="{!index}" type="text" maxlength="10" label="" value="{!acc.Discount__c}" />
+                                </td>  -->
+                                
+                                <td>
+                                    <a onclick="{!c.removeRow}" data-record="{!index}">
+                                        <lightning:icon iconName="utility:delete" size="small" alternativeText="Delete"/>
+                                        <span class="slds-assistive-text">Delete</span>
+                                    </a>
+                                </td> 
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+            <div class="slds-p-top_small">
+                <center>
+                    <aura:if isTrue="{!v.SaveHitManual}">
+                        <lightning:button variant="brand" label="Save" onclick="{! c.doSaveManual }" />
+                    </aura:if>     
+                    <lightning:button variant="destructive" label="Cancel" onclick="{! c.Onclose }" />
+                </center>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

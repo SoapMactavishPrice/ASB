@@ -1,0 +1,163 @@
+<template>
+
+    
+
+
+    <lightning-card>
+        <!-- <label class="slds-text-heading_medium slds-align_absolute-center">Project Deatils</label><br/> -->
+    <lightning-button label="Show Project Management Details" class="slds-align_absolute-center" onclick={getDatails} variant="brand"></lightning-button>
+    </lightning-card>
+
+
+
+<template if:true={openModel}>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-02" aria-modal="true"
+        aria-describedby="modal-content-id-3" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container" style="width: 60%;min-width: 88rem;">
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                    title="Close" onclick={closePdfPreviewModal}>
+                    <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                        size="small">
+                    </lightning-icon>
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Project Management Summary</h2>
+
+            </header>
+            <div class="slds-modal__content slds-var-p-around_medium" id="modal-content-id-3">
+                
+                <div style="text-align: center;">
+                    <div if:true={showSpinner}>
+                        <lightning-spinner variant="brand" alternative-text="Loading" size="medium"></lightning-spinner>
+                    </div>
+
+                    <!-- <lightning-datatable data={ShowTableData} key-field="Id" columns={cols} hide-checkbox-column="true"
+                    if:false={showSpinner} data-id="datatable"
+                    ></lightning-datatable> -->
+
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                            <thead>
+                                <tr id="firstRow" class="slds-line-height_reset">
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Item Number">Project No*</div>
+                                    </th>
+                                    
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Contract No - Rev No*"><span
+                                                class="slds-truncate">Contract No - Rev No*</span>
+                                        </div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Quantity"><span
+                                                class="slds-truncate">Phase</span>
+                                        </div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Base Price"><span
+                                                class="slds-truncate">Product Type</span></div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Base Price"><span
+                                                class="slds-truncate">Product</span></div>
+                                    </th>
+                                    <th class="" scope="col" >
+                                        <div class="slds-truncate" title="Quantity">
+                                            <span
+                                                class="slds-truncate">Ceiling Unit Sales Price</span>
+                                        </div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Sales Price"><span
+                                                class="slds-truncate">Serial Number</span></div>
+                                    </th>
+
+                                    
+                                 
+                                   
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={ShowTableData} for:item="product" for:index="index">
+                                    <tr key={product.Id} id={product.Id}>
+                                        <th data-label="Opportunity Name" scope="row" style="white-space: normal !important;word-break: break-word !important;">
+                                            <div class="" title="Cloudhub">
+                                                <a href={product.pNo} tabindex="-1">{product.Name}</a>
+                                            </div>
+                                        </th>
+                                        <td>
+                                            <div class="" title="Cloudhub">
+                                                <a href={product.contractId} tabindex="-1">{product.Contract_No_Rev_No_NEW}</a>
+                                            </div>
+                                        </td>
+                                        <td >
+                                           <div>{product.Phase}</div>
+                                        </td>
+                                        <td>
+                                           <div>{product.Product_Type}</div>
+                                        </td>
+
+                                        <td >
+                                           <div>{product.Product}</div>
+                                        </td>
+
+                                        <td >
+                                            <div>{product.currencycode} <lightning-formatted-number 
+          value={product.Total_Sales_Price}
+          style="currency"
+          currency={product.currencycode}
+          minimum-fraction-digits={minimumFractionDigits}
+          maximum-fraction-digits={maximumFractionDigits}
+      ></lightning-formatted-number></div>
+                                            
+                                        </td>
+
+                                        <td>
+                                            <div>{product.MATERIAL_CODE}</div>
+
+                                        </td>
+
+                                        
+                                        <!-- <td if:true={isDomestic}> 
+                                            <lightning-input type="number" value={product.Total} placeholder="0" data-label="Freight" disabled
+                                                 variant="label-hidden"
+                                                onchange={handleOnchnage}></lightning-input>
+                                        </td> -->
+                                        <td if:true={isDomestic}>
+                                            <lightning-input type="number" value={product.Freight} placeholder="0" data-label="Freight"
+                                                data-target-id={product.pindex} variant="label-hidden"
+                                                onchange={handleOnchnage}></lightning-input>
+                                        </td>
+
+                                        
+                                        <td if:true={isExport}>
+                                            <lightning-button-icon icon-name="utility:new" onclick={hadleAdd} if:true={product.isAdd} data-index={product.pindex}
+                                                variant="label-hidden" value={product.Id} data-target-id={product.Id}
+                                                data-field="delete" alternative-text="Delete"
+                                                class="slds-m-left_xx-small" title="Delete"></lightning-button-icon>
+
+                                                <lightning-button-icon icon-name="utility:delete" onclick={hadleDelete} if:true={product.isDelete} data-index={product.pindex}
+                                                variant="label-hidden" value={product.Id} data-target-id={product.Id}
+                                                data-field="delete" alternative-text="Delete"
+                                                class="slds-m-left_xx-small" title="Delete"></lightning-button-icon>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                    </table>
+
+
+                
+                </div>
+            </div>
+            <footer class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" onclick={closePdfPreviewModal}
+                    title="NO">Cancel</button>
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>
+
+    
+</template>

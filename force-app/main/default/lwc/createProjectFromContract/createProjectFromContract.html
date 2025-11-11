@@ -1,0 +1,111 @@
+<template>
+    <lightning-quick-action-panel header='New Project Management' if:true={isOpen}>
+
+
+        <div if:true={isOpenTable}>
+            <table class="slds-table slds-table_bordered slds-border_left slds-border_right" style="width:98%;">
+                <thead>
+                    <tr>
+                        <th class="" scope="col" style="background-color: #0070D2; color: #fff;">
+                            Select
+
+                        </th>
+                        <th class="" scope="col" style="background-color: #0070D2; color: #fff;">
+                            <div class="slds-truncate" title="Case Number">Line Item Number</div>
+                        </th>
+                        <th class="" scope="col" style="background-color: #0070D2; color: #fff;">
+                            <div class="slds-truncate" title="Case Number">Project Number</div>
+                        </th>
+
+                        <th class="" scope="col" style="background-color: #0070D2; color: #fff;">
+                            <div class="slds-truncate" title="Case Number">Sales Amount</div>
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <!-- <tr>
+                        <td colspan="3" if:true={showErrorMsg}><label style="color:rgb(0, 0, 0)"
+                                class="slds-align_absolute-center slds-text-title_bold">
+                                Program not found </label></td>
+                    </tr> -->
+                    <template for:each={showTableProjects} for:item="pg" for:index="index">
+
+                        <tr key={pg.LineNumberId}>
+                            <td style="">
+                                <lightning-input type="checkbox" value={pg.prgName} name="checkbox"
+                                    data-id={pg.LineNumberId} checked={pg.isSelect} onchange={handlerowselected}
+                                    disabled={pg.isDisabled}>
+                                </lightning-input>
+                            </td>
+                            <td>{pg.proName}</td>
+                            <td>{pg.proNumber}</td>
+                            <td>
+                                <lightning-formatted-number value={pg.salesPrice} format-style="currency"
+                                    currency-code={pg.p_currency}></lightning-formatted-number>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+
+        <div slot='footer'>
+
+
+            <div style="width:98%;" class="slds-m-top_small">
+                <div style="display:flex; width:97%">
+                    <div class="slds-align_absolute-center">
+                        <lightning-button onclick={closeAction} label="Cancel"></lightning-button>
+                        <lightning-button class="slds-m-left_small" variant="brand" onclick={saveProjects}
+                            disabled={saveDisabled} label="Save"></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </lightning-quick-action-panel>
+
+
+    <template if:true={showModal}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-19" class="slds-modal slds-fade-in-open slds-modal_large">
+            <div class="slds-modal__container" style="width: 100% !important;
+            max-width: 100% !important;margin-left: 20px;
+            margin-top: 20px;">
+                <!-- modal header start -->
+                <header class="slds-modal__header" style="background-color:#00A9A9;">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close" onclick={hideshowModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                            size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 style="text-align: center; color: white !important;"
+                        class="slds-text-heading_medium slds-hyphenate">
+                        Please Confirm</h2>
+                </header>
+                <!-- modal body start -->
+                <div style="background-color: #0070D2;
+            padding: 0px 0px;">
+                    <div class="slds-modal__content slds-p-around_medium slds-modal_medium">
+                        <p class="slds-align_absolute-center">{WaringMessage}</p>
+                    </div>
+
+                </div>
+                <!-- modal footer start-->
+                <footer class="slds-modal__footer ">
+                    <div class="slds-align_absolute-center" style="display:flex">
+                        <p class="slds-button slds-button_neutral button-font-size" onclick={hideshowModal}>No</p>
+                        <p class="slds-button slds-button_brand button-font-size slds-m_left-small" onclick={handleOk}>
+                            Yes</p>
+                    </div>
+                </footer>
+            </div>
+        </section>
+        <!-- <div class="slds-backdrop slds-backdrop_open"></div> -->
+    </template>
+
+
+
+</template>

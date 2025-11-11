@@ -1,0 +1,90 @@
+<apex:page standardController="Opportunity" extensions="QuoteCreationClass" lightningStylesheets="true" docType="html-5.0">
+    <apex:message />
+    <apex:form >
+        <apex:pageBlock >
+            
+            
+            <apex:pAGEbLOCK >
+                <apex:pageBlockSection title="Create A New Blank Quote" columns="2">
+                    <apex:outputText title="Opportuntiy" label="Opportunity Name" value="{!OpptyName}"/>
+                    <apex:outputText title="Account" label="Account Name" value="{!AccountName}"/>
+                    <apex:inputText required="{!clone5}"  value="{!QuoteName}" label="Quote Name"/><br/>
+                    <br/>
+                    
+                    <apex:outputPanel rendered="{!clone3}">
+                        <apex:pageBlockSectionItem >
+                            <apex:commandButton style="margin-left: 79%;width: 12%;" value="Verify" action="{!VerifyBlank}"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:outputPanel>
+                    
+                    
+                    <apex:outputPanel rendered="{!clone4}">
+                        <apex:pageBlockSectionItem >
+                            
+                            <apex:commandButton style="margin-left: 79%;width: 12%;" value="Create Quote" action="{!CreateQuote}"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:outputPanel>
+                    
+                    
+                </apex:pageBlockSection>
+            </apex:pAGEbLOCK>
+            
+            <!--    </apex:outputPanel>
+</apex:outputPanel>
+
+<apex:outputPanel id="Page2">
+<apex:outputPanel rendered="{!IF(selectedCountry1 =='Quote Existing',true,false)}"> -->
+            <!--<apex:PageBlock >
+                <apex:pageBlockSection title="Create A clone Quote" columns="2">
+                    <!---------------------------------------------------------------------------------------------------Filter------------------------------------->
+                    <!--<apex:input value="{!filter}">
+                        <apex:actionSupport event="onchange" action="{!determinePageBlock}" reRender="pageBlockList"  />
+                    </apex:input>
+                    
+                    <!-- -------------------------------------------------------------------------------------------------------------------------------------------->
+                    <!--<apex:outputPanel id="pageBlockList">
+                    
+                    </apex:outputPanel>
+                    <apex:selectList value="{!strSelected}" multiselect="false" size="1">
+                        <apex:selectOptions value="{!options}"/>
+                    </apex:selectList>
+                    <apex:inputText required="{!clone}"  value="{!QuoteNameFieldClone}" label="Quote Name"/><br/>
+                    
+                    <apex:outputPanel rendered="{!Clone1}">
+                        <apex:pageBlockSectionItem ><br/>
+                            <apex:commandButton style="width: 10%;" value="Verify" action="{!VERIFY}"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!Clone2}">
+                        <apex:pageBlockSectionItem ><br/>
+                            <apex:commandButton style="width: 10%;" value="Clone Quote" action="{!QuoteClone}"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:outputPanel>
+                    
+                    
+                    
+                    
+                </apex:pageBlockSection>
+            </apex:PageBlock>-->
+            <!--         </apex:outputPanel>
+</apex:outputPanel> -->
+            
+            
+            
+            
+            
+            <apex:pagemessages />
+            <apex:pageBlock >
+                <apex:pageBlockSection columns="4" title="Upload A Quote"> 
+                  <!--  <apex:inputFile value="{!csvFileBody}"  filename="{!csvAsString}"/>  -->
+                    <apex:commandButton style="margin-left: 24%;" value="Import Quote" action="{!importCSVFile}"/>
+                </apex:pageBlockSection>
+            </apex:pageBlock>   
+            
+            
+            
+            
+            
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

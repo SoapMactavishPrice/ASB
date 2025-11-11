@@ -1,0 +1,2 @@
+<apex:page standardController="Contract_Line_Item__c" extensions="ActivatelIneItemController" action="{!LineItemCancel}" lightningStylesheets="true">
+</apex:page>

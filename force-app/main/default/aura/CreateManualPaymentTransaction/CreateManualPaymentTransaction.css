@@ -1,0 +1,16 @@
+.errormsg.THIS {
+    font-size: 0.85rem !important;
+    font-weight: bold;
+    color: red;
+    text-align: center;
+}
+.THIS .btn-color{
+    background-color:rgb(1, 118, 211);
+    border:none;
+  
+  }
+  .THIS .btn-color:hover{
+    background-color:rgb(11, 87, 163);
+    border:none;
+    
+  }

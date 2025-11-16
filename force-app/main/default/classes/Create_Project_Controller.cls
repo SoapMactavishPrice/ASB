@@ -195,12 +195,13 @@ public class Create_Project_Controller {
             if(ObjCont.FY__c != null && ObjCont.FY__c != ''){
                 ObjPro.FY__c = ObjCont.FY__c;
             }
-            if(ObjCont.FY1__c != null){
+                // Shubham K : 11th Nov 2025
+           /* if(ObjCont.FY1__c != null){
                 ObjPro.FY1__c =  ObjCont.FY1__c;
-            }
+            } */
             if(ObjCli.id != null){
                 ObjPro.Contract_Line_Item__c = ObjCli.id;
-            }
+            } 
             if(ObjCont.id != null){
                 ObjPro.Contract__c = ObjCont.id;
             }

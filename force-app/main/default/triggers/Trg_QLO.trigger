@@ -4,7 +4,7 @@ trigger Trg_QLO on Quote_Line_Options__c (before insert, After insert ,before  d
         for(Quote_Line_Options__c pt : Trigger.new){
             if((pt.Manula_Option_List_Price__c != null && pt.Manula_Option_List_Price__c != 0)){
                 if(pt.Discount__c != null && pt.Discount_in_Value__c !=null && pt.Discount__c != 0 && pt.Discount_in_Value__c != 0){
-                    pt.addError('fill only one from  Discount or Discount in Value');
+                    // pt.addError('fill only one from  Discount or Discount in Value');
                 }else if(pt.Discount__c != null && pt.Discount__c != 0.00){
                     pt.Discount_Type__c = 'Percent';
                     pt.Discount_in_Value__c = 0;

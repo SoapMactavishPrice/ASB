@@ -1,0 +1,168 @@
+<template>
+    <lightning-card title="Quote Line Items">
+        <div class="slds-p-around_medium">
+            <template if:true={isLoading}>
+                <div class="slds-is-relative" style="height: 100px;">
+                    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                </div>
+            </template>
+            
+            <div class="table-container">
+                <table class={tableClasses}>
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th class="slds-text-align_center" style="width: 6%;" title="SQ No.">SQ No.</th>
+                            <th class="slds-text-align_center" style="width: 4%;" title="Opt. No.">Opt. No.</th>
+                            <th class="slds-text-align_left wrap-text" style="width: 16%;" title="Name">Name</th>
+
+                            <th class="slds-text-align_center" style="width: 5%;" title="Unit Transfer Price USD">Unit Transfer Price USD</th>
+                            <th class="slds-text-align_center" style="width: 5%;" title="Quantity">Quantity</th>
+                            <th class="slds-text-align_center" style="width: 5%;" title="Total Quantity">Total Quantity</th>
+                            <th class="slds-text-align_center" style="width: 5%;" title="Total Transfer Price">Total Transfer Price</th>
+                            <th class="slds-text-align_center" style="width: 5%;" title="Unit List Price USD">Unit List Price USD</th>
+                            <th class="slds-text-align_center" style="width: 5%;" title="Total List Price">Total List Price</th>
+                            <th class="slds-text-align_center" style="width: 5%;" title="Discount %">Discount %</th>
+                            <th class="slds-text-align_center" style="width: 5%;" title="Discount Value">Discount Value</th>
+                            <th class="slds-text-align_center" style="width: 5%;" title="Desired Price">Desired Price</th>
+                            <th class="slds-text-align_center" style="width: 5%;" title="Desired Price Subtotal">Desired Price Subtotal</th>
+                            <th class="slds-text-align_center" style="width: 5%;" title="Total Discount in Value">Total Discount in Value</th>
+                            <th class="slds-text-align_center" style="width: 5%;" title="Unit Sales Price USD">Unit Sales Price USD</th>
+                            <th class="slds-text-align_center" style="width: 5%;" title="Total Sales Price">Total Sales Price</th>
+                            <th class="slds-text-align_center" style="width: 5%;" title="Sales Margin">Sales Margin</th>
+
+                            <th class="slds-text-align_center" style="width: 4%;" title="Toggle Columns">
+                                <lightning-button-icon
+                                    icon-name={toggleIcon}
+                                    alternative-text="Toggle Columns"
+                                    title="Toggle Columns"
+                                    onclick={handleToggleColumns}
+                                    variant="border-filled">
+                                </lightning-button-icon>
+                            </th>
+
+                            <template if:true={showAdditionalColumns}>
+                                <th class="slds-text-align_center" style="width: 100px; min-width: 100px;" title="Discount Allowed">Discount Allowed</th>
+                                <th class="slds-text-align_center" style="width: 80px; min-width: 80px;" title="M1">M1</th>
+                                <th class="slds-text-align_center" style="width: 80px; min-width: 80px;" title="M2">M2</th>
+                                <th class="slds-text-align_center" style="width: 80px; min-width: 80px;" title="M3">M3</th>
+                            </template>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={tableData} for:item="row">
+                            <tr key={row.id} class={row.type}>
+                                <td class="slds-text-align_center" title={row.srNo}>
+                                    <template if:true={row.srNo}>
+                                        <template if:false={row.isOption}>
+                                            <template if:false={row.isSubtotal}>
+                                                {row.srNo}
+                                            </template>
+                                        </template>
+                                    </template>
+                                    <template if:true={row.isGrandTotal}>
+                                        <strong>GRAND TOTAL</strong>
+                                    </template>
+                                    <template if:true={row.isSubtotal}>
+                                        <strong>SUB TOTAL</strong>
+                                    </template>
+                                </td>
+                                <td class="slds-text-align_center" title={row.optNo}>{row.optNo}</td>
+                                <td class="slds-text-align_left wrap-text" title={row.name}>{row.name}</td>
+                                <td class="slds-text-align_right" title={row.unitTransferPrice}>{row.unitTransferPrice}</td>
+                                <td class="slds-text-align_center" title={row.quantity}>{row.quantity}</td>
+                                <td class="slds-text-align_center" title={row.totalQuantity}>{row.totalQuantity}</td>
+                                <td class="slds-text-align_right" title={row.totalTransferPrice}>{row.totalTransferPrice}</td>
+                                <td class="slds-text-align_right" title={row.unitListPrice}>{row.unitListPrice}</td>
+                                <td class="slds-text-align_right" title={row.totalListPrice}>{row.totalListPrice}</td>
+                                <td class="slds-text-align_center" title={row.discountPercent}>
+                                    <template if:true={row.showDiscountInputs}>
+                                        <lightning-input
+                                            type="number"
+                                            step="0.01"
+                                            value={row.discountPercent}
+                                            data-id={row.id}
+                                            data-field="discountPercent"
+                                            onchange={handleInputChange}
+                                            variant="label-hidden"
+                                            class="input-field"
+                                            disabled={row.disableDiscounts}
+                                            title={row.discountPercent}>
+                                        </lightning-input>
+                                    </template>
+                                </td>
+                                <td class="slds-text-align_right" title={row.discountValue}>
+                                    <template if:true={row.showDiscountInputs}>
+                                        <lightning-input
+                                            type="number"
+                                            step="0.01"
+                                            value={row.discountValue}
+                                            data-id={row.id}
+                                            data-field="discountValue"
+                                            onchange={handleInputChange}
+                                            variant="label-hidden"
+                                            class="input-field"
+                                            disabled={row.disableDiscounts}
+                                            title={row.discountValue}>
+                                        </lightning-input>
+                                    </template>
+                                </td>
+                                <td class="slds-text-align_right" title={row.desiredPrice}>
+                                    <template if:true={row.showDiscountInputs}>
+                                        <lightning-input
+                                            type="number"
+                                            step="0.01"
+                                            value={row.desiredPrice}
+                                            data-id={row.id}
+                                            data-field="desiredPrice"
+                                            onchange={handleInputChange}
+                                            variant="label-hidden"
+                                            class="input-field"
+                                            disabled={row.disableDesiredPrice}
+                                            title={row.desiredPrice}>
+                                        </lightning-input>
+                                    </template>
+                                </td>
+                                <td class="slds-text-align_right" title={row.desiredPriceSubtotal}>
+                                    <template if:true={row.showDesiredPriceSubtotal}>
+                                        <lightning-input
+                                            type="number"
+                                            step="0.01"
+                                            value={row.desiredPriceSubtotal}
+                                            data-id={row.id}
+                                            data-field="desiredPriceSubtotal"
+                                            onchange={handleInputChange}
+                                            variant="label-hidden"
+                                            class="input-field"
+                                            disabled={row.disableDesiredPriceSubtotal}
+                                            title={row.desiredPriceSubtotal}>
+                                        </lightning-input>
+                                    </template>
+                                </td>
+                                <td class="slds-text-align_right" title={row.totalDiscountInValue}>{row.totalDiscountInValueFormatted}</td>
+                                <td class="slds-text-align_right" title={row.salesPrice}>{row.salesPriceFormatted}</td>
+                                <td class="slds-text-align_right" title={row.totalSalesPrice}>{row.totalSalesPriceFormatted}</td>
+                                <td class="slds-text-align_center" title={row.salesMargin}>{row.salesMargin}</td>
+                                <td class="slds-text-align_center" title=""></td>
+                                <template if:true={showAdditionalColumns}>
+                                    <td class="slds-text-align_center" title={row.discountAllowed}>{row.discountAllowed}</td>
+                                    <td class="slds-text-align_center" title={row.m1}>{row.m1}</td>
+                                    <td class="slds-text-align_center" title={row.m2}>{row.m2}</td>
+                                    <td class="slds-text-align_center" title={row.m3}>{row.m3}</td>
+                                </template>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="slds-m-top_medium slds-align_absolute-center">
+                <lightning-button
+                    variant="brand"
+                    label="Save"
+                    onclick={handleSave}
+                    disabled={isLoading}>
+                </lightning-button>
+            </div>
+        </div>
+    </lightning-card>
+</template>

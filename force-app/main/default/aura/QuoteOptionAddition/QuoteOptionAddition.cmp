@@ -223,39 +223,24 @@
                                         </div>
                                     </div>
                                 </th>
-                                <!--<th scope="col">
-                                <div class="slds-truncate" title="Name" style="width:55px">Sr No</div>
-                            </th>-->
                                 <th scope="col">
                                     <div class="slds-truncate" title="Name" style="width:160px">Name</div>
                                 </th>
                                 <th scope="col">
+                                    <div class="slds-truncate" title="Unit Transfer Price">Unit Transfer Price&nbsp;({!v.currencyCode})</div>
+                                </th>
+                                <th scope="col">
                                     <div class="slds-truncate" title="Family">List Price&nbsp;({!v.currencyCode})</div>
                                 </th>
-                                <!-- <th scope="col">
-                                    <div class="slds-truncate" title="Code">Plant</div>
-                                </th> -->
                                 <th scope="col">
                                     <div class="slds-truncate" title="PriceBookEntry">Option Number</div>
                                 </th>
                                 <!-- <th scope="col">
-                                <div class="slds-truncate" title="PriceBookEntry">Discount</div>
-                            </th>   -->
-                                <th scope="col">
                                     <div class="slds-truncate" title="PriceBookEntry">Cavity</div>
-                                </th>
-
+                                </th> -->
                                 <th scope="col">
                                     <div class="slds-truncate" title="PriceBookEntry">OP. Qty</div>
                                 </th>
-                                <!-- <th scope="col">
-                                    <div class="slds-truncate" title="PriceBookEntry">Pricing Type</div>
-                                </th> -->
-
-                                <!-- <th scope="col" style="width:100px">
-                                    <div class="slds-truncate" title="PriceBookEntry">Discount Description</div>
-                                </th> -->
-
                             </tr>
                         </thead>
                         <tbody>
@@ -274,57 +259,33 @@
                                             </div>
                                         </div>
                                     </th>
-                                    <!--<th scope="row" style="width:50px">
-                                    <lightning:input value="{!obj.serialNumber}" data-row-index="{!index}" variant="label-hidden"/>
-
-                               </th>-->
                                     <th scope="row">
                                         <div class="slds-truncate" title="{!obj.objLead.Product2.Name}" style="">
                                             {!obj.objLead.Product2.Name}
                                         </div>
                                     </th>
                                     <th scope="row">
+                                        <lightning:formattedNumber value="{!obj.unitTransferPrice}" style="currency"
+                                            currencyCode="{!v.currencyCode}" minimumFractionDigits="2"
+                                            maximumFractionDigits="2"></lightning:formattedNumber>
+                                    </th>
+                                    <th scope="row">
                                         <lightning:formattedNumber value="{!obj.objLead.UnitPrice}" style="currency"
                                             currencyCode="{!v.currencyCode}" minimumFractionDigits="2"
                                             maximumFractionDigits="2"></lightning:formattedNumber>
-
-
                                     </th>
-                                    <!-- <th scope="row">
-                                        <div class="slds-truncate" title="{!obj.objLead.Product2.Plant__c}">
-                                            {!obj.objLead.Product2.Plant__c}
-                                        </div>
-                                    </th>  -->
+                                    
                                     <th scope="row">
                                         <div class="slds-truncate" title="{!obj.objLead.Product2.Option_No__c}">
                                             {!obj.objLead.Product2.Option_No__c}
                                         </div>
                                     </th>
-                                    <!--  <th scope="row">
-                                    
-                                    <div class="slds-form-element__control" style="width:80px">
-                                        <span data-record="{!obj.objLead}">
-                                            <aura:if isTrue="{!v.userInfo.Level__c == 'L1'}">
-                                                <lightning:input id="text-input-id-1 " name="{!index}" value="{!obj.objLead.Discount__c}" placeholder="Placeholder Text" onchange="{!c.OnBlured}"/>
-                                            </aura:if>
-                                            <aura:if isTrue="{!v.userInfo.Level__c == 'L2'}">
-                                                <lightning:input id="text-input-id-1 " name="{!index}" value="{!obj.objLead.Discount_Level_2__c}" placeholder="Placeholder Text" onchange="{!c.OnBlured}" />
-                                            </aura:if>
-                                            <aura:if isTrue="{!v.userInfo.Level__c == 'L3'}">
-                                                <lightning:input id="text-input-id-1 " name="{!index}" value="{!obj.objLead.Discount_Level_3__c}" placeholder="Placeholder Text" onchange="{!c.OnBlured}"/>
-                                            </aura:if>
-                                        </span>
-                                    </div>
-                                    
-                                </th>  -->
-                                    <th scope="row">
+                                    <!-- <th scope="row">
                                         <div class="slds-truncate"
                                             title="{!obj.objLead.Product2.Number_Of_Cavity_Mould__c}">
                                             {!obj.objLead.Product2.Number_Of_Cavity_Mould__c}
                                         </div>
-                                    </th>
-
-
+                                    </th> -->
                                     <th scope="row">
                                         <div class="slds-truncate" title="{!obj.objLead.Quantity__c}"
                                             style="width:80px">
@@ -332,20 +293,6 @@
                                                 value="{!obj.objLead.Quantity__c}" placeholder="Quantity" />
                                         </div>
                                     </th>
-                                    <!-- <th scope="row">
-                                        <div class="slds-truncate" title="{!obj.objLead.Product2.Option_Type__c}"
-                                            style="width:80px">
-                                            {!obj.objLead.Product2.Option_Type__c}
-                                        </div>
-
-                                    </th> -->
-
-                                    <!-- <th style="width:80px">
-                                        <p id="demo"></p>
-                                        
-                                        <lightning:input name="{!index}" value="{!obj.objLead.desc}" />
-                                    </th> -->
-
                                 </tr>
                             </aura:iteration>
                         </tbody>

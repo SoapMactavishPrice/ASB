@@ -22,65 +22,114 @@ vf Page for attachPdf to the Quote
     <apex:form id="form1">
         <style type="text/css">
             .custPopup{
-            background-color: white;
-            border-width: 1px;
-            border-style: solid;
-            z-index: 999;
-            left: 25%;
-            padding:10px;
-            position: absolute;
-            width: 50%;
-            height:50%;
-            top: 10px;
-            //margin-left: -450px;
+                background-color: white;
+                border-width: 1px;
+                border-style: solid;
+                z-index: 999;
+                left: 25%;
+                padding:10px;
+                position: absolute;
+                width: 50%;
+                height:50%;
+                top: 10px;
+                /*margin-left: -450px;*/
             }
             .popupBackground{
-            background-color:rgba(0,0,0,0.6);
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: 999;
+                background-color:rgba(0,0,0,0.6);
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                z-index: 999;
             }
             .closeButton
             {
-            width: 9vh;
-            height: 6vh;
-            float: right;
-            position: absolute !important;
-            top: 39vh;
-            z-index: 1;
-            right: 66vh;
-            display:none
+                width: 9vh;
+                height: 6vh;
+                float: right;
+                position: absolute !important;
+                top: 39vh;
+                z-index: 1;
+                right: 66vh;
+                display:none
             }
             .popupTable {
-            width: 100%;
-            padding: 10%
+                width: 100%;
+                padding: 10%
             }
-            
+
             .txt-bold{
                 font-family: sans-serif;
                 width: 100%;
                 font-weight: bold; 
             }
+
+            /* Make popup tables use a light grey border instead of black */
             .popupTable thead tr th,
             .popupTable thead tr td {
-            color: black;
-            border: 0.5px solid black;
-            font-size: 14px;
-            padding: 5px;
+                color: #222;
+                border: 1px solid #e0e0e0;
+                font-size: 14px;
+                padding: 8px;
+                background: #fafafa;
             }
+
+            /* Options modal table styling: subtle light-grey borders and consistent padding */
+            .optionsTable{
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 13px;
+                color: #111;
+            }
+            .optionsTable thead th{
+                text-align: left;
+                padding: 10px 8px;
+                border-bottom: 1px solid #e6e6e6;
+                background: #f7f7f7;
+                font-weight: 600;
+            }
+            .optionsTable tbody td{
+                padding: 8px;
+                border-bottom: 1px solid #f0f0f0;
+                vertical-align: middle;
+            }
+            /* Numeric columns aligned right */
+            .optionsTable td.align-right, .optionsTable th.align-right{ text-align: right; }
+            .optionsTable td.center { text-align: center; }
         </style>
         <script type="text/javascript">
-        var $j = jQuery.noConflict();
-        
-        function closeWindow_NoAction(){
-        $j('#popup').hide();
-        window.close();
-        console.log('clicked');
-    }
-</script>
+            var $j = jQuery.noConflict();
+
+            function closeWindow_NoAction(){
+                $j('#popup').hide();
+                window.close();
+                console.log('clicked');
+            }
+
+            // Function to handle mutually exclusive checkboxes
+            function handlePdfChecked(pdfCheckbox) {
+                if (pdfCheckbox.checked) {
+                    // Find the corresponding Name_Hide checkbox in the same row
+                    var row = pdfCheckbox.closest('tr');
+                    var nameHideCheckbox = row.querySelector('input[type="checkbox"]:not([onclick*="handlePdfChecked"])');
+                    if (nameHideCheckbox) {
+                        nameHideCheckbox.checked = false;
+                    }
+                }
+            }
+
+            function handleNameHide(nameHideCheckbox) {
+                if (nameHideCheckbox.checked) {
+                    // Find the corresponding Pdf_Checked checkbox in the same row
+                    var row = nameHideCheckbox.closest('tr');
+                    var pdfCheckbox = row.querySelector('input[type="checkbox"]:not([onclick*="handleNameHide"])');
+                    if (pdfCheckbox) {
+                        pdfCheckbox.checked = false;
+                    }
+                }
+            }
+            </script>
         <apex:outputPanel id="popup">
             <apex:outputPanel styleClass="popupBackground" layout="block" id="modal1" rendered="{!isModalOpen}">
                 <div style="background-color: white;position: relative; width: 50%; margin: auto; min-height: 100px; margin-top: 15%">
@@ -122,31 +171,50 @@ vf Page for attachPdf to the Quote
         <!-- Options selection modal: shows quote line items and their options with checkboxes -->
         <apex:outputPanel layout="block" id="optionsPanel">
             <apex:outputPanel styleClass="popupBackground" layout="block" id="optionsModal" rendered="{!showOptionsModal}">
-                <div style="background-color: white;position: relative; width: 70%; margin: auto; min-height: 150px; margin-top: 5%">
-                    <h3 style="padding:10px; margin:0">Select Option(s) to include in PDF</h3>
+                <div style="background-color: white;position: relative; width: 60%; margin: auto; min-height: 150px; margin-top: 5%">
+                    <apex:commandButton action="{!Cancel}" value="×" title="Close" styleClass="slds-button" style="position: absolute; top: 5px; right: 10px; background: none; border: none; font-size: 28px; color: #666; cursor: pointer; padding: 0; width: auto; height: auto;"/>
+                    <h3 style="padding:10px; margin:0; text-align:center;">Selected option prices are visible on the PDF</h3>
                     <div style="padding:10px; max-height:400px; overflow:auto;">
-                        <table style="width:100%; border-collapse:collapse;">
+                        <table class="optionsTable" style="width:100%;">
                             <thead>
                                 <tr>
-                                    <th style="width:6%; text-align:center;">Select</th>
-                                    <th style="width:20%; text-align:left;">Quote Line</th>
-                                    <th style="text-align:left;">Option (Name)</th>
-                                    <th style="width:12%; text-align:right;">Qty</th>
-                                    <th style="width:15%; text-align:right;">List Price</th>
-                                    <th style="width:15%; text-align:right;">Sales Price</th>
+                                    <th style="width:24%; text-align:left;">Items</th>
+                                    <th style="width:8%; text-align:center;">Name<br/>Hide</th>
+                                    <th style="width:32%; text-align:left;">Options</th>
+                                    <th style="width:8%; text-align:right;">Qty</th>
+                                    <th style="width:13%; text-align:right;">Unit Sales Price</th>
+                                    <th style="width:13%; text-align:right;">Total Sales Price</th>
+                                    <th style="width:2%;"></th>
+                                    <th style="width:8%; text-align:center;">Price<br/>Visible</th>
                                 </tr>
+
                             </thead>
                             <tbody>
                                 <apex:repeat value="{!prodLineList}" var="pl">
-                                    <tr style="background:#f3f3f3"><td></td><td colspan="5"><strong>{!pl.Product_Name} ({!pl.Line_Item_Id})</strong></td></tr>
+                                    <tr style="background:#f3f3f3">
+                                        <td><strong>{!pl.Product_Name} ({!pl.Line_Item_Id})</strong></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="align-right">{!IF(pl.Quantity != null, pl.Quantity, '')}</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <!-- <td class="align-right">{!IF(pl.totalValueString != null, pl.totalValueString, '')}</td>
+                                        <td class="align-right">{!IF(pl.Ceiling_Total_Sales_Pricestring != null, pl.Ceiling_Total_Sales_Pricestring, '')}</td> -->
+                                    </tr>
                                     <apex:repeat value="{!pl.childProd}" var="opt">
                                         <tr>
-                                            <td style="text-align:center;"><apex:inputCheckbox value="{!opt.Pdf_Checked}"/></td>
                                             <td></td>
-                                            <td style="text-align:left;">{!opt.Manual_Product_Name}</td>
-                                            <td style="text-align:right;">{!IF(opt.Quantity != null, opt.Quantity, '')}</td>
-                                            <td style="text-align:right;">{!IF(opt.Manual_Option_List_Price != null, opt.Manual_Option_List_Price, '')}</td>
-                                            <td style="text-align:right;">{!IF(opt.Sales_Price != null, opt.Sales_Price, '')}</td>
+                                            <td class="center">
+                                                <apex:inputCheckbox value="{!opt.Name_Hide}" style="text-align: center;" onclick="handleNameHide(this)"/>
+                                            </td>
+                                            <td>{!opt.Manual_Product_Name}</td>
+                                            <td class="align-right">{!IF(opt.Quantity != null, opt.Quantity, '')}</td>
+                                            <td class="align-right">{!IF(opt.Manual_Option_List_Price != null, opt.Manual_Option_List_Price, '')}</td>
+                                            <td class="align-right">{!IF(opt.Sales_Price != null, opt.Sales_Price, '')}</td>
+                                            <td></td>
+                                            <td class="center"><apex:inputCheckbox value="{!opt.Pdf_Checked}" onclick="handlePdfChecked(this)"/></td>
                                         </tr>
                                     </apex:repeat>
                                 </apex:repeat>
@@ -154,7 +222,8 @@ vf Page for attachPdf to the Quote
                         </table>
                     </div>
                     <div style="text-align:right; padding:10px;">
-                        <apex:commandButton action="{!saveOptions}" value="Save" rerender="form1" styleClass="slds-button slds-button_brand"/>
+                        <apex:commandButton action="{!Cancel}" value="Cancel" styleClass="slds-button" style="margin-left: 5px; margin-bottom: 3px;"/>
+                        <apex:commandButton action="{!saveOptions}" value="Show Pdf" rerender="form1" styleClass="slds-button"/>
                     </div>
                 </div>
             </apex:outputPanel>
@@ -170,7 +239,7 @@ vf Page for attachPdf to the Quote
             <div style="width:60%; padding-bottom: 2%; margin: 0 auto">
                 <apex:slds />
                 <div style="padding: 5px" class="slds-scope">
-                    <apex:actionRegion>
+                    <apex:actionRegion >
                         <div style="padding: 5px">
                             <apex:inputText html-placeholder="Email ID" value="{!emailId}" styleClass="slds-input" disabled="true" />
                             <apex:inputText html-placeholder="CC Addresses  (Comma Seperated)" value="{!CC_Addresses}" styleClass="slds-input" style="margin-top: 5px; margin-left: 0px" />

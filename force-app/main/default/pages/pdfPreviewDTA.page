@@ -289,7 +289,7 @@
                                             
                                             <!-- Child Products/Options -->
                                             <apex:repeat value="{!qLine.childProd}" var="QLOpt">
-                                                <tr style="display:{!IF(QLOpt.isstartWith_a, 'none','table-row')};">
+                                                <tr style="display:{!IF(QLOpt.isstartWith_a, 'none','table-row')}; {!IF(QLOpt.Name_Hide, 'display:none;', '')}">
                                                     <td></td>
                                                     <td style="vertical-align:top;">
                                                         *

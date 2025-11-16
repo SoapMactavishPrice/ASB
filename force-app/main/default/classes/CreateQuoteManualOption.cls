@@ -53,10 +53,17 @@ public class CreateQuoteManualOption {
             List<Quote_Line_Item_Custom__c> ObjQLI = new List<Quote_Line_Item_Custom__c>();
             String ProdId = ProductId;
             Integer maxSerNum= 0;
-            ObjQLI = [Select id, Product__c,Max_Serial_Number__c from Quote_Line_Item_Custom__c where id = : ProdId];
+            Decimal unitTransferPrice = 0;
+            
+            // Query to get Base_Price__c from Quote_Line_Item_Custom__c
+            ObjQLI = [Select id, Product__c, Max_Serial_Number__c, Base_Price__c 
+                    from Quote_Line_Item_Custom__c where id = : ProdId];
             String PrId = ObjQLI[0].Product__c;
             
-            //System.debug('PrId'+PrId);
+            // Get the Unit Transfer Price (Base_Price__c)
+            if(ObjQLI[0].Base_Price__c != null) {
+                unitTransferPrice = ObjQLI[0].Base_Price__c;
+            }
             
             set<Id> qprodIds = new set<Id>();
             for(Quote_Line_Item_Custom__c qlio : ObjQLI){
@@ -64,17 +71,14 @@ public class CreateQuoteManualOption {
                 maxSerNum = Integer.valueOf(qlio.Max_Serial_Number__c);
             }
             
-            
             User_Setup__c u=[Select id,name,Subsidiari__c,Subsidiari__r.Price_Book__c from User_Setup__c where user__c=:userinfo.getUserId()];
             System.debug('RecId=>'+RecId);
             Quote quote=[select id,name,Language__c, Exchange_Rate__c,Subsidiary__r.Additional_Margin__c,
-                         Subsidiary__r.Rounding_Off_Digits__c,Subsidiary__r.Quantity_Restricted__c,Additinal_Margin__c, 
-                         Subsidiary__r.M1__c,Subsidiary__r.D1__c,Subsidiary__r.D2__c,Subsidiary__r.D3__c from Quote where id=:RecId];
+                        Subsidiary__r.Rounding_Off_Digits__c,Subsidiary__r.Quantity_Restricted__c,Additinal_Margin__c, 
+                        Subsidiary__r.M1__c,Subsidiary__r.D1__c,Subsidiary__r.D2__c,Subsidiary__r.D3__c from Quote where id=:RecId];
             System.debug('quote : : '+quote);
             
-            
             set<Id> prodIds = new set<Id>();
-            //if(qprodIds.size() > 0){
             system.debug('qprodIds'+qprodIds);
             List<Quote_Line_Options__c> QuoteLineList = [Select Id,Product__c,Quote_Line_Item_Custom__r.Product__c from Quote_Line_Options__c where Quote_Line_Item_Custom__c IN : qprodIds];
             system.debug('QuoteLineList'+QuoteLineList.size());
@@ -84,7 +88,6 @@ public class CreateQuoteManualOption {
                     prodIds.add(qline.Product__c);    
                 }
             }
-            //}
             system.debug(PrId+' line id-->'+prodIds);
             
             System.debug('quote.Language__c : : '+quote.Language__c);
@@ -96,15 +99,13 @@ public class CreateQuoteManualOption {
             else
                 pb=[select id,name from pricebook2 where name='Standard Price Book'].id;
             
-            
-            
             for(PriceBookEntry lstpbe :[SELECT Product2.Id,Discount__c,Product2.Description, Product2.ProductCode, Product2.Name,Product2.formulae__c,UnitPrice,Product2.Plant__c,Product2.Product_Number__c,Product2.Option_No__c,Product2.Discount_Level_3__c,
                                         Product2.Family,Product2.Number_Of_Cavity_Mould__c,Product2.Option_Type__c,Product2.Product_Type__c,Product2.Scope_of_Mold__c,Product2.tag__c,Product2.Discount_Level_2__c,
                                         Base_Price__c,List_Price_Level_2__c,List_Price_level_3__c,Product2.Pricing_Type__c,Pricing_Type__c,Discount_Level_2__c,Discount_Level_3__c,Quantity__c,Description__c,Product2.Discount_Level_1__c
                                         ,M1__c,M2__c,M3__c,D1__c,D2__c,D3__c,M4__c
                                         ,Rounding_Off_Digits__c FROM PriceBookEntry 
                                         WHERE Pricebook2Id IN (SELECT Id 
-                                                               FROM PriceBook2 where id =:pb AND PriceBook2.IsActive = true) AND product2.Product_Options__c =:PrId 
+                                                            FROM PriceBook2 where id =:pb AND PriceBook2.IsActive = true) AND product2.Product_Options__c =:PrId 
                                         AND Product2.Id  NOT IN : prodIds  
                                         AND Product2.Family = 'Options'
                                         AND Product2.IsACTIVE = true AND Product2.ProductCode != null 
@@ -117,12 +118,10 @@ public class CreateQuoteManualOption {
                                             if(lstpbe.M1__c != null && lstpbe.M2__c != null && lstpbe.M3__c != null && lstpbe.Rounding_Off_Digits__c != null){
                                                 lstpbe.UnitPrice=AddProducts.getListPrice(lstpbe.Base_Price__c,quote.Exchange_Rate__c,lstpbe.M1__c,lstpbe.M2__c,lstpbe.M3__c,lstpbe.M4__c,quote.Additinal_Margin__c,Integer.valueof(lstpbe.Rounding_Off_Digits__c));
                                             }
-                                            //lstpbe.UnitPrice=AddProducts.getListPrice(lstpbe.UnitPrice,quote.Exchange_Rate__c,quote.Subsidiary__r.D1__c,quote.Subsidiary__r.D2__c,quote.Additinal_Margin__c,Integer.valueof(quote.Subsidiary__r.Rounding_Off_Digits__c));
-                                            lstProductListWrapper.add(new LeadListWrapper(false,maxSerNum,0,lstpbe));
+                                            // Pass unitTransferPrice to wrapper
+                                            lstProductListWrapper.add(new LeadListWrapper(false,maxSerNum,0,lstpbe,unitTransferPrice));
                                         } 
-            //System.debug('lstProductListWrapper'+lstProductListWrapper);
             System.debug('lstProductListWrapper'+lstProductListWrapper.size());
-            //  System.debug('CampaignId'+CampaignId);
             return lstProductListWrapper; 
         }
         else 
@@ -515,13 +514,23 @@ pro.Discount__c = objquote.Discount__c;
         @AuraEnabled public boolean isChecked;
         @AuraEnabled public integer MaxSerailNumber;
         @AuraEnabled public integer serialNumber;
-        @AuraEnabled public  PriceBookEntry objLead;
+        @AuraEnabled public PriceBookEntry objLead;
+        @AuraEnabled public Decimal unitTransferPrice;
         
         public LeadListWrapper(boolean isChecked,integer MaxSerailNumber,integer serialNumber, PriceBookEntry objLead){
             this.isChecked = isChecked;
             this.MaxSerailNumber = MaxSerailNumber;
             this.serialNumber = serialNumber;
             this.objLead = objLead;
+            this.unitTransferPrice = 0;
+        }
+        
+        public LeadListWrapper(boolean isChecked,integer MaxSerailNumber,integer serialNumber, PriceBookEntry objLead, Decimal unitTransferPrice){
+            this.isChecked = isChecked;
+            this.MaxSerailNumber = MaxSerailNumber;
+            this.serialNumber = serialNumber;
+            this.objLead = objLead;
+            this.unitTransferPrice = unitTransferPrice;
         }
     }
 }

@@ -56,6 +56,7 @@ export default class LwcReOpenQuote extends NavigationMixin(LightningElement) {
     @track wrapList = [];
     getDetail() {
         getProjectDetail({ CurrentId: this.recordId }).then(result => {
+            console.log('Result from getProjectDetail:', result);
             let data = JSON.parse(result);
             let i = 0;
             data.forEach(element => {

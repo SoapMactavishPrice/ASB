@@ -20,9 +20,10 @@ trigger FiscalYearTrigger on Fiscal_Year_Master__c (before insert,before update)
                                          where Active__c=true and id not in: rids];
     for(Fiscal_Year_Master__c c:Trigger.new)
     {   
-        if(addList.size()>0 && c.Active__c==true)
+        // Shubham K : 11th Nov 2025 
+       /* if(addList.size()>0 && c.Active__c==true)
         {
             Trigger.new[0].addError('Only one financial year can be active');
-        }
+        } */
     }
 }

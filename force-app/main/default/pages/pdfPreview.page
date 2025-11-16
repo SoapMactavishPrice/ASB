@@ -361,7 +361,7 @@
                                             
                                             <!-- Child Products/Options -->
                                             <apex:repeat value="{!qLine.childProd}" var="QLOpt">
-                                                <tr style="display:{!IF(QLOpt.isstartWith_a, 'none','table-row')};">
+                                                <tr style="display:{!IF(QLOpt.isstartWith_a, 'none','table-row')}; {!IF(QLOpt.Name_Hide, 'display:none;', '')}">
                                                     <td></td>
                                                     <td style="font-size: 12px; vertical-align:top;">
                                                         <apex:outputPanel rendered="{!IF(QLOpt.Description == '' && !QLOpt.isstartWith_a, true, false)}"> 

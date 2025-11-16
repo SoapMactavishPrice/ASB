@@ -62,7 +62,7 @@ trigger Trg_QLI on Quote_Line_Item_Custom__c (before insert,after insert,Before 
                 if((pt.List_Price__c != null && pt.List_Price__c != 0 && pt.Quantity__c > 0)){
                     if(pt.Discount__c != null && pt.Discount_in_Value__c !=null && pt.Discount__c != 0  && pt.Discount_in_Value__c !=0){
                         system.debug('inside 1');
-                        pt.addError('fill only one from  Discount or Discount in Value');
+                        // pt.addError('fill only one from  Discount or Discount in Value');
                     }else if(pt.Discount__c != null && pt.Discount__c > 0.00){
                         system.debug('inside 2');
                         pt.Discount_Type__c = 'Percent';

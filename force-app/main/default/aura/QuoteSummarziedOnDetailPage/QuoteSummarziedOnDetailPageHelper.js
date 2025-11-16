@@ -99,7 +99,7 @@
                             //sub_totalQuantity += qlo.Quantity__c || 0;
                             sub_totalAvgDiscount += qlo.Average_Discount_Value__c || 0;
                             sub_totalFinalSales += qlo.Final_Sales_Price__c || 0;
-                            sub_totalSalesPrice += qlo.Sales_Price__c || 0;
+                            sub_totalSalesPrice += qlo.Final_Sales_Price__c || 0;
                             discount_total += qlo.Discount_in_Value_Percent__c || 0;
                         });
                     }

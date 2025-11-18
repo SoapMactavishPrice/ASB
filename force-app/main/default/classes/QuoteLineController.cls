@@ -17,9 +17,9 @@ public with sharing class QuoteLineController {
                    Sales_Margin_including_Options__c,
                    (SELECT Id, Option_No__c, Serial_Number__c, Manual_Product_Name__c, Quantity__c,
                            Base_price_Total__c, Manula_Option_List_Price__c,
-                           List_Price_Total2__c, Discount__c, Discount_in_Value__c,
+                           Total_Option_List_Price__c, Discount__c, Discount_in_Value__c,
                            Desired_Price__c, Discount_Allowed_New__c, Discount_Value__c,
-                           Average_Sales_Price__c, Price__c, Sales_Margin__c,
+                           Average_Sales_Price__c, Final_Sales_Price__c, Sales_Margin__c,
                            P_M1__c, P_M2__c, P_M3__c
                     FROM Quote_Line_Options__r
                     ORDER BY Serial_Number__c ASC)

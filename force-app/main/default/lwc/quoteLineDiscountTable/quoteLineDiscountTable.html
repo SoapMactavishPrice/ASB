@@ -11,26 +11,27 @@
                 <table class={tableClasses}>
                     <thead>
                         <tr class="slds-line-height_reset">
-                            <th class="slds-text-align_center" style="width: 6%;" title="SQ No.">SQ No.</th>
-                            <th class="slds-text-align_center" style="width: 4%;" title="Opt. No.">Opt. No.</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 6%;" title="SQ No.">SQ No.</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 4%;" title="Opt. No.">Opt. No.</th>
                             <th class="slds-text-align_left wrap-text" style="width: 16%;" title="Name">Name</th>
 
-                            <th class="slds-text-align_center" style="width: 5%;" title="Unit Transfer Price USD">Unit Transfer Price USD</th>
-                            <th class="slds-text-align_center" style="width: 5%;" title="Quantity">Quantity</th>
-                            <th class="slds-text-align_center" style="width: 5%;" title="Total Quantity">Total Quantity</th>
-                            <th class="slds-text-align_center" style="width: 5%;" title="Total Transfer Price">Total Transfer Price</th>
-                            <th class="slds-text-align_center" style="width: 5%;" title="Unit List Price USD">Unit List Price USD</th>
-                            <th class="slds-text-align_center" style="width: 5%;" title="Total List Price">Total List Price</th>
-                            <th class="slds-text-align_center" style="width: 5%;" title="Discount %">Discount %</th>
-                            <th class="slds-text-align_center" style="width: 5%;" title="Discount Value">Discount Value</th>
-                            <th class="slds-text-align_center" style="width: 5%;" title="Desired Price">Desired Price</th>
-                            <th class="slds-text-align_center" style="width: 5%;" title="Desired Price Subtotal">Desired Price Subtotal</th>
-                            <th class="slds-text-align_center" style="width: 5%;" title="Total Discount in Value">Total Discount in Value</th>
-                            <th class="slds-text-align_center" style="width: 5%;" title="Unit Sales Price USD">Unit Sales Price USD</th>
-                            <th class="slds-text-align_center" style="width: 5%;" title="Total Sales Price">Total Sales Price</th>
-                            <th class="slds-text-align_center" style="width: 5%;" title="Sales Margin">Sales Margin</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Unit Transfer Price USD">Unit Transfer Price USD</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Quantity">Quantity</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Total Quantity">Total Quantity</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Total Transfer Price">Total Transfer Price</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Unit List Price USD">Unit List Price USD</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Total List Price">Total List Price</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Copy: Item% To Options">Copy: Item% To Options</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Discount %">Discount %</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Discount Value">Discount Value</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Desired Price">Desired Price</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Desired Price Subtotal">Desired Price Subtotal</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Total Discount in Value">Total Discount in Value</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Unit Sales Price USD">Unit Sales Price USD</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Total Sales Price">Total Sales Price</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Sales Margin">Sales Margin</th>
 
-                            <th class="slds-text-align_center" style="width: 4%;" title="Toggle Columns">
+                            <th class="slds-text-align_center wrap-text" style="width: 4%;" title="Toggle Columns">
                                 <lightning-button-icon
                                     icon-name={toggleIcon}
                                     alternative-text="Toggle Columns"
@@ -41,10 +42,10 @@
                             </th>
 
                             <template if:true={showAdditionalColumns}>
-                                <th class="slds-text-align_center" style="width: 100px; min-width: 100px;" title="Discount Allowed">Discount Allowed</th>
-                                <th class="slds-text-align_center" style="width: 80px; min-width: 80px;" title="M1">M1</th>
-                                <th class="slds-text-align_center" style="width: 80px; min-width: 80px;" title="M2">M2</th>
-                                <th class="slds-text-align_center" style="width: 80px; min-width: 80px;" title="M3">M3</th>
+                                <th class="slds-text-align_center wrap-text" style="width: 100px; min-width: 100px;" title="Discount Allowed">Discount Allowed</th>
+                                <th class="slds-text-align_center wrap-text" style="width: 80px; min-width: 80px;" title="M1">M1</th>
+                                <th class="slds-text-align_center wrap-text" style="width: 80px; min-width: 80px;" title="M2">M2</th>
+                                <th class="slds-text-align_center wrap-text" style="width: 80px; min-width: 80px;" title="M3">M3</th>
                             </template>
                         </tr>
                     </thead>
@@ -74,6 +75,19 @@
                                 <td class="slds-text-align_right" title={row.totalTransferPrice}>{row.totalTransferPrice}</td>
                                 <td class="slds-text-align_right" title={row.unitListPrice}>{row.unitListPrice}</td>
                                 <td class="slds-text-align_right" title={row.totalListPrice}>{row.totalListPrice}</td>
+                                <td class="slds-text-align_center">
+                                    <template if:true={row.showCopyCheckbox}>
+                                        <lightning-button-icon
+                                            icon-name="utility:copy"
+                                            data-id={row.id}
+                                            size="small"
+                                            variant="bare"
+                                            onclick={handleCopyCheckboxChange}
+                                            class="copy-btn"
+                                            disabled={row.disableDiscounts}>
+                                        </lightning-button-icon>
+                                    </template>
+                                </td>
                                 <td class="slds-text-align_center" title={row.discountPercent}>
                                     <template if:true={row.showDiscountInputs}>
                                         <lightning-input
@@ -157,8 +171,14 @@
             
             <div class="slds-m-top_medium slds-align_absolute-center">
                 <lightning-button
+                    variant="neutral"
+                    class="slds-p-right_small"
+                    label="Cancel"
+                    onclick={navigateToQuote}>
+                </lightning-button>
+                <lightning-button
                     variant="brand"
-                    label="Save"
+                    label="Update Discounts"
                     onclick={handleSave}
                     disabled={isLoading}>
                 </lightning-button>

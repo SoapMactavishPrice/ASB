@@ -10,13 +10,11 @@ function formatNumberWithCommas(value) {
     if (value === null || value === undefined || value === '') {
         return '';
     }
-    // Convert to number if it's a string representation of a number
     const num = typeof value === 'string' ? parseFloat(value) : value;
     if (isNaN(num)) {
         return '';
     }
-    // Format with commas
-    return num.toLocaleString('en-IN');
+    return num.toLocaleString('en-US');
 }
 
 // Helper to parse formatted numbers back to number
@@ -24,11 +22,9 @@ function parseFormattedNumber(value) {
     if (!value || value === '') {
         return null;
     }
-    // If already a number, return it
     if (typeof value === 'number') {
         return value;
     }
-    // Remove commas and convert to number
     const cleaned = String(value).replace(/,/g, '');
     const parsed = parseFloat(cleaned);
     return isNaN(parsed) ? null : parsed;
@@ -43,7 +39,6 @@ function roundToTwoDecimals(value) {
     if (isNaN(num)) {
         return null;
     }
-    // Round to 2 decimal places
     return Math.round(num * 100) / 100;
 }
 
@@ -55,7 +50,6 @@ function roundToTwoDecimalsAndFormatInteger(value) {
     if (isNaN(num)) {
         return null;
     }
-    // Round to 2 decimal places
     return formatNumberWithCommas(Math.round(num * 100) / 100);
 }
 
@@ -63,15 +57,13 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
     @api recordId;
     @track tableData = [];
     @track isLoading = false;
-    @track showAdditionalColumns = false; // Default to collapsed
+    @track showAdditionalColumns = false;
     originalData = [];
 
-    // Computed property for toggle icon
     get toggleIcon() {
         return this.showAdditionalColumns ? 'utility:chevronleft' : 'utility:chevronright';
     }
 
-    // Computed property for table classes
     get tableClasses() {
         let classes = 'slds-table slds-table_cell-buffer slds-table_bordered';
         if (this.showAdditionalColumns) {
@@ -82,12 +74,10 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
         return classes;
     }
 
-    // Handle toggle columns button click
     handleToggleColumns() {
         this.showAdditionalColumns = !this.showAdditionalColumns;
     }
 
-    // Helper to compute disabled flags for a row
     setDisableFlags(row) {
         const isBlank = (v) =>
             v === null ||
@@ -96,19 +86,14 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             (typeof v === 'string' && v.trim() === '') ||
             (typeof v === 'number' && Number.isNaN(v));
 
-        // Treat empty string as cleared for UI values that may originate from inputs
         const hasDesired = !isBlank(row.desiredPrice);
         const hasPercent = !isBlank(row.discountPercent);
         const hasValue = !isBlank(row.discountValue);
 
-        // Disable discount inputs if Desired Price has a value
         row.disableDiscounts = hasDesired;
-
-        // Disable Desired Price if either discount input has a value
         row.disableDesiredPrice = hasPercent || hasValue;
     }
 
-    // Helper to check if any line item or option has pricing inputs filled
     hasAnyPricingInputs(srNo) {
         return this.tableData.some(row => {
             if (row.srNo === srNo && (row.isLineItem || row.isOption)) {
@@ -129,7 +114,6 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
         });
     }
 
-    // Helper to check if any line item or option has pricing inputs filled (for initial load)
     hasAnyPricingInputsForItems(items, srNo) {
         const isBlank = (v) =>
             v === null ||
@@ -140,7 +124,6 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
 
         for (let item of items) {
             if (item.Sr_No__c === srNo) {
-                // Check line item
                 const lineHasPercent = !isBlank(item.Discount__c);
                 const lineHasValue = !isBlank(item.Discount_in_Value__c);
                 const lineHasDesired = !isBlank(item.Desired_Price__c);
@@ -149,7 +132,6 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                     return true;
                 }
 
-                // Check options
                 if (item.Quote_Line_Options__r) {
                     for (let option of item.Quote_Line_Options__r) {
                         const optHasPercent = !isBlank(option.Discount__c);
@@ -174,25 +156,11 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             this.showToast('Error', error.body.message, 'error');
         }
     }
-    
-    // Computed helpers for template disabled states
-    isDiscountDisabled(row) {
-        // discountPercent/discountValue disabled when desiredPrice has a value
-        return row.desiredPrice !== null && row.desiredPrice !== undefined;
-    }
-
-    isDesiredPriceDisabled(row) {
-        // desiredPrice disabled when either discountPercent or discountValue has a value
-        const hasPercent = row.discountPercent !== null && row.discountPercent !== undefined;
-        const hasValue = row.discountValue !== null && row.discountValue !== undefined;
-        return Boolean(hasPercent || hasValue);
-    }
 
     processData(lineItems) {
         let rows = [];
-        
+        let grandTotalDiscount = 0;
         lineItems.forEach(item => {
-            // Check if desiredPriceSubtotal has a value
             const hasDesiredPriceSubtotal = item.Desired_Price_Subtotal__c !== null && 
                                            item.Desired_Price_Subtotal__c !== undefined && 
                                            item.Desired_Price_Subtotal__c !== 0;
@@ -224,6 +192,7 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                 m1: roundToTwoDecimals(item.M1__c),
                 m2: roundToTwoDecimals(item.M2__c),
                 m3: roundToTwoDecimals(item.M3__c),
+                parentQuantity: 0,
                 isEditable: true,
                 isLineItem: true,
                 isOption: false,
@@ -234,16 +203,16 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                 showDiscountInputs: true,
                 showDesiredPriceSubtotal: false,
                 showCheckboxes: false,
-                // UI flags - if desiredPriceSubtotal exists, disable all pricing inputs
+                showCopyCheckbox: true,
+                copyToOptions: false,
                 disableDiscounts: hasDesiredPriceSubtotal,
                 disableDesiredPrice: hasDesiredPriceSubtotal
             };
-            // Only set disable flags if desiredPriceSubtotal is not present
             if (!hasDesiredPriceSubtotal) {
                 this.setDisableFlags(lineRow);
             }
             rows.push(lineRow);
-            
+            let subtotalDiscountInValue = lineRow.totalDiscountInValue || 0;
             if (item.Quote_Line_Options__r) {
                 item.Quote_Line_Options__r.forEach(option => {
                     const optRow = {
@@ -258,22 +227,23 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                         totalQuantity: option.Quantity__c,
                         totalTransferPrice: roundToTwoDecimalsAndFormatInteger(option.Base_price_Total__c),
                         unitListPrice: roundToTwoDecimalsAndFormatInteger(option.Manula_Option_List_Price__c),
-                        totalListPrice: roundToTwoDecimalsAndFormatInteger(option.List_Price_Total2__c),
+                        totalListPrice: roundToTwoDecimalsAndFormatInteger(option.Total_Option_List_Price__c),
                         discountPercent: roundToTwoDecimals(option.Discount__c),
                         discountValue: roundToTwoDecimals(option.Discount_in_Value__c),
                         desiredPrice: roundToTwoDecimals(option.Desired_Price__c),
                         desiredPriceSubtotal: null,
                         discountAllowed: roundToTwoDecimals(option.Discount_Allowed_New__c),
-                        totalDiscountInValue: roundToTwoDecimals(option.Discount_Value__c),
-                        totalDiscountInValueFormatted: roundToTwoDecimalsAndFormatInteger(option.Discount_Value__c),
+                        totalDiscountInValue: roundToTwoDecimals(option.Discount_Value__c * item.Quantity__c),
+                        totalDiscountInValueFormatted: roundToTwoDecimalsAndFormatInteger(option.Discount_Value__c * item.Quantity__c),
                         salesPrice: roundToTwoDecimals(option.Average_Sales_Price__c),
                         salesPriceFormatted: roundToTwoDecimalsAndFormatInteger(option.Average_Sales_Price__c),
-                        totalSalesPrice: roundToTwoDecimals(option.Price__c),
-                        totalSalesPriceFormatted: roundToTwoDecimalsAndFormatInteger(option.Price__c),
+                        totalSalesPrice: roundToTwoDecimals(option.Final_Sales_Price__c),
+                        totalSalesPriceFormatted: roundToTwoDecimalsAndFormatInteger(option.Final_Sales_Price__c),
                         salesMargin: roundToTwoDecimals(option.Sales_Margin__c),
                         m1: roundToTwoDecimals(option.P_M1__c),
                         m2: roundToTwoDecimals(option.P_M2__c),
                         m3: roundToTwoDecimals(option.P_M3__c),
+                        parentQuantity: item.Quantity__c,
                         isEditable: true,
                         isLineItem: false,
                         isOption: true,
@@ -284,18 +254,24 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                         showDiscountInputs: true,
                         showDesiredPriceSubtotal: false,
                         showCheckboxes: true,
-                        // UI flags - if desiredPriceSubtotal exists, disable all pricing inputs
+                        showCopyCheckbox: false,
+                        copyToOptions: false,
                         disableDiscounts: hasDesiredPriceSubtotal,
                         disableDesiredPrice: hasDesiredPriceSubtotal
                     };
-                    // Only set disable flags if desiredPriceSubtotal is not present
                     if (!hasDesiredPriceSubtotal) {
                         this.setDisableFlags(optRow);
                     }
                     rows.push(optRow);
+                    subtotalDiscountInValue += optRow.totalDiscountInValue || 0;
                 });
             }
-            
+
+            if (lineRow.desiredPriceSubtotal && lineRow.desiredPriceSubtotal > 0) {
+                subtotalDiscountInValue = item.Total_List_Price__c - lineRow.desiredPriceSubtotal;
+            }
+            grandTotalDiscount += subtotalDiscountInValue;
+
             rows.push({
                 id: item.Id + '_subtotal',
                 type: 'subtotal',
@@ -314,8 +290,8 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                 desiredPrice: '',
                 desiredPriceSubtotal: roundToTwoDecimals(item.Desired_Price_Subtotal__c),
                 discountAllowed: '',
-                totalDiscountInValue: roundToTwoDecimals(item.Total_Discount_Value_including_options__c),
-                totalDiscountInValueFormatted: roundToTwoDecimalsAndFormatInteger(item.Total_Discount_Value_including_options__c),
+                totalDiscountInValue: roundToTwoDecimals(subtotalDiscountInValue),
+                totalDiscountInValueFormatted: roundToTwoDecimalsAndFormatInteger(subtotalDiscountInValue),
                 salesPrice: '',
                 salesPriceFormatted: '',
                 totalSalesPrice: roundToTwoDecimals(item.Total_Sales_Price_including_Options__c),
@@ -334,13 +310,15 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                 showDiscountInputs: false,
                 showDesiredPriceSubtotal: true,
                 showCheckboxes: false,
+                showCopyCheckbox: false,
+                copyToOptions: false,
                 disableDesiredPriceSubtotal: this.hasAnyPricingInputsForItems(lineItems, item.Sr_No__c)
             });
         });
         
         let grandTotalTransferPrice = 0;
         let grandTotalListPrice = 0;
-        let grandTotalDiscountInValue = 0;
+        let grandTotalDiscountInValue = grandTotalDiscount;
         let grandTotalSalesPrice = 0;
         let grandSalesMargin = 0;
         
@@ -351,9 +329,6 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                 }
                 if (item.Quote__r.Quote_Total_List_Price__c) {
                     grandTotalListPrice = item.Quote__r.Quote_Total_List_Price__c;
-                }
-                if (item.Quote__r.Quote_Total_Discount_Value__c) {
-                    grandTotalDiscountInValue = item.Quote__r.Quote_Total_Discount_Value__c;
                 }
                 if (item.Quote__r.Quote_Totoal__c) {
                     grandTotalSalesPrice = item.Quote__r.Quote_Totoal__c;
@@ -400,11 +375,41 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             displayPDFAmount: false,
             showDiscountInputs: false,
             showDesiredPriceSubtotal: false,
-            showCheckboxes: false
+            showCheckboxes: false,
+            showCopyCheckbox: false,
+            copyToOptions: false
         });
         
         this.tableData = rows;
         this.originalData = JSON.parse(JSON.stringify(rows));
+    }
+
+    handleCopyCheckboxChange(event) {
+        const lineItemId = event.target.dataset.id;
+        
+        const lineItemIndex = this.tableData.findIndex(row => row.id === lineItemId);
+        if (lineItemIndex !== -1) {
+            const lineItem = this.tableData[lineItemIndex];
+            
+            if (lineItem.discountPercent !== null && lineItem.discountPercent !== undefined) {
+                const discountPercent = lineItem.discountPercent;
+                
+                for (let i = 0; i < this.tableData.length; i++) {
+                    const row = this.tableData[i];
+                    if (!row.disableDiscounts) {
+                        if (row.isOption && row.parentId === lineItemId) {
+                            row.discountPercent = discountPercent;
+                            // row.discountValue = null;
+                            // row.desiredPrice = null;
+                            // this.setDisableFlags(row);
+                            this.calculateDiscounts(i);
+                        }
+                    }
+                }
+            }
+        }
+        
+        this.tableData = [...this.tableData];
     }
     
     handleInputChange(event) {
@@ -412,7 +417,6 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
         const field = event.target.dataset.field;
         let value = event.target.value;
 
-        // Normalize numeric inputs; treat empty string or whitespace as null
         if (
             field === 'discountPercent' ||
             field === 'discountValue' ||
@@ -420,9 +424,7 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             field === 'desiredPriceSubtotal'
         ) {
             const raw = typeof value === 'string' ? value.trim() : value;
-            // Parse formatted number (with commas) back to number
             const parsedValue = raw !== '' && raw !== null && raw !== undefined ? parseFormattedNumber(raw) : null;
-            // Round to 2 decimal places
             value = roundToTwoDecimals(parsedValue);
         }
 
@@ -430,30 +432,39 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
         if (rowIndex !== -1) {
             const row = this.tableData[rowIndex];
 
-            // Enforce mutual exclusivity at row level between desiredPrice and discountPercent/discountValue
             if (field === 'desiredPrice') {
                 row.desiredPrice = value;
                 if (value !== null) {
-                    // When Desired Price is set, clear discounts
                     row.discountPercent = null;
                     row.discountValue = null;
                 }
             } else if (field === 'discountPercent') {
                 row.discountPercent = value;
                 if (value !== null) {
-                    // When any discount is set, clear Desired Price
                     row.desiredPrice = null;
+                }
+                
+                // If this is a line item and copy checkbox is checked, copy to options
+                if (row.isLineItem && row.copyToOptions) {
+                    for (let i = 0; i < this.tableData.length; i++) {
+                        const optRow = this.tableData[i];
+                        if (optRow.isOption && optRow.parentId === rowId) {
+                            optRow.discountPercent = value;
+                            optRow.discountValue = null;
+                            optRow.desiredPrice = null;
+                            this.setDisableFlags(optRow);
+                            this.calculateDiscounts(i);
+                        }
+                    }
                 }
             } else if (field === 'discountValue') {
                 row.discountValue = value;
                 if (value !== null) {
-                    // When any discount is set, clear Desired Price
                     row.desiredPrice = null;
                 }
             } else if (field === 'desiredPriceSubtotal') {
                 row.desiredPriceSubtotal = value;
 
-                // When Desired Price Subtotal is entered (non-null, non-0), clear and disable pricing inputs
                 if (value !== null) {
                     row.discountPercent = null;
                     row.discountValue = null;
@@ -463,23 +474,18 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                 row[field] = value;
             }
 
-            // Update UI disabled flags after value changes
             this.setDisableFlags(row);
 
-            // Update desiredPriceSubtotal disabled state for the related subtotal row
             if (row.isLineItem || row.isOption) {
                 const subtotalIndex = this.tableData.findIndex(r => 
                     r.srNo === row.srNo && r.isSubtotal
                 );
                 if (subtotalIndex !== -1) {
-                    // Check if ANY pricing inputs exist in line items/options for this srNo
                     const hasPricingInputs = this.hasAnyPricingInputs(row.srNo);
                     this.tableData[subtotalIndex].disableDesiredPriceSubtotal = hasPricingInputs;
                 }
             }
 
-            // If this is a subtotal row and it has a desiredPriceSubtotal,
-            // disable the related line item AND its options pricing inputs.
             if (row.isSubtotal) {
                 const parentIndex = this.tableData.findIndex(r => r.id === row.parentId && r.isLineItem);
                 if (parentIndex !== -1) {
@@ -487,14 +493,12 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                     const subtotalEntered = row.desiredPriceSubtotal !== null && row.desiredPriceSubtotal !== 0;
 
                     if (subtotalEntered) {
-                        // Clear values and disable parent line item by setting flags
                         parent.discountPercent = null;
                         parent.discountValue = null;
                         parent.desiredPrice = null;
                         parent.disableDiscounts = true;
                         parent.disableDesiredPrice = true;
 
-                        // Clear values and disable all options under same parent (child rows)
                         for (let i = 0; i < this.tableData.length; i++) {
                             const r = this.tableData[i];
                             if (r.isOption && r.parentId === parent.id) {
@@ -506,7 +510,6 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                             }
                         }
                     } else {
-                        // Subtotal cleared: re-enable by recomputing flags based on current values
                         this.setDisableFlags(parent);
                         for (let i = 0; i < this.tableData.length; i++) {
                             const r = this.tableData[i];
@@ -530,15 +533,15 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
     
     calculateDiscounts(rowIndex) {
         const row = this.tableData[rowIndex];
-        // Parse formatted totalListPrice back to number for calculations
         const totalListPrice = parseFormattedNumber(row.totalListPrice) || 0;
+        const totalTransferPrice = parseFormattedNumber(row.totalTransferPrice) || 0;
+        const totalQuantity = row.parentQuantity || 1;
         let calculatedDiscount = 0;
         
         if (row.desiredPrice !== null && row.desiredPrice !== undefined && row.desiredPrice !== 0) {
             calculatedDiscount = totalListPrice - row.desiredPrice;
             row.totalDiscountInValue = roundToTwoDecimals(calculatedDiscount);
             row.totalDiscountInValueFormatted = roundToTwoDecimalsAndFormatInteger(calculatedDiscount);
-            // Do not calculate or populate discountPercent when desiredPrice is entered
             row.discountPercent = null;
             row.discountValue = null;
         } else if (
@@ -561,6 +564,26 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             row.totalDiscountInValue = 0;
             row.totalDiscountInValueFormatted = '0';
         }
+
+        // Calculate salesPrice, totalSalesPrice, and salesMargin
+        const salesPrice = totalQuantity !== 0 ? (totalListPrice-row.totalDiscountInValue) / totalQuantity : 0;
+        row.salesPrice = roundToTwoDecimals(salesPrice);
+        row.salesPriceFormatted = roundToTwoDecimalsAndFormatInteger(salesPrice);
+        
+        const totalSalesPrice = salesPrice * totalQuantity;
+        row.totalSalesPrice = roundToTwoDecimals(totalSalesPrice);
+        row.totalSalesPriceFormatted = roundToTwoDecimalsAndFormatInteger(totalSalesPrice);
+        
+        if (totalSalesPrice === 0) {
+            row.salesMargin = '-';
+        } else {
+            let margin = (salesPrice - totalTransferPrice) / salesPrice;
+            if (salesPrice < 0) {
+                margin = -margin;
+            }
+            margin *= 100;
+            row.salesMargin = roundToTwoDecimals(margin);
+        }
         
         if (row.isLineItem || row.isOption) {
             this.updateSubtotal(row.srNo);
@@ -571,7 +594,6 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
     
     calculateSubtotalDiscounts(rowIndex) {
         const row = this.tableData[rowIndex];
-        // Parse formatted totalListPrice back to number for calculations
         const totalListPrice = parseFormattedNumber(row.totalListPrice) || 0;
         
         if (row.desiredPriceSubtotal !== null && row.desiredPriceSubtotal !== undefined && row.desiredPriceSubtotal !== 0) {
@@ -579,17 +601,14 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             row.totalDiscountInValue = roundToTwoDecimals(calculatedDiscount);
             row.totalDiscountInValueFormatted = roundToTwoDecimalsAndFormatInteger(calculatedDiscount);
             
-            // Propagate to parent line item and disable its pricing inputs, and do the same for options
             const lineItemIndex = this.tableData.findIndex(r => r.id === row.parentId && r.isLineItem);
             if (lineItemIndex !== -1) {
                 const parent = this.tableData[lineItemIndex];
                 parent.desiredPriceSubtotal = row.desiredPriceSubtotal;
 
-                // Disable the inputs when subtotal desired price is present
                 parent.disableDiscounts = true;
                 parent.disableDesiredPrice = true;
 
-                // Disable options under the same parent
                 for (let i = 0; i < this.tableData.length; i++) {
                     const opt = this.tableData[i];
                     if (opt.isOption && opt.parentId === parent.id) {
@@ -599,7 +618,6 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                 }
             }
         } else {
-            // If subtotal desired price cleared, recalculate from line items and options
             const relatedRows = this.tableData.filter(r => 
                 r.srNo === row.srNo && (r.isLineItem || r.isOption)
             );
@@ -612,15 +630,12 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             row.totalDiscountInValue = roundToTwoDecimals(totalDiscountInValue);
             row.totalDiscountInValueFormatted = roundToTwoDecimalsAndFormatInteger(totalDiscountInValue);
             
-            // Re-enable parent line item and options
             const lineItemIndex = this.tableData.findIndex(r => r.id === row.parentId && r.isLineItem);
             if (lineItemIndex !== -1) {
                 const parent = this.tableData[lineItemIndex];
                 parent.desiredPriceSubtotal = null;
-                // Recompute flags based on parent's current values
                 this.setDisableFlags(parent);
                 
-                // Re-enable options under the same parent
                 for (let i = 0; i < this.tableData.length; i++) {
                     const opt = this.tableData[i];
                     if (opt.isOption && opt.parentId === parent.id) {
@@ -630,27 +645,26 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             }
         }
         
-        // Update grand total after subtotal changes
+        // Calculate totalSalesPrice and salesMargin for subtotal
+        const totalTransferPrice = parseFormattedNumber(row.totalTransferPrice) || 0;
+        const totalSalesPrice = totalListPrice - row.totalDiscountInValue;
+        row.totalSalesPrice = roundToTwoDecimals(totalSalesPrice);
+        row.totalSalesPriceFormatted = roundToTwoDecimalsAndFormatInteger(totalSalesPrice);
+        
+        // Calculate salesMargin for subtotal
+        if (totalSalesPrice === 0) {
+            row.salesMargin = '-';
+        } else {
+            let margin = (totalSalesPrice - totalTransferPrice) / totalSalesPrice;
+            if (totalSalesPrice < 0) {
+                margin = -margin;
+            }
+            row.salesMargin = roundToTwoDecimals(margin);
+        }
+        
         this.updateGrandTotal();
         
         this.tableData = [...this.tableData];
-    }
-
-    // Getter to format numeric values with thousand separators for display
-    get formattedDiscountPercent() {
-        return formatNumberWithCommas(this.discountPercent);
-    }
-
-    get formattedDiscountValue() {
-        return formatNumberWithCommas(this.discountValue);
-    }
-
-    get formattedDesiredPrice() {
-        return formatNumberWithCommas(this.desiredPrice);
-    }
-
-    get formattedDesiredPriceSubtotal() {
-        return formatNumberWithCommas(this.desiredPriceSubtotal);
     }
     
     updateSubtotal(srNo) {
@@ -670,9 +684,28 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             
             this.tableData[subtotalIndex].totalDiscountInValue = roundToTwoDecimals(totalDiscountInValue);
             this.tableData[subtotalIndex].totalDiscountInValueFormatted = roundToTwoDecimalsAndFormatInteger(totalDiscountInValue);
+            
+            // Recalculate subtotal's totalSalesPrice and salesMargin
+            const subtotalRow = this.tableData[subtotalIndex];
+            const totalListPrice = parseFormattedNumber(subtotalRow.totalListPrice) || 0;
+            const totalTransferPrice = parseFormattedNumber(subtotalRow.totalTransferPrice) || 0;
+            const totalSalesPrice = totalListPrice - subtotalRow.totalDiscountInValue;
+            
+            subtotalRow.totalSalesPrice = roundToTwoDecimals(totalSalesPrice);
+            subtotalRow.totalSalesPriceFormatted = roundToTwoDecimalsAndFormatInteger(totalSalesPrice);
+            
+            if (totalSalesPrice === 0) {
+                subtotalRow.salesMargin = '-';
+            } else {
+                let margin = (totalSalesPrice - totalTransferPrice) / totalSalesPrice;
+                if (totalSalesPrice < 0) {
+                    margin = -margin;
+                }
+                margin *= 100;
+                subtotalRow.salesMargin = roundToTwoDecimals(margin);
+            }
         }
         
-        // Update grand total after subtotal changes
         this.updateGrandTotal();
     }
     
@@ -680,17 +713,36 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
         const grandTotalIndex = this.tableData.findIndex(r => r.isGrandTotal);
         
         if (grandTotalIndex !== -1) {
-            // Sum up all subtotal discount values
             let grandTotalDiscountInValue = 0;
+            let grandTotalListPrice = 0;
+            let grandTotalTransferPrice = 0;
             
             this.tableData.forEach(row => {
                 if (row.isSubtotal) {
                     grandTotalDiscountInValue += row.totalDiscountInValue || 0;
+                    grandTotalListPrice += parseFormattedNumber(row.totalListPrice) || 0;
+                    grandTotalTransferPrice += parseFormattedNumber(row.totalTransferPrice) || 0;
                 }
             });
             
             this.tableData[grandTotalIndex].totalDiscountInValue = roundToTwoDecimals(grandTotalDiscountInValue);
             this.tableData[grandTotalIndex].totalDiscountInValueFormatted = roundToTwoDecimalsAndFormatInteger(grandTotalDiscountInValue);
+            
+            // Calculate grand total's totalSalesPrice and salesMargin
+            const grandTotalSalesPrice = grandTotalListPrice - grandTotalDiscountInValue;
+            this.tableData[grandTotalIndex].totalSalesPrice = roundToTwoDecimals(grandTotalSalesPrice);
+            this.tableData[grandTotalIndex].totalSalesPriceFormatted = roundToTwoDecimalsAndFormatInteger(grandTotalSalesPrice);
+            
+            if (grandTotalSalesPrice === 0) {
+                this.tableData[grandTotalIndex].salesMargin = '-';
+            } else {
+                let margin = (grandTotalSalesPrice - grandTotalTransferPrice) / grandTotalSalesPrice;
+                if (grandTotalSalesPrice < 0) {
+                    margin = -margin;
+                }
+                margin *= 100;
+                this.tableData[grandTotalIndex].salesMargin = roundToTwoDecimals(margin);
+            }
         }
     }
     
@@ -759,14 +811,9 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             return '';
         }
 
-        // Convert to number
         let num = Number(value);
-
-        // limit to max 2 decimals
         num = Number(num.toFixed(2));
-
-        // Add thousand separators
-        return num.toLocaleString('en-IN'); // for Indian format
+        return num.toLocaleString('en-IN');
     }
 
     navigateToQuote() {

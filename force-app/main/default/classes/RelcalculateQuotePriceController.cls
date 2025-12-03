@@ -35,11 +35,15 @@ public class RelcalculateQuotePriceController {
             prodqlio.add(qlios.Product__c);
         }
         System.debug(prodqlio);
-        List<PricebookEntry> pbe = [Select Product2Id,UnitPrice,Pricebook2Id,M1__c,M2__c,M3__c,D1__c,D2__c,D3__c,M4__c,Base_Price__c
+        List<PricebookEntry> pbe = [Select Product2Id,UnitPrice,Pricebook2Id,
+                                    // M1__c,M2__c,M3__c,M4__c,
+                                    D1__c,D2__c,D3__c,Base_Price__c, List_Price__c
                                     ,Rounding_Off_Digits__c from PricebookEntry WHERE Product2Id IN: prod 
                                     AND Pricebook2Id =: ObjQuote.Subsidiary__r.Price_Book__c];
         
-        List<PricebookEntry> pbeqlio = [Select Product2Id,UnitPrice,Pricebook2Id, M1__c,M2__c,M3__c,D1__c,D2__c,D3__c,M4__c,Base_Price__c
+        List<PricebookEntry> pbeqlio = [Select Product2Id,UnitPrice,Pricebook2Id, 
+                                        // M1__c,M2__c,M3__c,M4__c,
+                                        D1__c,D2__c,D3__c,Base_Price__c, List_Price__c
                                         ,Rounding_Off_Digits__c from PricebookEntry WHERE Product2Id IN: prodqlio 
                                         AND Pricebook2Id =: ObjQuote.Subsidiary__r.Price_Book__c];
         
@@ -60,18 +64,18 @@ public class RelcalculateQuotePriceController {
                     qli.P_D1__c = pmap.get(qli.Product__c).d1__c;
                     qli.P_D2__c = pmap.get(qli.Product__c).d2__c;
                     qli.P_D3__c = pmap.get(qli.Product__c).d3__c;
-                    qli.P_M1__c = pmap.get(qli.Product__c).M1__c;
-                    qli.P_M2__c = pmap.get(qli.Product__c).M2__c;
-                    qli.P_M3__c = pmap.get(qli.Product__c).M3__c;
-                    qli.P_M4__c = pmap.get(qli.Product__c).M4__c;
+                    // qli.P_M1__c = pmap.get(qli.Product__c).M1__c;
+                    // qli.P_M2__c = pmap.get(qli.Product__c).M2__c;
+                    // qli.P_M3__c = pmap.get(qli.Product__c).M3__c;
+                    // qli.P_M4__c = pmap.get(qli.Product__c).M4__c;
                     qli.Discount_Allowed_New__c = qli.Discount_Allowed_New__c;
                     if(qli.Is_Tax__c!=null)
                     qli.Is_Tax__c = qli.Is_Tax__c;
                     //qli.List_Price__c=AddProducts.getListPrice(pmap.get(qli.Product__c).UnitPrice, qli.Quote__r.Exchange_Rate__c, pmap.get(qli.Product__c).M1__c, pmap.get(qli.Product__c).M2__c,pmap.get(qli.Product__c).M3__c,pmap.get(qli.Product__c).M4__c, qli.Quote__r.Additinal_Margin__c, Integer.valueof(pmap.get(qli.Product__c).Rounding_Off_Digits__c));
                     
                     qli.Base_Price__c  = ((pmap.get(qli.Product__c).Base_Price__c*qli.Quote__r.Exchange_Rate__c)); 
-                    qli.List_Price__c=AddProducts.getListPrice(pmap.get(qli.Product__c).Base_Price__c, qli.Quote__r.Exchange_Rate__c, pmap.get(qli.Product__c).M1__c, pmap.get(qli.Product__c).M2__c,pmap.get(qli.Product__c).M3__c,pmap.get(qli.Product__c).M4__c, qli.Quote__r.Additinal_Margin__c, Integer.valueof(pmap.get(qli.Product__c).Rounding_Off_Digits__c));
-                    
+                    // qli.List_Price__c=AddProducts.getListPrice(pmap.get(qli.Product__c).Base_Price__c, qli.Quote__r.Exchange_Rate__c, pmap.get(qli.Product__c).M1__c, pmap.get(qli.Product__c).M2__c,pmap.get(qli.Product__c).M3__c,pmap.get(qli.Product__c).M4__c, qli.Quote__r.Additinal_Margin__c, Integer.valueof(pmap.get(qli.Product__c).Rounding_Off_Digits__c));
+                    qli.List_Price__c = pmap.get(qli.Product__c).List_Price__c;
                     //qli.List_Price__c=qli.List_Price__c;
                         
                     
@@ -110,10 +114,10 @@ public class RelcalculateQuotePriceController {
                     qlio.P_D1__c = pmapqlio.get(qlio.Product__c).d1__c;
                     qlio.P_D2__c = pmapqlio.get(qlio.Product__c).d2__c;
                     qlio.P_D3__c = pmapqlio.get(qlio.Product__c).d3__c;
-                    qlio.P_M1__c = pmapqlio.get(qlio.Product__c).M1__c;
-                    qlio.P_M2__c = pmapqlio.get(qlio.Product__c).M2__c;
-                    qlio.P_M3__c = pmapqlio.get(qlio.Product__c).M3__c;
-                    qlio.P_M4__c = pmapqlio.get(qlio.Product__c).M4__c;
+                    // qlio.P_M1__c = pmapqlio.get(qlio.Product__c).M1__c;
+                    // qlio.P_M2__c = pmapqlio.get(qlio.Product__c).M2__c;
+                    // qlio.P_M3__c = pmapqlio.get(qlio.Product__c).M3__c;
+                    // qlio.P_M4__c = pmapqlio.get(qlio.Product__c).M4__c;
                     qlio.Discount_Allowed_New__c = qlio.Discount_Allowed_New__c;
                     //qlio.Manula_Option_List_Price__c = AddProducts.getListPrice(pmapqlio.get(qlio.Product__c).UnitPrice,ObjQuote.Exchange_Rate__c,qlio.P_M1__c,qlio.P_M2__c,qlio.P_M3__c,qlio.P_M4__c,ObjQuote.Additinal_Margin__c,Integer.valueof(pmapqlio.get(qlio.Product__c).Rounding_Off_Digits__c));// pmapqlio.get(qlio.Product__c).UnitPrice;
                     //qlio.Manual_Option_Base_Price__c = pmapqlio.get(qlio.Product__c).Base_Price__c;

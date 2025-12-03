@@ -4,12 +4,12 @@ public with sharing class QuoteLineController {
     public static Map<String, Object> getQuoteLineData(Id quoteId) {
         List<Quote_Line_Item_Custom__c> lineItems = [
             SELECT Id, Sr_No__c, Product_Name__c, Base_Price__c, Quantity__c, 
-                   Total_Base_Price__c, List_Price__c, Total_List_Price2__c,
+                   Total_Global_Price_Item__c, List_Price__c, Total_List_Price2__c,
                    Discount_Allowed_New__c, Discount__c, Discount_in_Value__c,
                    Desired_Price__c, Desired_Price_Subtotal__c, Discount_Value__c,
                    Average_Sales_Price__c, Sales_Price__c, Sales_Margin__c, 
                    Quote__r.Sales_Margin__c, Quote__r.Quote_Total_Base_Price__c, Quote__r.Quote_Total_List_Price__c,
-                   Quote__r.Quote_Total_Discount_Value__c, Quote__r.Quote_Totoal__c,
+                   Quote__r.Quote_Total_Discount_Value__c, Quote__r.Quote_Totoal__c, Quote__r.Quote_Number__c,
                    M1__c, M2__c, M3__c,
                    Total_List_Price__c, Total_Base_Price_including_Options__c,
                    Total_Discount_Value_including_options__c, 
@@ -17,9 +17,9 @@ public with sharing class QuoteLineController {
                    Sales_Margin_including_Options__c,
                    (SELECT Id, Option_No__c, Serial_Number__c, Manual_Product_Name__c, Quantity__c,
                            Base_price_Total__c, Manula_Option_List_Price__c,
-                           Total_Option_List_Price__c, Discount__c, Discount_in_Value__c,
+                           List_Price_Total2__c, Discount__c, Discount_in_Value__c,
                            Desired_Price__c, Discount_Allowed_New__c, Discount_Value__c,
-                           Average_Sales_Price__c, Final_Sales_Price__c, Sales_Margin__c,
+                           Average_Sales_Price__c, Sales_Price__c, Sales_Margin__c,
                            P_M1__c, P_M2__c, P_M3__c
                     FROM Quote_Line_Options__r
                     ORDER BY Serial_Number__c ASC)
@@ -29,7 +29,8 @@ public with sharing class QuoteLineController {
         ];
         
         return new Map<String, Object>{
-            'lineItems' => lineItems
+            'lineItems' => lineItems,
+            'quoteName' => lineItems.size() > 0 ? lineItems[0].Quote__r.Quote_Number__c : ''
         };
     }
     

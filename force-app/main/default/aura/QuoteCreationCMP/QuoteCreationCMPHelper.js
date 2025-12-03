@@ -168,24 +168,33 @@
     // helper for creating a blank quote
     blankQuote: function (component) {
         component.set('v.showSpinner', true);
-        var recordId = component.get("v.recordId"); //Oppty Id
-        var cRate = component.get("v.QuoteConversionRate");
+        var recordId = component.get("v.recordId");
         var cRate = component.get("v.QuoteConversionRate");
         var qtNameToCheck = component.find("qtName").get("v.value");
         var navService = component.find("navService");
         var addionalMargin = component.get("v.AddionalMargin");
         var currentProdType2 = component.get("v.currentProdType");
+        var selectedPricebook = component.find("blankPricebook").get("v.value");
         
-        
+        if(!selectedPricebook || selectedPricebook === '') {
+            component.set('v.showSpinner', false);
+            component.find('notifLib').showToast({
+                "variant": "error",
+                "title": "Please select a Pricebook!",
+            });
+            return;
+        }
+
         console.log('addionalMargin --->', addionalMargin);
         if (qtNameToCheck != null && qtNameToCheck != undefined && qtNameToCheck != '') {
             var action = component.get('c.createBlankQuoteController');
             action.setParams({
                 "QuoteName": qtNameToCheck,
                 "recordId": recordId,
-                "currencyName":currentProdType2,
+                "currencyName": currentProdType2,
                 "cRate": cRate,
-                "QuoteAdditionalMargin": addionalMargin
+                "QuoteAdditionalMargin": addionalMargin,
+                "pricebookId": selectedPricebook
             });
             action.setCallback(this, function (response) {
                 var err = response.getError();
@@ -241,23 +250,26 @@
         //alert('true');
         component.set('v.showSpinner', true);
         var selectedQuoteToClone = component.get('v.selectedCloneQuote').split('-')[0];
-        //alert('selectedQuoteToClone = ='+selectedQuoteToClone);
         var qtNameToCheck = component.find('cloneQtName').get('v.value');
         var soldTo = component.get('v.soldTo');
         var shipTo = component.get('v.shipTo');
-        
-        console.log('soldTo--->',soldTo +' shipTo '+shipTo );
-        //alert('qtNameToCheck = ='+qtNameToCheck);
         var navService = component.find("navService");
-        //alert('navService = ='+navService);
         var recordId = component.get("v.recordId");
-        //alert('recId = ='+recId);
         var currentProdType1 = component.get("v.currentProdType");
         var lstQuotes = component.get("v.LstExistingQuotes");
         var cRate = component.get("v.QuoteConversionRate");
         var addionalMargin = component.get("v.AddionalMargin");
-        console.log('addionalMargin ===>', addionalMargin);
+        var selectedPricebook = component.find("clonePricebook").get("v.value");
         //alert('lstQuotes = ='+lstQuotes);
+
+        if(!selectedPricebook || selectedPricebook === '') {
+            component.set('v.showSpinner', false);
+            component.find('notifLib').showToast({
+                "variant": "error",
+                "title": "Please select a Pricebook!",
+            });
+            return;
+        }
 
         
         if ((soldTo == '' || soldTo == null)) {
@@ -306,12 +318,13 @@
                 action.setParams({
                     "quoteToClone": selectedQuoteToClone,
                     "clonedQuoteName": qtNameToCheck,
-                    "currencyName":currentProdType1,
+                    "currencyName": currentProdType1,
                     "recordId": recordId,
                     "cRate": cRate,
                     "QuoteAdditionalMargin": addionalMargin,
-                    "soldTo":soldTo,
-                     "shipTo":shipTo,
+                    "soldTo": soldTo,
+                    "shipTo": shipTo,
+                    "pricebookId": selectedPricebook
                 });
                 console.log('callingCloned--!');
                 action.setCallback(this, function (response) {

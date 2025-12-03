@@ -124,7 +124,7 @@ public class QuoteCreationCMPController {
    
     
     @AuraEnabled
-    public static String createBlankQuoteController(String QuoteName, String recordId,String currencyName,String cRate, String QuoteAdditionalMargin) {
+    public static String createBlankQuoteController(String QuoteName, String recordId, String currencyName, String cRate, String QuoteAdditionalMargin, String pricebookId) {
         
         try{
             
@@ -164,6 +164,9 @@ public class QuoteCreationCMPController {
             ObjQuote.PREPARED_BY__c = opp.Prepared_By__c;
             ObjQuote.SOLD_TO__c = opp.AccountId;
             ObjQuote.SHIP_TO__c = opp.AccountId;
+            if(String.isNotBlank(pricebookId)) {
+                ObjQuote.Pricebook2Id = pricebookId;
+            }
             if(string.isNotBlank(con.Email)){
                 ObjQuote.Email = con.Email;  
             }
@@ -230,13 +233,12 @@ public class QuoteCreationCMPController {
     }
     
     @AuraEnabled
-    public static map<string,object> cloneExistingQuote(String quoteToClone, String clonedQuoteName, string currencyName, String recordId, String cRate, String QuoteAdditionalMargin,
-                                                            string soldTo, string shipTo) {
+    public static map<string,object> cloneExistingQuote(String quoteToClone, String clonedQuoteName, string currencyName, String recordId, String cRate, String QuoteAdditionalMargin, string soldTo, string shipTo, String pricebookId) {
         /* Param 1 'quoteToClone' - 18 Digit Id of the Quote which is being Cloned.
-* Param 2 'clonedQuoteName' - Name of the New Cloned Quote from quote 'quoteToClone'.
-* Param 3 'recordId' - Parent Opportunity ID. 
+        * Param 2 'clonedQuoteName' - Name of the New Cloned Quote from quote 'quoteToClone'.
+        * Param 3 'recordId' - Parent Opportunity ID. 
 
-*/ 
+        */ 
         map<string,object> result = new map<string,object>();
                    
         
@@ -328,6 +330,9 @@ public class QuoteCreationCMPController {
             QuoteClone.Expected_Month_of_Consolidated_Order__c = parentQuote.Expected_Month_of_Consolidated_Order__c;
             QuoteClone.SOLD_TO__c = soldTo;
             QuoteClone.SHIP_TO__c = shipTo;
+            if(String.isNotBlank(pricebookId)) {
+                QuoteClone.Pricebook2Id = pricebookId;
+            }
             system.debug('QCOM46-00339'+parentQuote.INCO_TERMS__c);
             QuoteClone.INCO_TERMS__c = parentQuote.INCO_TERMS__c;
             system.debug('QCOM46-00339-->'+QuoteClone.INCO_TERMS__c);
@@ -395,13 +400,14 @@ public class QuoteCreationCMPController {
             
             List<Pricebookentry> titleList3 = new List<Pricebookentry>([SELECT Product2.Id, Product2.Name,UnitPrice,Product2.Product_Number__c,
                                                                         Product2.Product_Type__c,Product2.ProductCode,
-                                                                        M1__c,M2__c,M3__c,D1__c,D2__c,D3__c,M4__c
-                                                                        ,Rounding_Off_Digits__c,
+                                                                        // M1__c,M2__c,M3__c,M4__c,
+                                                                        D1__c,D2__c,D3__c
+                                                                        ,Rounding_Off_Digits__c, List_Price__c,
                                                                         Base_Price__c,Quantity__c,Product2.Description
                                                                         FROM PriceBookEntry Where Product2.IsActive = TRUE 
                                                                         AND Pricebook2.id =: pb AND Product2.ProductCode != null 
                                                                         AND Product2.Family = 'Items' 
-                                                                        AND M1__c != null and M2__c != null and M3__c != null and M4__c != null
+                                                                        // AND M1__c != null and M2__c != null and M3__c != null and M4__c != null
                                                                         AND D1__c != null and D2__c != null and D3__c != null and Rounding_Off_Digits__c != null 
                                                                     	AND Product2.Language__c=:quote.Language__c  
                                                                         and (Product2.Subsidiari__c=:null OR Product2.Subsidiari__c=:u.Subsidiari__c) 
@@ -439,10 +445,10 @@ public class QuoteCreationCMPController {
                     cli.P_D1__c = pro1.P_D1__c;
                     cli.P_D2__c = pro1.P_D2__c;
                     cli.P_D3__c = pro1.P_D3__c;
-                    cli.P_M1__c = pro1.P_M1__c;
-                    cli.P_M2__c = pro1.P_M2__c;
-                    cli.P_M3__c = pro1.P_M3__c;
-                    cli.P_M4__c = pro1.P_M4__c;
+                    // cli.P_M1__c = pro1.P_M1__c;
+                    // cli.P_M2__c = pro1.P_M2__c;
+                    // cli.P_M3__c = pro1.P_M3__c;
+                    // cli.P_M4__c = pro1.P_M4__c;
                     
                     
                     if(pro1.Product__c !=null){ 
@@ -547,10 +553,10 @@ public class QuoteCreationCMPController {
                     cli.P_D1__c = pro1.P_D1__c;
                     cli.P_D2__c = pro1.P_D2__c;
                     cli.P_D3__c = pro1.P_D3__c;
-                    cli.P_M1__c = pro1.P_M1__c;
-                    cli.P_M2__c = pro1.P_M2__c;
-                    cli.P_M3__c = pro1.P_M3__c;
-                    cli.P_M4__c = pro1.P_M4__c;
+                    // cli.P_M1__c = pro1.P_M1__c;
+                    // cli.P_M2__c = pro1.P_M2__c;
+                    // cli.P_M3__c = pro1.P_M3__c;
+                    // cli.P_M4__c = pro1.P_M4__c;
                     
                     
                     
@@ -655,7 +661,7 @@ public class QuoteCreationCMPController {
             Map<Id, PriceBookEntry> mapProductWisePriceOptionEntry = new Map<Id, PricebookEntry>();
             for(PriceBookEntry eachPBE : [SELECT Id, Product2.Id,unitprice,Base_Price__c,List_Price_Level_2__c,List_Price_level_3__c
                                           FROM PriceBookEntry 
-                                          WHERE Pricebook2Id =:u.Subsidiari__r.Price_Book__c
+                                          WHERE Pricebook2Id =:pricebookId
                                           AND IsActive=true
                                           And Product2.id in:prodid
                                           AND Product2.IsACTIVE = true AND Product2.Family = 'Options']){
@@ -774,10 +780,10 @@ public class QuoteCreationCMPController {
                     ContLO.P_D1__c = pro2.P_D1__c;
                     ContLO.P_D2__c = pro2.P_D2__c;
                     ContLO.P_D3__c = pro2.P_D3__c;
-                    ContLO.P_M1__c = pro2.P_M1__c;
-                    ContLO.P_M2__c = pro2.P_M2__c;
-                    ContLO.P_M3__c = pro2.P_M3__c;
-                    ContLO.P_M4__c = pro2.P_M4__c;
+                    // ContLO.P_M1__c = pro2.P_M1__c;
+                    // ContLO.P_M2__c = pro2.P_M2__c;
+                    // ContLO.P_M3__c = pro2.P_M3__c;
+                    // ContLO.P_M4__c = pro2.P_M4__c;
                     
                     
                 }
@@ -1021,6 +1027,42 @@ public class QuoteCreationCMPController {
         us.lang=u.Default_Language__c;
         return us;
     }
+
+    @AuraEnabled
+    public static String getSubsidaryDefaultPriceBook(String recordId) {
+        Opportunity opportunity = [SELECT Subsidiary__r.Price_Book__c FROM Opportunity WHERE Id = :recordId LIMIT 1];
+
+        if (opportunity.Subsidiary__r.Price_Book__c != null) {
+            return opportunity.Subsidiary__r.Price_Book__c;
+        } else {
+            return null;
+        }
+    }
+
+    @AuraEnabled
+    public static List<Map<String, String>> getPricebooks(String recordId) {
+
+        Opportunity opportunity = [SELECT Subsidiary__c, Subsidiary__r.Name, Subsidiary__r.Price_Book__c FROM Opportunity WHERE Id = :recordId LIMIT 1];
+
+        List<Map<String, String>> pricebookOptions = new List<Map<String, String>>();
+
+        List<Pricebook2> pricebooks = [
+            SELECT Id, Name, IsActive, IsStandard 
+            FROM Pricebook2 
+            WHERE IsActive = true AND (Subsidiary__c = :opportunity.Subsidiary__c OR Id = :opportunity.Subsidiary__r.Price_Book__c)
+            ORDER BY IsStandard DESC, Name ASC
+        ];
+        
+        for (Pricebook2 pb : pricebooks) {
+            Map<String, String> option = new Map<String, String>();
+            option.put('label', pb.Name + (pb.IsStandard ? ' (Standard)' : ''));
+            option.put('value', pb.Id);
+            pricebookOptions.add(option);
+        }
+        
+        return pricebookOptions;
+    }
+
     Public Class UserSetup {
         public String FY;
         Public String Subsidiari;

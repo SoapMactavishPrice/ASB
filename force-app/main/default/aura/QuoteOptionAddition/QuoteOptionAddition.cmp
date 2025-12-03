@@ -45,6 +45,7 @@
     <aura:attribute name="QuoteLineItmInstance" type="QuoteLineItem" />
     <aura:attribute name="PercentPick" type="Quote_Line_Item_Custom__c[]" />
     <aura:attribute name="currencyCode" type="String" />
+    <aura:attribute name="basePriceLabel" type="String" default="Base Price" />
 
     <aura:attribute name="wrappedOptions" type="List" />
     <aura:attribute name="filter" type="String" />
@@ -346,7 +347,7 @@
                                 <div class="slds-truncate" title="List price">List price</div>
                             </th>
                             <th scope="col">
-                                <div class="slds-truncate" title="Discount">Base Price</div>
+                                <div class="slds-truncate" title="Discount">{!v.basePriceLabel}</div>
                             </th>
                             <!-- <th scope="col">
                             <div class="slds-truncate" title="Discount">Price Type</div>

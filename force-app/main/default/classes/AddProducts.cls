@@ -206,7 +206,7 @@ public class AddProducts {
                 }
            
            if(pbe.Base_Price__c != null){
-               objQLI.Base_Price__c = pbe.UnitPrice;
+               objQLI.Base_Price__c = pbe.Base_Price__c;
                system.debug('Exchange_Rate__c ='+ lstQuote[0].Exchange_Rate__c);
                system.debug('Base Price is ='+ objQLI.Base_Price__c);
                system.debug('Base Price is After calculation ='+ pbe.Base_Price__c*lstQuote[0].Exchange_Rate__c);

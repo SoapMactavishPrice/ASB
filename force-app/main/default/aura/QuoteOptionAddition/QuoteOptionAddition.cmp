@@ -271,7 +271,7 @@
                                             maximumFractionDigits="2"></lightning:formattedNumber>
                                     </th>
                                     <th scope="row">
-                                        <lightning:formattedNumber value="{!obj.objLead.UnitPrice}" style="currency"
+                                        <lightning:formattedNumber value="{!obj.objLead.List_Price__c}" style="currency"
                                             currencyCode="{!v.currencyCode}" minimumFractionDigits="2"
                                             maximumFractionDigits="2"></lightning:formattedNumber>
                                     </th>
@@ -347,7 +347,7 @@
                                 <div class="slds-truncate" title="List price">List price</div>
                             </th>
                             <th scope="col">
-                                <div class="slds-truncate" title="Discount">{!v.basePriceLabel}</div>
+                                <div class="slds-truncate" title="Discount">Transfer Price</div>
                             </th>
                             <!-- <th scope="col">
                             <div class="slds-truncate" title="Discount">Price Type</div>

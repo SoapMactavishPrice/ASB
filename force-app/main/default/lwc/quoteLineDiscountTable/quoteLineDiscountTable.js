@@ -41,7 +41,7 @@ function roundToTwoDecimals(value) {
     }
     // Return null if value is 0
     const rounded = Math.round(num * 100) / 100;
-    return rounded === 0 ? null : rounded;
+    return rounded === 0 ? null : rounded.toFixed(2);
 }
 
 function roundToTwoDecimalsAndFormatInteger(value) {
@@ -69,10 +69,11 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
     @track isLoading = false;
     @track showAdditionalColumns = false;
     @track quoteName = '';
+    @track quoteCurrency = '';
     originalData = [];
 
     get quoteNameHeader() {
-        return `Quote: ${this.quoteName}`;
+        return `Quote: ${this.quoteName}    |    Currency: ${this.quoteCurrency}`;
     }
 
     get toggleIcon() {
@@ -168,6 +169,7 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
         if (data) {
             this.processData(data.lineItems);
             this.quoteName = data.quoteName;
+            this.quoteCurrency = data.quoteCurrency;
         } else if (error) {
             this.showToast('Error', error.body.message, 'error');
         }

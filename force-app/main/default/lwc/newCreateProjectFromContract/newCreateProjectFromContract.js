@@ -1,4 +1,4 @@
-import { LightningElement ,track,api,wire} from 'lwc';
+import { LightningElement, track, api, wire } from 'lwc';
 import { CurrentPageReference } from 'lightning/navigation';
 import { NavigationMixin } from 'lightning/navigation';
 import { CloseActionScreenEvent } from "lightning/actions";
@@ -41,7 +41,7 @@ export default class NewCreateProjectFromContract extends NavigationMixin(Lightn
     getExistingProject() {
         console.log('adwwwqs');
         getExistingProjectDetails({ contractId: this.recordId }).then(result => {
-            console.log('result--->>>',JSON.stringify(result));
+            console.log('result--->>>', JSON.stringify(result));
             let errorMessage = 0;
             for (let key in result) {
                 if (key == 'Information') {
@@ -49,31 +49,31 @@ export default class NewCreateProjectFromContract extends NavigationMixin(Lightn
                     this.ShowToastMessage(key, result[key]);
                     errorMessage = Number(errorMessage) + 1;
                     this.isOpen = false;
-                }else
-                if (key == 'UniquePM') {
-                    this.WaringMessage = 'Please create a unique project number by clicking the button/link below.';
-                    this.isCreateProjectUniqueNo = true;
-                     this.isOpen = false;
-                    this.isOpenTable = false;
-                    this.showModal = false;
-                }
-                else {
-                    this.WaringMessage = result['Warning'];
-                    this.isCreateProjectUniqueNo = false;
-                    
-                    let data = JSON.parse(result['data']);
-                    for(let i = 0; i< data.length; i++){
-
+                } else
+                    if (key == 'UniquePM') {
+                        this.WaringMessage = 'Please create a unique project number by clicking the button/link below.';
+                        this.isCreateProjectUniqueNo = true;
+                        this.isOpen = false;
+                        this.isOpenTable = false;
+                        this.showModal = false;
                     }
+                    else {
+                        this.WaringMessage = result['Warning'];
+                        this.isCreateProjectUniqueNo = false;
 
-                    this.showTableProjects = JSON.parse(result['data']);
+                        let data = JSON.parse(result['data']);
+                        for (let i = 0; i < data.length; i++) {
 
-                    this.TotalProgram = this.showTableProjects.length;
-                    this.isOpen = false;
-                    this.isOpenTable = false;
-                    this.showModal = true;
-                    ///this.handleCancel();
-                }
+                        }
+
+                        this.showTableProjects = JSON.parse(result['data']);
+
+                        this.TotalProgram = this.showTableProjects.length;
+                        this.isOpen = false;
+                        this.isOpenTable = false;
+                        this.showModal = true;
+                        ///this.handleCancel();
+                    }
 
             }
 
@@ -122,16 +122,15 @@ export default class NewCreateProjectFromContract extends NavigationMixin(Lightn
     }
 
 
-    handleProjectUniqueNo(){
-        createUniqueNo({conId:this.recordId}).then(result=>
-        {
-            console.log('OUTPUT : ',JSON.stringify(result));
-                if (result.Status =='Success') {
-                    this.ShowToastMessage('Success',result.Message );
-                }else{
-                    this.ShowToastMessage('Error',result.Message );
-                }
-            
+    handleProjectUniqueNo() {
+        createUniqueNo({ conId: this.recordId }).then(result => {
+            console.log('OUTPUT : ', JSON.stringify(result));
+            if (result.Status == 'Success') {
+                this.ShowToastMessage('Success', result.Message);
+            } else {
+                this.ShowToastMessage('Error', result.Message);
+            }
+
 
         })
 
@@ -146,10 +145,10 @@ export default class NewCreateProjectFromContract extends NavigationMixin(Lightn
 
     @track TotalProgram = 0;
     handlerowselected(event) {
-        console.log('id-->',event.target.dataset.id);
-        
+        console.log('id-->', event.target.dataset.id);
+
         let index = this.showTableProjects.map(a => a.LineNumberIdClone).indexOf(event.target.dataset.id);
-        console.log('index-->',index);
+        console.log('index-->', index);
         this.showTableProjects[index].isSelect = event.target.checked;
         if (this.showTableProjects[index].isSelect) {
             this.TotalProgram++;
@@ -172,15 +171,15 @@ export default class NewCreateProjectFromContract extends NavigationMixin(Lightn
         }
     }
 
-    onDataChange(event){
+    onDataChange(event) {
         let index = this.showTableProjects.map(a => a.LineNumberIdClone).indexOf(event.target.dataset.id);
         let label = event.target.dataset.label;
-        
+
         this.showTableProjects[index][label] = event.target.value;
     }
 
 
-     handleDateBRChange(event) {
+    handleDateBRChange(event) {
         this.saveDisabled = false;
         const input = event.target;
         const label = input.dataset.label;
@@ -189,22 +188,22 @@ export default class NewCreateProjectFromContract extends NavigationMixin(Lightn
         let index = this.showTableProjects.map(a => a.LineNumberIdClone).indexOf(event.target.dataset.id);
 
         if (label === "ExpectedSalesMonth" || label === "YourPOIssueDate") {
-            const enteredDate = new Date(value);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); // Ignore time
+            // const enteredDate = new Date(value);
+            // const today = new Date();
+            // today.setHours(0, 0, 0, 0); // Ignore time
 
-            let errorMessage = "";
-            if (enteredDate < today) {
-                errorMessage = "Date should be today or a future date.";
-                this.saveDisabled = true;
-            }
+            // let errorMessage = "";
+            // if (enteredDate < today) {
+            //     errorMessage = "Date should be today or a future date.";
+            //     this.saveDisabled = true;
+            // }
 
-            input.setCustomValidity(errorMessage);
+            input.setCustomValidity("");
             input.reportValidity();
 
             // Optionally update the value in caseFields
- //           const index = parseInt(input.dataset.index, 10);
-//                        const caseIndex = this.caseFields.findIndex(addr => addr.index === index);
+            //           const index = parseInt(input.dataset.index, 10);
+            //                        const caseIndex = this.caseFields.findIndex(addr => addr.index === index);
             if (this.showTableProjects && this.showTableProjects[index]) {
                 this.showTableProjects[index][label] = value;
             }
@@ -213,83 +212,83 @@ export default class NewCreateProjectFromContract extends NavigationMixin(Lightn
 
 
     saveProjects() {
-    let varCheck = true;
+        let varCheck = true;
 
-    // Loop through each project in showTableProjects
-    for (let pro of this.showTableProjects) {
+        // Loop through each project in showTableProjects
+        for (let pro of this.showTableProjects) {
 
-        // Skip disabled projects
-        if (!pro.isDisabled && pro.isSelect){
+            // Skip disabled projects
+            if (!pro.isDisabled && pro.isSelect) {
 
-            // Check for Expected Sales Month
-            if (!pro.ExpectedSalesMonth) {
-                varCheck = false;
-                this.ShowToastMessage1('Error', 'Please Fill Expected Sales Month -> ' + pro.proName);
-            }
+                // Check for Expected Sales Month
+                if (!pro.ExpectedSalesMonth) {
+                    varCheck = false;
+                    this.ShowToastMessage1('Error', 'Please Fill Expected Sales Month -> ' + pro.proName);
+                }
 
-            // Check for Your PO Number
-            if (!pro.YourPONumber) {
-                varCheck = false;
-                this.ShowToastMessage1('Error', 'Please Fill Your PO Number -> ' + pro.proName);
-            }
+                // Check for Your PO Number
+                if (!pro.YourPONumber) {
+                    varCheck = false;
+                    this.ShowToastMessage1('Error', 'Please Fill Your PO Number -> ' + pro.proName);
+                }
 
-            // Check for Your PO Issue Date
-            if (!pro.YourPOIssueDate) {
-                varCheck = false;
-                this.ShowToastMessage1('Error', 'Please Fill Your PO Issue Date -> ' + pro.proName);
+                // Check for Your PO Issue Date
+                if (!pro.YourPOIssueDate) {
+                    varCheck = false;
+                    this.ShowToastMessage1('Error', 'Please Fill Your PO Issue Date -> ' + pro.proName);
+                }
             }
         }
+
+        // Delay to allow all toasts to render before submitting (optional)
+        setTimeout(() => {
+
+            if (varCheck) {
+                this.showSpinner = true;
+
+                SaveProjectDeatils({
+                    ContractId: this.recordId,
+                    js: JSON.stringify(this.showTableProjects),
+                    TotalProgram: this.TotalProgram
+                })
+                    .then(result => {
+                        console.log('OUTPUT:', JSON.stringify(result));
+
+                        for (let key in result) {
+                            if (key === 'Success') {
+                                this.ShowToastMessage(key, result[key]);
+
+                                // Navigate to the Contract record
+                                this[NavigationMixin.Navigate]({
+                                    type: 'standard__recordPage',
+                                    attributes: {
+                                        recordId: this.recordId,
+                                        objectApiName: 'Contract',
+                                        actionName: 'view'
+                                    }
+                                });
+
+                                this.goBackToRecord();
+                                this.showSpinner = false;
+
+                            } else {
+                                // Show error toast if not "Success"
+                                this.showSpinner = false;
+                                this.ShowToastMessage(key, result[key]);
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        this.showSpinner = false;
+                        console.error('SaveProjectDeatils error:', error);
+                        this.ShowToastMessage('Error', 'An error occurred while saving project details.');
+                    });
+            }
+
+        }, 500); // Reduced delay from 1000ms to 500ms unless longer delay is necessary
     }
 
-    // Delay to allow all toasts to render before submitting (optional)
-    setTimeout(() => {
-
-        if (varCheck) {
-            this.showSpinner = true;
-
-            SaveProjectDeatils({
-                ContractId: this.recordId,
-                js: JSON.stringify(this.showTableProjects),
-                TotalProgram: this.TotalProgram
-            })
-            .then(result => {
-                console.log('OUTPUT:', JSON.stringify(result));
-
-                for (let key in result) {
-                    if (key === 'Success') {
-                        this.ShowToastMessage(key, result[key]);
-
-                        // Navigate to the Contract record
-                        this[NavigationMixin.Navigate]({
-                            type: 'standard__recordPage',
-                            attributes: {
-                                recordId: this.recordId,
-                                objectApiName: 'Contract',
-                                actionName: 'view'
-                            }
-                        });
-
-                        this.goBackToRecord();
-                        this.showSpinner = false;
-
-                    } else {
-                        // Show error toast if not "Success"
-                        this.showSpinner = false;
-                        this.ShowToastMessage(key, result[key]);
-                    }
-                }
-            })
-            .catch(error => {
-                this.showSpinner = false;
-                console.error('SaveProjectDeatils error:', error);
-                this.ShowToastMessage('Error', 'An error occurred while saving project details.');
-            });
-        }
-
-    }, 500); // Reduced delay from 1000ms to 500ms unless longer delay is necessary
-}
-
-ShowToastMessage1(variant, msg) {
+    ShowToastMessage1(variant, msg) {
         this.dispatchEvent(
             new ShowToastEvent({
                 title: variant,
@@ -297,7 +296,7 @@ ShowToastMessage1(variant, msg) {
                 variant: variant,
             }),
         );
-       
+
     }
 
 

@@ -144,7 +144,7 @@
                                             </th>
                                             <aura:if isTrue="{!not(v.isDTA)}">
                                                 <th class="col-stick" scope="col" style="width: 101px;text-align: right !important;">
-                                                    <div class="" style="text-wrap: balance;" title="Base Price">Unit Base Price</div>
+                                                    <div class="" style="text-wrap: balance;" title="Base Price">Unit TP</div>
                                                 </th>
                                             </aura:if>
                                             <th class="col-stick" scope="col" style="width: 101px;text-align: right !important;">

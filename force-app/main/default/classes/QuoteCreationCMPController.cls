@@ -817,7 +817,7 @@ public class QuoteCreationCMPController {
                         ContLO.Manula_Option_List_Price__c = pro2.Manula_Option_List_Price__c;
                     }
                     if(pro2.Manual_Option_Base_Price__c != null){
-                        ContLO.Manual_Option_Base_Price__c = pro2.Manual_Option_Base_Price__c;
+                        //ContLO.Manual_Option_Base_Price__c = pro2.Manual_Option_Base_Price__c;
                     }
                     if(CloneId != null && CloneId !='' ){
                         ContLO.Quote__c = CloneId;

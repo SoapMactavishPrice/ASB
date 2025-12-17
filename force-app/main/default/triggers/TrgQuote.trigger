@@ -701,7 +701,7 @@ UpdateQuoteRecords.add(qt);
                 }
             }
             
-            List<Contract> qlist = new List<Contract>();
+        /*    List<Contract> qlist = new List<Contract>();
             if(qIdmap.size() > 0){
                 List<Contract> conList = [select Id ,Quote__c,Expiration_Date__c from Contract where Quote__c IN : qIdmap.keyset() FOR UPDATE];
                 if(conList.size() > 0){
@@ -747,7 +747,7 @@ UpdateQuoteRecords.add(qt);
             
             if(opplist.size() > 0){
                 update opplist;
-            }
+            } */
         }
     }
     

@@ -263,6 +263,7 @@ public class ReOpenQuoteFromContract {
                 string newQuote = '';
                 string oldQuote = '';
                 string pricebook = '';
+                String currencyIsoCode = '';
                 try{
                     
                     if(string.isNotBlank(conData.Quote__c)){
@@ -293,7 +294,8 @@ public class ReOpenQuoteFromContract {
                             
                             decimal exeRate = CommonData.getExchangeRate(objQuote.Opportunity.CurrencyISOCode);
                             //Id stQuote = Schema.SObjectType.quote.getRecordTypeInfosByName().get('Blank Quote').getRecordTypeId();
-                            pricebook = objQuote.Subsidiary__r.Price_Book__c;
+                            pricebook = objQuote.Pricebook2Id;
+                            currencyIsoCode = objQuote.CurrencyIsoCode;
                             Quote QuoteClone  = objQuote.clone(false, false, false, false);
                             QuoteClone.SHIP_To_Contact_Name__c = objQuote.SHIP_To_Contact_Name__c;  
                             //QuoteClone.RecordTypeId = stQuote; 
@@ -386,7 +388,7 @@ public class ReOpenQuoteFromContract {
                                                 // M1__c,M2__c,M3__c,M4__c
                                                 D1__c,D2__c,D3__c, List_Price__c
                                                   ,Rounding_Off_Digits__c FROM PriceBookEntry Where Product2.IsActive = TRUE AND 
-                                                  Pricebook2.id =:pricebook and IsActive=true AND Product2.id in:proIds]){
+                                                  Pricebook2.id =:pricebook AND CurrencyIsoCode = :currencyIsoCode AND IsActive=true AND Product2.id in:proIds]){
                                                       mapProductWisePriceEntry.put(eachPBE.Product2.Id,eachPBE);	                
                                                   }
                     
@@ -455,7 +457,7 @@ cli.Manual_Product_Code__c = pro1.Manual_Product_Code__c;
                             cli.Discount_Allowed_New__c = cli.Discount_Allowed_New__c;
                             decimal up;
                             up=mapProductWisePriceEntry.get(pro1.Product__c).UnitPrice;
-                            cli.Base_Price__c = (mapProductWisePriceEntry.get(pro1.Product__c).Base_Price__c*pro1.Quote__r.Exchange_Rate__c);
+                            cli.Base_Price__c = (mapProductWisePriceEntry.get(pro1.Product__c).Base_Price__c);
                             if(test.isRunningTest()){
                                 cli.List_Price__c=AddProducts.getListPrice(2, 1, 1, 1,1,
                                                                            1, cli.Quote__r.Additinal_Margin__c, Integer.valueof(mapProductWisePriceEntry.get(pro1.Product__c).Rounding_Off_Digits__c));
@@ -542,7 +544,7 @@ cli.Manual_Product_Code__c = pro1.Manual_Product_Code__c;
                                                     D1__c,D2__c,D3__c, List_Price__c,
                                                   Rounding_Off_Digits__c
                                                   FROM PriceBookEntry 
-                                                  WHERE Pricebook2Id IN (SELECT Id FROM PriceBook2  where  Pricebook2.id =:pricebook AND 
+                                                  WHERE Pricebook2Id IN (SELECT Id FROM PriceBook2  where  Pricebook2.id =:pricebook AND CurrencyIsoCode = :currencyIsoCode AND
                                                                          PriceBook2.IsActive = true)
                                                   AND Product2.IsACTIVE = true AND Product2.Family = 'Options' and Product2.id in:proIds]){mapProductWisePriceOptionEntry.put(eachPBE.Product2.Id,eachPBE);	                
                                                   }             
@@ -571,7 +573,7 @@ cli.Manual_Product_Code__c = pro1.Manual_Product_Code__c;
                             //                                                             mapProductWisePriceOptionEntry.get(pro2.Product__c).M2__c,mapProductWisePriceOptionEntry.get(pro2.Product__c).M3__c, mapProductWisePriceOptionEntry.get(pro2.Product__c).M4__c,
                             //                                                             1, Integer.valueof(mapProductWisePriceOptionEntry.get(pro2.Product__c).Rounding_Off_Digits__c));
                             ContLO.Manula_Option_List_Price__c = mapProductWisePriceOptionEntry.get(pro2.Product__c).List_Price__c;
-                            ContLO.Manual_Option_Base_Price__c = mapProductWisePriceOptionEntry.get(pro2.Product__c).Base_Price__c * pro2.Quote__r.Exchange_Rate__c;
+                            ContLO.Manual_Option_Base_Price__c = mapProductWisePriceOptionEntry.get(pro2.Product__c).Base_Price__c;
                             
                         }else{
                             if(pro2.P_D1__c!=null)

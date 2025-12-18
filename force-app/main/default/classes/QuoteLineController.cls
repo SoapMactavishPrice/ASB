@@ -1,3 +1,9 @@
+/***************************************************************
+ * FILENAME: QuoteLineController.cls
+ * DESCRIPTION: Discount Revision Lightning Web Component Apex Controller
+ * AUTHOR: Praveen Kumar S
+ * DATE: 18/11/2025
+ ***************************************************************/
 public with sharing class QuoteLineController {
     
     @AuraEnabled(cacheable=true)

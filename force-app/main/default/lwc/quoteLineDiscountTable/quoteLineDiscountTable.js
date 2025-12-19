@@ -487,7 +487,7 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
         ) {
             const raw = typeof value === 'string' ? value.trim() : value;
             const parsedValue = raw !== '' && raw !== null && raw !== undefined ? parseFormattedNumber(raw) : null;
-            value = roundToTwoDecimals(parsedValue);
+            value = parsedValue;
         }
 
         const rowIndex = this.tableData.findIndex((row) => row.id === rowId);

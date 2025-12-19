@@ -227,10 +227,11 @@
                     toastevent.fire();
                     // component.set("v.SaveHit",true);
                 } else {
+                    console.log('err', JSON.parse(JSON.stringify(err)));
                     component.set('v.showSpinner', false);
                     component.find('notifLib').showToast({
                         "variant": "error",
-                        "title": "Something went wrong!",
+                        "title": err[0].message.startsWith("The Opportunity Currency is already") ? "Currency Mismatch Error" : "Something went wrong!",
                         "message": err[0].message,
                     });
                 }
@@ -330,6 +331,7 @@
                 action.setCallback(this, function (response) {
                     
                     var quoteCreatedId = response.getReturnValue();
+                    var err = response.getError();
                     
                     console.log('calledCloned--!',quoteCreatedId,response.getState());
                     if (response.getState() == 'SUCCESS') {
@@ -374,13 +376,13 @@
                     }
                         
                     } 
-                    else {
-                        console.log('inside else',quoteCreatedId.error);
+                     else {
+                        console.log('err', JSON.parse(JSON.stringify(err)));
                         component.set('v.showSpinner', false);
                         component.find('notifLib').showToast({
                             "variant": "error",
-                            "title": "Something went wrong!",
-                            "message": quoteCreatedId.error, 
+                            "title": err[0].message.startsWith("The Opportunity Currency is already") ? "Currency Mismatch Error" : "Something went wrong!",
+                            "message": err[0].message,
                         });
                     }
                 });

@@ -126,7 +126,7 @@ public class QuoteCreationCMPController {
     @AuraEnabled
     public static String createBlankQuoteController(String QuoteName, String recordId, String currencyName, String cRate, String QuoteAdditionalMargin, String pricebookId) {
         
-        try{
+        // try{
             
         system.debug('QuoteName--->' + QuoteName);
         system.debug('RecordId---->' + recordId);
@@ -142,10 +142,21 @@ public class QuoteCreationCMPController {
         string Quoteid; 
         if(QuoteName != null && QuoteName != ''){
             
-           Opportunity opp = [SELECT Id, Account.Global_Region__c, Contact__c,Account.Global_SubRegion__c,Prepared_By__c,accountId FROM Opportunity WHERE Id = :recordId];
+           Opportunity opp = [SELECT Id, CurrencyIsoCode, Account.Global_Region__c, Contact__c,Account.Global_SubRegion__c,Prepared_By__c,accountId FROM Opportunity WHERE Id = :recordId];
             system.debug('opp.ContactId'+opp.Contact__c);
             Contact con = [SELECT Id, Email,Name FROM Contact WHERE Id = :opp.Contact__c limit 1];
            //Contact con = [SELECT Id, Email,Name FROM Contact WHERE AccountId = :opp.AccountId ];
+            String originalOppCurrency = opp.CurrencyIsoCode;
+            
+            if (currencyName != null) {
+                try {
+                    opp.CurrencyIsoCode = currencyName;
+                    update opp;
+                } catch (Exception e) {
+                    throw new AuraHandledException('The Opportunity Currency is already set to "' + originalOppCurrency + '", and one or more Quotes exist in the same currency');
+                }
+            }
+
             
             Quote ObjQuote = new Quote();
             ObjQuote.name = QuoteName;
@@ -225,10 +236,10 @@ public class QuoteCreationCMPController {
                 return  null;
             }
         
-        }catch(exception e){
-            system.debug('error is'+e.getMessage()+' line '+e.getLineNumber());
-             throw new AuraHandledException(e.getMessage());
-        }
+        // }catch(exception e){
+        //     system.debug('error is'+e.getMessage()+' line '+e.getLineNumber());
+        //      throw new AuraHandledException(e.getMessage());
+        // }
         
     }
     
@@ -251,7 +262,7 @@ public class QuoteCreationCMPController {
         String parentQuoteId = quoteToClone;
         String newlyClonedQuoteName = clonedQuoteName; 
         String oppId = recordId;
-         try{
+        //  try{
 
         //if(clonedQuoteName != null || clonedQuoteName !=''){
         if(!String.isBlank(newlyClonedQuoteName)){           
@@ -270,9 +281,18 @@ public class QuoteCreationCMPController {
             
             String opportunityId = oppId;
             Opportunity Oppty = new Opportunity();
-            Oppty =[select id, name,Zero_Cooling__c,Class__c,MFG_AT__c,APPLICATION__c from Opportunity where id = :oppId];  
+            Oppty =[select id, CurrencyIsoCode, name,Zero_Cooling__c,Class__c,MFG_AT__c,APPLICATION__c from Opportunity where id = :oppId];  
             
-            
+            String originalOppCurrency = Oppty.CurrencyIsoCode;
+
+            if (currencyName != null) {
+                try {
+                    Oppty.CurrencyIsoCode = currencyName;
+                    update Oppty;
+                } catch (Exception e) {
+                    throw new AuraHandledException('The Opportunity Currency is already set to "' + originalOppCurrency + '", and one or more Quotes exist in the same currency');
+                }
+            }
             
             //ObjQ.Discount__c=0;
             
@@ -896,11 +916,11 @@ public class QuoteCreationCMPController {
            /*}else{
             return result;
            } */ 
-         }catch(exception e){                
-                result.put('error',e.getMessage());
-                System.debug('Error::::'+e.getMessage());
-                //return result;
-            }
+        //  }catch(exception e){                
+        //         result.put('error',e.getMessage());
+        //         System.debug('Error::::'+e.getMessage());
+        //         //return result;
+        //     }
         System.debug('Error::::'+result);
              if(result !=null){
                  return result;

@@ -1,0 +1,61 @@
+<template>
+    <lightning-card title="Create Quote in Different Currency" icon-name="standard:quote">
+        <div class="slds-p-around_medium">
+            <template if:false={isLoading}>
+                <!-- Currency Selection -->
+                <lightning-combobox
+                    name="currency"
+                    label="Select Currency"
+                    value={selectedCurrency}
+                    placeholder="Choose a currency"
+                    options={currencyOptions}
+                    onchange={handleCurrencyChange}
+                    required>
+                </lightning-combobox>
+
+                <!-- Exchange Rate Display -->
+                <!-- <template if:true={selectedCurrency}>
+                    <div class="slds-m-top_medium">
+                        <lightning-input
+                            label="Exchange Rate"
+                            value={exchangeRate}
+                            disabled
+                            class="slds-m-bottom_small">
+                        </lightning-input>
+                        <p class="slds-text-color_weak slds-text-body_small">
+                            Exchange rate will be automatically applied
+                        </p>
+                    </div>
+                </template> -->
+
+                <!-- Action Buttons -->
+                <div class="slds-m-top_large">
+                    <lightning-button
+                        variant="brand"
+                        label="Save"
+                        title="Create Quote with Selected Currency"
+                        onclick={handleSave}
+                        disabled={isSaveDisabled}
+                        class="slds-m-right_small">
+                    </lightning-button>
+                    <lightning-button
+                        variant="neutral"
+                        label="Cancel"
+                        title="Cancel and Go Back"
+                        onclick={handleCancel}>
+                    </lightning-button>
+                </div>
+            </template>
+
+            <!-- Loading Spinner -->
+            <template if:true={isLoading}>
+                <div class="slds-is-relative" style="height: 100px;">
+                    <lightning-spinner
+                        alternative-text="Processing"
+                        size="medium">
+                    </lightning-spinner>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

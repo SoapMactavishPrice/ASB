@@ -42,14 +42,7 @@ public class AddProducts {
             }
         }
         
-        String pb;
-        if(quote.Pricebook2Id!=null)
-        {
-            pb=quote.Pricebook2Id;
-        }
-        else{
-            pb=[select id,name from pricebook2 where name='Standard Price Book'].id; //,Description__c,Pricing_Type__c,Discount_Level_2__c,Discount_Level_3__c,List_Price_Level_2__c,List_Price_level_3__c,Product2.Scope_of_Mold__c,Product2.Option_Type__c,Product2.Number_Of_Cavity_Mould__c,Discount__c,Product2.UOM__c,Product2.Plant__c,Product2.Option_No__c,Product2.Family,
-        }
+        String pb=quote.Pricebook2Id;
             // 
         system.debug('pb'+pb);
         system.debug('size'+prodId.size()+'Id'+prodId);

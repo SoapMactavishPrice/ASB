@@ -153,7 +153,7 @@ public class QuoteCreationCMPController {
                     opp.CurrencyIsoCode = currencyName;
                     update opp;
                 } catch (Exception e) {
-                    throw new AuraHandledException('The Opportunity Currency is already set to "' + originalOppCurrency + '", and one or more Quotes exist in the same currency');
+                    throw new AuraHandledException('The Opportunity Currency is already set to "' + originalOppCurrency + '", and one or more Quotes exist in the same currency, Salesforce does not allow creating a Quote in a different currency for this Opportunity. 👉 What you can do: Create a new Opportunity with the required currency, and Then create the Quote under that new Opportunity.');
                 }
             }
 
@@ -290,7 +290,7 @@ public class QuoteCreationCMPController {
                     Oppty.CurrencyIsoCode = currencyName;
                     update Oppty;
                 } catch (Exception e) {
-                    throw new AuraHandledException('The Opportunity Currency is already set to "' + originalOppCurrency + '", and one or more Quotes exist in the same currency');
+                    throw new AuraHandledException('The Opportunity Currency is already set to "' + originalOppCurrency + '", and one or more Quotes exist in the same currency, Salesforce does not allow creating a Quote in a different currency for this Opportunity. 👉 What you can do: Create a new Opportunity with the required currency, and Then create the Quote under that new Opportunity.');
                 }
             }
             
@@ -409,14 +409,8 @@ public class QuoteCreationCMPController {
             User_Setup__c u=[Select id,name,Subsidiari__c,Subsidiari__r.Price_Book__c,Subsidiari__r.Additional_Margin__c,Subsidiari__r.M1__c,
                              Subsidiari__r.D1__c,Subsidiari__r.D2__c,Subsidiari__r.Rounding_Off_Digits__c from User_Setup__c 
                              where user__c=:userinfo.getUserId() limit 1];
-            Quote quote=[select id,name,Language__c, Exchange_Rate__c from Quote where id=:parentQuoteId limit 1];
-            String pb;
-            if(u.Subsidiari__r.Price_Book__c!=null)
-            {
-                pb=u.Subsidiari__r.Price_Book__c;
-            }
-            else
-                pb=[select id,name from pricebook2 where name='Standard Price Book'].id;
+            Quote quote=[select id,name,Language__c, Exchange_Rate__c, Pricebook2Id from Quote where id=:parentQuoteId limit 1];
+            String pb = quote.Pricebook2Id;
             
             List<Pricebookentry> titleList3 = new List<Pricebookentry>([SELECT Product2.Id, Product2.Name,UnitPrice,Product2.Product_Number__c,
                                                                         Product2.Product_Type__c,Product2.ProductCode,
@@ -425,7 +419,7 @@ public class QuoteCreationCMPController {
                                                                         ,Rounding_Off_Digits__c, List_Price__c,
                                                                         Base_Price__c,Quantity__c,Product2.Description
                                                                         FROM PriceBookEntry Where Product2.IsActive = TRUE 
-                                                                        AND Pricebook2.id =: pb AND Product2.ProductCode != null 
+                                                                        AND Pricebook2.id =: pricebookId AND Product2.ProductCode != null AND CurrencyIsoCode = :currencyName
                                                                         AND Product2.Family = 'Items' 
                                                                         // AND M1__c != null and M2__c != null and M3__c != null and M4__c != null
                                                                         AND D1__c != null and D2__c != null and D3__c != null and Rounding_Off_Digits__c != null 
@@ -446,7 +440,7 @@ public class QuoteCreationCMPController {
             for(Quote_Line_Item_Custom__c pro1 : ObjQuoteLineItem){
                 String QLIid = pro1.Id;
                 Quote_Line_Item_Custom__c cli = new Quote_Line_Item_Custom__c();
-                cli.CurrencyIsoCode=pro1.CurrencyIsoCode;
+                cli.CurrencyIsoCode=currencyName;
                 if(pro1.Is_Manual__c == false){
                     cli.Sr_No__c = pro1.Sr_No__c;
                     cli.Application__c = Oppty.APPLICATION__c;
@@ -495,7 +489,9 @@ public class QuoteCreationCMPController {
                            //cli.List_Price__c=AddProducts.getListPrice(up, Decimal.valueOf(cRate), u.Subsidiari__r.D1__c, u.Subsidiari__r.D2__c, decimal.valueOf(QuoteAdditionalMargin),Integer.valueOf(u.Subsidiari__r.Rounding_Off_Digits__c));
                         //   cli.List_Price__c=AddProducts.getListPrice(up, Decimal.valueOf(cRate), mapProductWisePriceEntry.get(pro1.Product__c).M1__c, mapProductWisePriceEntry.get(pro1.Product__c).M2__c,mapProductWisePriceEntry.get(pro1.Product__c).M3__c,mapProductWisePriceEntry.get(pro1.Product__c).M4__c, decimal.valueOf(QuoteAdditionalMargin),Integer.valueOf(mapProductWisePriceEntry.get(pro1.Product__c).Rounding_Off_Digits__c));
                     //} else 
-                    cli.List_Price__c=pro1.List_Price__c;
+                    if (mapProductWisePriceEntry.containsKey(pro1.Product__c) && mapProductWisePriceEntry.get(pro1.Product__c).List_Price__c != null){
+                        cli.List_Price__c=mapProductWisePriceEntry.get(pro1.Product__c).List_Price__c;
+                    }
                     
                     if(pro1.Product_Name__c !=null){ 
                         cli.Product_Name__c = pro1.Product_Name__c; 
@@ -522,7 +518,9 @@ public class QuoteCreationCMPController {
                         cli.Base_Price__c  = Math.ceil(pro1.Base_Price__c/Integer.valueOf(pro1.Level_Of_Ceiling__c))*Integer.valueOf(pro1.Level_Of_Ceiling__c);
                     }*/
                     
-                    cli.Base_Price__c  = pro1.Base_Price__c;
+                    if (mapProductWisePriceEntry.containsKey(pro1.Product__c) && mapProductWisePriceEntry.get(pro1.Product__c).Base_Price__c != null) {
+                        cli.Base_Price__c  = mapProductWisePriceEntry.get(pro1.Product__c).Base_Price__c;
+                    }
                     
                     system.debug('dis'+pro1.Discount_Type__c+'  '+ pro1.Discount_in_Value__c+'  '+pro1.Discount__c+'  '+pro1.Discount_Allowed_New__c);
                     cli.Discount_Allowed_New__c = pro1.Discount_Allowed_New__c;
@@ -636,7 +634,7 @@ public class QuoteCreationCMPController {
                         cli.Cavity__c = pro1.Cavity__c; 
                     }
                     if(pro1.List_Price__c !=null){ 
-                        cli.List_Price__c = pro1.List_Price__c; 
+                        cli.List_Price__c = convert(pro1.List_Price__c, pro1.CurrencyIsoCode, currencyName);
                     }
                     if(pro1.Product_Name__c !=null){ 
                         cli.Product_Name__c = pro1.Product_Name__c; 
@@ -647,7 +645,7 @@ public class QuoteCreationCMPController {
                     }
                     if(pro1.Base_Price__c !=null)
                     {
-                        cli.Base_Price__c = pro1.Base_Price__c;
+                        cli.Base_Price__c = convert(pro1.Base_Price__c, pro1.CurrencyIsoCode, currencyName);
                     }                    
                     //cli.Discount__c = 0.00;
                     
@@ -679,9 +677,9 @@ public class QuoteCreationCMPController {
             }
             
             Map<Id, PriceBookEntry> mapProductWisePriceOptionEntry = new Map<Id, PricebookEntry>();
-            for(PriceBookEntry eachPBE : [SELECT Id, Product2.Id,unitprice,Base_Price__c,List_Price_Level_2__c,List_Price_level_3__c
+            for(PriceBookEntry eachPBE : [SELECT Id, Product2.Id,unitprice,Base_Price__c,List_Price_Level_2__c,List_Price_level_3__c, List_Price__c
                                           FROM PriceBookEntry 
-                                          WHERE Pricebook2Id =:pricebookId
+                                          WHERE Pricebook2Id =:pricebookId AND CurrencyIsoCode = :currencyName
                                           AND IsActive=true
                                           And Product2.id in:prodid
                                           AND Product2.IsACTIVE = true AND Product2.Family = 'Options']){
@@ -693,7 +691,7 @@ public class QuoteCreationCMPController {
             for(Quote_Line_Options__c pro2 :lstQuoteOption){
                 Quote_Line_Options__c ContLO =new Quote_Line_Options__c();              
                 ContLO.Quote_Line_Item_Custom__c  = MapofQuoteContract.get(pro2.Quote_Line_Item_Custom__c).id; 
-                ContLO.CurrencyIsoCode=pro2.CurrencyIsoCode;
+                ContLO.CurrencyIsoCode=currencyName;
                 if( pro2.Select_Option__c == false){
                     //ContLO.Level_Of_Ceiling__c = ContLO.Level_Of_Ceiling__c;
                     ContLO.Serial_Number__c = pro2.Serial_Number__c;
@@ -735,8 +733,8 @@ public class QuoteCreationCMPController {
                      //   ContLO.Manula_Option_List_Price__c = pro2.Manula_Option_List_Price__c; 
                     }  
                     
-                    if(pro2.Manula_Option_List_Price__c != null){
-                        ContLO.Manula_Option_List_Price__c = pro2.Manula_Option_List_Price__c; 
+                    if(mapProductWisePriceOptionEntry.containsKey(pro2.Product__c) && mapProductWisePriceOptionEntry.get(pro2.Product__c).List_Price__c != null){
+                        ContLO.Manula_Option_List_Price__c = mapProductWisePriceOptionEntry.get(pro2.Product__c).List_Price__c; 
                     }
                     
                     /*if(wrp1.Base_Price__c != null){
@@ -747,8 +745,8 @@ public class QuoteCreationCMPController {
                     //pro.Manual_Option_Base_Price__c = Math.ceil( pro.Manual_Option_Base_Price__c/Integer.valueOf(objquote.Subsidiary__r.Rounding_Off_Digits__c))*Integer.valueOf(objquote.Subsidiary__r.Rounding_Off_Digits__c);
                 }*/
                    
-                    if(pro2.Manual_Option_Base_Price__c !=null){
-                       ContLO.Manual_Option_Base_Price__c = pro2.Manual_Option_Base_Price__c;//*quote.Exchange_Rate__c); 
+                    if(mapProductWisePriceOptionEntry.containsKey(pro2.Product__c) && mapProductWisePriceOptionEntry.get(pro2.Product__c).Base_Price__c != null){
+                       ContLO.Manual_Option_Base_Price__c = mapProductWisePriceOptionEntry.get(pro2.Product__c).Base_Price__c;//*quote.Exchange_Rate__c); 
                     }
                     /*if(mapProductWisePriceOptionEntry.containsKey(pro2.Product__c))
                     {  
@@ -834,10 +832,10 @@ public class QuoteCreationCMPController {
                         ContLO.quantity__c = pro2.quantity__c;
                     }
                     if(pro2.Manula_Option_List_Price__c != null){
-                        ContLO.Manula_Option_List_Price__c = pro2.Manula_Option_List_Price__c;
+                        ContLO.Manula_Option_List_Price__c = convert(pro2.Manula_Option_List_Price__c, pro2.CurrencyIsoCode, currencyName);
                     }
                     if(pro2.Manual_Option_Base_Price__c != null){
-                        //ContLO.Manual_Option_Base_Price__c = pro2.Manual_Option_Base_Price__c;
+                        ContLO.Manual_Option_Base_Price__c = convert(pro2.Manual_Option_Base_Price__c, pro2.CurrencyIsoCode, currencyName);
                     }
                     if(CloneId != null && CloneId !='' ){
                         ContLO.Quote__c = CloneId;
@@ -1046,6 +1044,32 @@ public class QuoteCreationCMPController {
         us.Subsidiari=u.Subsidiari__c;
         us.lang=u.Default_Language__c;
         return us;
+    }
+
+    public static Decimal convert(Decimal amount, String fromIso, String toIso) {
+        // 1. Query active currencies
+        Map<String, CurrencyType> currencyMap = new Map<String, CurrencyType>();
+        for (CurrencyType ct : [SELECT IsoCode, ConversionRate, DecimalPlaces 
+                                FROM CurrencyType 
+                                WHERE IsActive = true]) {
+            currencyMap.put(ct.IsoCode, ct);
+        }
+
+        // 2. Validate input ISO codes
+        if (!currencyMap.containsKey(fromIso) || !currencyMap.containsKey(toIso)) {
+            throw new IllegalArgumentException('One or both ISO codes are inactive or invalid.');
+        }
+
+        CurrencyType fromCurrency = currencyMap.get(fromIso);
+        CurrencyType toCurrency = currencyMap.get(toIso);
+
+        // 3. Formula: (Amount / SourceRate) * TargetRate
+        // First step (amount / fromCurrency.ConversionRate) gets the value in Corporate Currency
+        Decimal corporateAmount = amount / fromCurrency.ConversionRate;
+        Decimal convertedAmount = corporateAmount * toCurrency.ConversionRate;
+
+        // 4. Round to the target currency's defined decimal places
+        return convertedAmount.setScale(toCurrency.DecimalPlaces, RoundingMode.HALF_UP);
     }
 
     @AuraEnabled

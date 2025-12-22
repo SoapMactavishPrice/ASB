@@ -231,7 +231,7 @@
                     component.set('v.showSpinner', false);
                     component.find('notifLib').showToast({
                         "variant": "error",
-                        "title": err[0].message.startsWith("The Opportunity Currency is already") ? "Currency Mismatch Error" : "Something went wrong!",
+                        "title": err[0].message.startsWith("The Opportunity Currency is already") ? "❌Currency Mismatch Error" : "Something went wrong!",
                         "message": err[0].message,
                     });
                 }
@@ -381,7 +381,7 @@
                         component.set('v.showSpinner', false);
                         component.find('notifLib').showToast({
                             "variant": "error",
-                            "title": err[0].message.startsWith("The Opportunity Currency is already") ? "Currency Mismatch Error" : "Something went wrong!",
+                            "title": err[0].message.startsWith("The Opportunity Currency is already") ? "❌Currency Mismatch Error" : "Something went wrong!",
                             "message": err[0].message,
                         });
                     }

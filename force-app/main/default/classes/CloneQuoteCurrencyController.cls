@@ -1,5 +1,3 @@
-
-
 /***************************************************************
  * FILENAME: CloneQuoteCurrencyController.cls
  * DESCRIPTION: Controller for cloning Quotes with different currency,

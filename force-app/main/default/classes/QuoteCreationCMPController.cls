@@ -634,7 +634,7 @@ public class QuoteCreationCMPController {
                         cli.Cavity__c = pro1.Cavity__c; 
                     }
                     if(pro1.List_Price__c !=null){ 
-                        cli.List_Price__c = convert(pro1.List_Price__c, pro1.CurrencyIsoCode, currencyName);
+                        cli.List_Price__c = ManualCurrencyConverter.convert(pro1.List_Price__c, pro1.CurrencyIsoCode, currencyName);
                     }
                     if(pro1.Product_Name__c !=null){ 
                         cli.Product_Name__c = pro1.Product_Name__c; 
@@ -645,7 +645,7 @@ public class QuoteCreationCMPController {
                     }
                     if(pro1.Base_Price__c !=null)
                     {
-                        cli.Base_Price__c = convert(pro1.Base_Price__c, pro1.CurrencyIsoCode, currencyName);
+                        cli.Base_Price__c = ManualCurrencyConverter.convert(pro1.Base_Price__c, pro1.CurrencyIsoCode, currencyName);
                     }                    
                     //cli.Discount__c = 0.00;
                     
@@ -832,10 +832,10 @@ public class QuoteCreationCMPController {
                         ContLO.quantity__c = pro2.quantity__c;
                     }
                     if(pro2.Manula_Option_List_Price__c != null){
-                        ContLO.Manula_Option_List_Price__c = convert(pro2.Manula_Option_List_Price__c, pro2.CurrencyIsoCode, currencyName);
+                        ContLO.Manula_Option_List_Price__c = ManualCurrencyConverter.convert(pro2.Manula_Option_List_Price__c, pro2.CurrencyIsoCode, currencyName);
                     }
                     if(pro2.Manual_Option_Base_Price__c != null){
-                        ContLO.Manual_Option_Base_Price__c = convert(pro2.Manual_Option_Base_Price__c, pro2.CurrencyIsoCode, currencyName);
+                        ContLO.Manual_Option_Base_Price__c = ManualCurrencyConverter.convert(pro2.Manual_Option_Base_Price__c, pro2.CurrencyIsoCode, currencyName);
                     }
                     if(CloneId != null && CloneId !='' ){
                         ContLO.Quote__c = CloneId;
@@ -1046,6 +1046,9 @@ public class QuoteCreationCMPController {
         return us;
     }
 
+    /**
+     * Deprecated
+     */
     public static Decimal convert(Decimal amount, String fromIso, String toIso) {
         // 1. Query active currencies
         Map<String, CurrencyType> currencyMap = new Map<String, CurrencyType>();

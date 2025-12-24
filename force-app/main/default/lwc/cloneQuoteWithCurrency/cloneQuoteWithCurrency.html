@@ -2,6 +2,24 @@
     <lightning-card title="Create Quote in Different Currency" icon-name="standard:quote">
         <div class="slds-p-around_medium">
             <template if:false={isLoading}>
+                <!-- Opportunity Name -->
+                <lightning-input
+                    label="Opportunity Name"
+                    value={opportunityName}
+                    onchange={handleOpportunityNameChange}
+                    required
+                    class="slds-m-bottom_small">
+                </lightning-input>
+
+                <!-- Quote Name -->
+                <lightning-input
+                    label="Quote Name"
+                    value={quoteName}
+                    onchange={handleQuoteNameChange}
+                    required
+                    class="slds-m-bottom_small">
+                </lightning-input>
+
                 <!-- Currency Selection -->
                 <lightning-combobox
                     name="currency"
@@ -10,23 +28,29 @@
                     placeholder="Choose a currency"
                     options={currencyOptions}
                     onchange={handleCurrencyChange}
-                    required>
+                    required
+                    class="slds-m-bottom_small">
                 </lightning-combobox>
 
-                <!-- Exchange Rate Display -->
-                <!-- <template if:true={selectedCurrency}>
-                    <div class="slds-m-top_medium">
-                        <lightning-input
-                            label="Exchange Rate"
-                            value={exchangeRate}
-                            disabled
-                            class="slds-m-bottom_small">
-                        </lightning-input>
-                        <p class="slds-text-color_weak slds-text-body_small">
-                            Exchange rate will be automatically applied
-                        </p>
-                    </div>
-                </template> -->
+                <!-- Exchange Rate -->
+                <lightning-input
+                    type="number"
+                    label="Exchange Rate for Manual Item/Options"
+                    value={exchangeRate}
+                    onchange={handleExchangeRateChange}
+                    disabled={isExchangeRateDisabled}
+                    step="any"
+                    min="0"
+                    placeholder="Manual Item/Option * Your Provided Exchange Rate"
+                    required
+                    class="slds-m-bottom_small">
+                </lightning-input>
+
+                <template if:true={isExchangeRateDisabled}>
+                    <p class="slds-text-color_weak slds-text-body_small slds-m-bottom_medium">
+                        Exchange rate is disabled (no manual items or options in this quote)
+                    </p>
+                </template>
 
                 <!-- Action Buttons -->
                 <div class="slds-m-top_large">

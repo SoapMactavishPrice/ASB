@@ -30,7 +30,7 @@ public with sharing class CloneQuoteCurrencyController {
      * Clone Quote with new currency and handle Opportunity/Opportunity Group
      */
     @AuraEnabled
-    public static ResponseWrapper cloneQuoteWithNewCurrency(String sourceQuoteId, String newCurrency, String exchangeRate) {
+    public static ResponseWrapper cloneQuoteWithNewCurrency(String sourceQuoteId, String newCurrency, String exchangeRate, String opportunityName, String quoteName) {
         ResponseWrapper response = new ResponseWrapper();
         
         try {
@@ -53,7 +53,7 @@ public with sharing class CloneQuoteCurrencyController {
             Id opportunityGroupId = handleOpportunityGroup(sourceOpp);
             
             
-            Opportunity clonedOpp = cloneOpportunity(sourceOpp, newCurrency, opportunityGroupId);
+            Opportunity clonedOpp = cloneOpportunity(sourceOpp, newCurrency, opportunityGroupId, opportunityName);
             insert clonedOpp;
             
             
@@ -65,7 +65,7 @@ public with sharing class CloneQuoteCurrencyController {
             
             Map<String, Object> cloneResult = QuoteCreationCMPController.cloneExistingQuote(
                 sourceQuoteId,
-                sourceQuote.Name,
+                quoteName,
                 newCurrency,
                 clonedOpp.Id,
                 exchangeRate,
@@ -76,8 +76,13 @@ public with sharing class CloneQuoteCurrencyController {
             );
             
             if(cloneResult.containsKey('Id')) {
+                String newQuoteId = (String)cloneResult.get('Id');
+                Quote clonedQuote = new Quote(Id = newQuoteId);
+                clonedQuote.Exchange_Rate_for_manual_item_option__c = Decimal.valueOf(exchangeRate);
+                update clonedQuote;
+                
                 response.success = true;
-                response.newQuoteId = (String)cloneResult.get('Id');
+                response.newQuoteId = newQuoteId;
                 response.newOpportunityId = clonedOpp.Id;
                 response.message = 'Quote and Opportunity cloned successfully';
             } else {
@@ -147,10 +152,10 @@ public with sharing class CloneQuoteCurrencyController {
     /**
      * Clone Opportunity with new currency
      */
-    private static Opportunity cloneOpportunity(Opportunity sourceOpp, String newCurrency, Id oppGroupId) {
+    private static Opportunity cloneOpportunity(Opportunity sourceOpp, String newCurrency, Id oppGroupId, String opportunityName) {
         Opportunity clonedOpp = sourceOpp.clone(false, false, false, false);
         
-        clonedOpp.Name = sourceOpp.Name;
+        clonedOpp.Name = opportunityName;
         clonedOpp.CurrencyIsoCode = newCurrency;
         clonedOpp.Opportunity_Group__c = oppGroupId;
         clonedOpp.StageName = sourceOpp.StageName;

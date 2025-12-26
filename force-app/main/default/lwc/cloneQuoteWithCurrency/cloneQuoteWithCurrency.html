@@ -1,5 +1,8 @@
 <template>
-    <lightning-card title="Create Quote in Different Currency" icon-name="standard:quote">
+    <lightning-card icon-name="standard:quote">
+        <h3 class="slds-text-heading_medium slds-text-align_center">
+            Create Quote in Different Currency
+        </h3>
         <div class="slds-p-around_medium">
             <template if:false={isLoading}>
                 <!-- Opportunity Name -->
@@ -45,6 +48,18 @@
                     required
                     class="slds-m-bottom_small">
                 </lightning-input>
+
+                <!-- Dynamic Calculation Example -->
+                <template if:false={isExchangeRateDisabled}>
+                    <div class="slds-box slds-box_xx-small slds-theme_shade slds-m-bottom_small">
+                        <p class="slds-text-body_small">
+                            <strong>Example:</strong> 1000 × <strong>{exchangeRate}</strong>
+                        </p>
+                        <p class="slds-text-body_small">
+                            <strong>Result:</strong> <span class="slds-text-color_success"><strong>{calculatedResult}</strong></span>
+                        </p>
+                    </div>
+                </template>
 
                 <template if:true={isExchangeRateDisabled}>
                     <p class="slds-text-color_weak slds-text-body_small slds-m-bottom_medium">

@@ -91,6 +91,11 @@ export default class CloneQuoteWithCurrency extends NavigationMixin(LightningEle
         return !this.selectedCurrency || !this.opportunityName || !this.quoteName || !this.exchangeRate || this.isLoading;
     }
 
+    get calculatedResult() {
+        const rate = parseFloat(this.exchangeRate) || 1;
+        return (1000 * rate).toFixed(2);
+    }
+
     handleSave() {
         if (!this.selectedCurrency) {
             this.showToast('Warning', 'Please select a currency', 'warning');

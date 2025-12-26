@@ -138,5 +138,94 @@ public class QuoteTriggerHandler {
             }
         }
     }
-    
+
+    public static void updateListPriceAndBasePriceUsingAdjustExchangeRate(List<Quote> quotes, Map<Id, Quote> oldMap) {
+        
+        if (quotes == null || quotes.isEmpty() || oldMap == null || oldMap.isEmpty()) {
+            return;
+        }
+
+        Map<Id, Quote> quoteMap = new Map<Id, Quote>();
+
+        for (Quote qt : quotes) {
+            if (qt == null || qt.Id == null) {
+                continue;
+            }
+            
+            Quote oldQuote = oldMap.get(qt.Id);
+            
+            if (oldQuote != null && 
+                qt.Adjust_Exchange_Rate_for_manual_item_opt__c != null && 
+                oldQuote.Adjust_Exchange_Rate_for_manual_item_opt__c != null &&
+                qt.Adjust_Exchange_Rate_for_manual_item_opt__c != oldQuote.Adjust_Exchange_Rate_for_manual_item_opt__c) {
+                quoteMap.put(qt.Id, qt);
+            }
+        }
+
+        if (quoteMap.isEmpty()) {
+            return;
+        }
+
+        List<Quote_Line_Item_Custom__c> quoteLineItems = [
+            SELECT Id, List_Price__c, Base_Price__c, Quote__c
+            FROM Quote_Line_Item_Custom__c
+            WHERE Quote__c IN :quoteMap.keySet() AND Is_Manual__c = true
+        ];
+
+        List<Quote_Line_Options__c> quoteLineOptions = [
+            SELECT Id, Manula_Option_List_Price__c, Manual_Option_Base_Price__c, Quote__c
+            FROM Quote_Line_Options__c
+            WHERE Quote__c IN :quoteMap.keySet() AND Select_Option__c = true
+        ];
+
+        if (quoteLineItems.isEmpty() && quoteLineOptions.isEmpty()) {
+            return;
+        }
+
+        if (!quoteLineItems.isEmpty()) {
+            for (Quote_Line_Item_Custom__c qli : quoteLineItems) {
+                if (qli == null || qli.Quote__c == null) {
+                    continue;
+                }
+                
+                Quote qt = quoteMap.get(qli.Quote__c);
+                
+                if (qt != null && qt.Adjust_Exchange_Rate_for_manual_item_opt__c != null) {
+                    if (qli.List_Price__c != null) {
+                        qli.List_Price__c = qli.List_Price__c * qt.Adjust_Exchange_Rate_for_manual_item_opt__c;
+                    }
+                    if (qli.Base_Price__c != null) {
+                        qli.Base_Price__c = qli.Base_Price__c * qt.Adjust_Exchange_Rate_for_manual_item_opt__c;
+                    }
+                }
+            }
+
+            if (!quoteLineItems.isEmpty()) {
+                update quoteLineItems;
+            }
+        }
+
+        if (!quoteLineOptions.isEmpty()) {
+            for (Quote_Line_Options__c qlo : quoteLineOptions) {
+                if (qlo == null || qlo.Quote__c == null) {
+                    continue;
+                }
+                
+                Quote qt = quoteMap.get(qlo.Quote__c);
+                
+                if (qt != null && qt.Adjust_Exchange_Rate_for_manual_item_opt__c != null) {
+                    if (qlo.Manula_Option_List_Price__c != null) {
+                        qlo.Manula_Option_List_Price__c = qlo.Manula_Option_List_Price__c * qt.Adjust_Exchange_Rate_for_manual_item_opt__c;
+                    }
+                    if (qlo.Manual_Option_Base_Price__c != null) {
+                        qlo.Manual_Option_Base_Price__c = qlo.Manual_Option_Base_Price__c * qt.Adjust_Exchange_Rate_for_manual_item_opt__c;
+                    }
+                }
+            }
+
+            if (!quoteLineOptions.isEmpty()) {
+                update quoteLineOptions;
+            }
+        }
+    }
 }

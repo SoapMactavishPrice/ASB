@@ -448,8 +448,8 @@ public class QuoteCreationCMPController {
                         cli.Product__c = pro1.Product__c; 
                     }
                     if(pro1.Product_Description__c !=null){ 
-                    cli.Product_Description__c = pro1.Product_Description__c; 
-                }
+                        cli.Product_Description__c = pro1.Product_Description__c; 
+                    }
                     if(pro1.Is_Manual__c !=null){ 
                         cli.Is_Manual__c = pro1.Is_Manual__c; 
                     }

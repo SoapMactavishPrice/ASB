@@ -700,4 +700,6 @@ trigger TrgQuote on Quote (After insert , After Update,Before Update )
         QuoteTriggerHandler.updateListPriceAndBasePriceUsingAdjustExchangeRate(Trigger.new, Trigger.oldMap);
     }
     
+    
+    
 }

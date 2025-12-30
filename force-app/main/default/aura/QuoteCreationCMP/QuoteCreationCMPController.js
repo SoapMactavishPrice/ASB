@@ -102,6 +102,16 @@
         var quoteId = selected.split('-')[0];
         
         console.log('selected value-->',selected);
+        
+        var parts = selected.split('-');
+        if(parts.length >= 5) {
+            var pricebookName = parts[parts.length - 1];
+            component.set("v.sourceQuotePricebookName", pricebookName);
+            console.log('Source Quote Pricebook:', pricebookName);
+        } else {
+            component.set("v.sourceQuotePricebookName", "");
+        }
+        
         setTimeout(function() {
             //helper.fetchSoldAndShipTo(component, event,quoteId);
         }, 200)

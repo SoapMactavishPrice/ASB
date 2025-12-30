@@ -9,28 +9,11 @@ Version  Date         Author             Remarks
 =======   ==========   =============  ==================================
 V1.1      7-14-2022   Amol Wagh      To generate QuoteNo and Auto assign Fy and Subsidiary
 V1.2      8-03-2022   Amol Wagh      Add exchange Rate REGION__c
+V1.3      12-30-2024  Updated        Added Pricebook2.Name to Quote query for Source Quote Pricebook display
 */
 
 
 public class QuoteCreationCMPController {
-    
-        
-     /*@AuraEnabled
-    public static Map<String, String> getSoldAndShipTo1(Id quoteId) {
-        system.debug('getSoldAndShipTo-->'+quoteId);
-        Quote q = [
-            SELECT Id, Sold_To__c, Ship_To__c 
-            FROM Quote 
-            WHERE Id = :quoteId 
-            LIMIT 1
-        ];
-
-        Map<String, String> result = new Map<String, String>();
-        result.put('Sold_To__c', q.Sold_To__c !=null ?q.Sold_To__c : null);
-        result.put('Ship_To__c', q.Ship_To__c !=null ?q.Ship_To__c : null);
-        system.debug('result-->'+result);
-        return result;
-    }*/
     
     @AuraEnabled
     public static map<string,object> IntialDataFetch(String RecId){
@@ -82,7 +65,7 @@ public class QuoteCreationCMPController {
         
         List<Quote> lstQt = new List<Quote>();
       
-        lstQt = [Select id,Name,region1__c,QuoteNumber,Additinal_Margin__c, QU_REVISION_NUMBER__c,AccountId, Account.Name ,Quote_Number__c
+        lstQt = [Select id,Name,region1__c,QuoteNumber,Additinal_Margin__c, QU_REVISION_NUMBER__c,AccountId, Account.Name ,Quote_Number__c, Pricebook2Id, Pricebook2.Name
                  from quote where Subsidiary__c=:objoppty.Subsidiary__c AND 
                  (Status ='CLOSE - SC CREATED' OR Status='RELEASED' OR Status='DISCARD/VOID' OR Status='CLOSE - REVISED' OR   Status='CANCELLED' OR   Status='CANCELLED AFTER PM' OR
                   Status='CLOSE - LOST' ) and Quote_Number__c != null and QU_REVISION_NUMBER__c != null
@@ -126,8 +109,6 @@ public class QuoteCreationCMPController {
     @AuraEnabled
     public static String createBlankQuoteController(String QuoteName, String recordId, String currencyName, String cRate, String QuoteAdditionalMargin, String pricebookId) {
         
-        // try{
-            
         system.debug('QuoteName--->' + QuoteName);
         system.debug('RecordId---->' + recordId);
         system.debug('cRate---->' + cRate);
@@ -145,7 +126,6 @@ public class QuoteCreationCMPController {
            Opportunity opp = [SELECT Id, CurrencyIsoCode, Account.Global_Region__c, Contact__c,Account.Global_SubRegion__c,Prepared_By__c,accountId FROM Opportunity WHERE Id = :recordId];
             system.debug('opp.ContactId'+opp.Contact__c);
             Contact con = [SELECT Id, Email,Name FROM Contact WHERE Id = :opp.Contact__c limit 1];
-           //Contact con = [SELECT Id, Email,Name FROM Contact WHERE AccountId = :opp.AccountId ];
             String originalOppCurrency = opp.CurrencyIsoCode;
             
             if (currencyName != null) {
@@ -216,15 +196,7 @@ public class QuoteCreationCMPController {
             Oppty = [select id,name,StageName,Contact__c from Opportunity where id=: recordId];
             Oppty.stageName = 'Under Quotation';
            
-            //try
-            //{
                 update Oppty;
-                
-            //}
-            //catch(Exception e)
-            //{
-              //  system.debug('exception--->' + e);
-            //}
             
             System.debug('Quoteid--->'+Quoteid);
             
@@ -235,11 +207,6 @@ public class QuoteCreationCMPController {
             }else{
                 return  null;
             }
-        
-        // }catch(exception e){
-        //     system.debug('error is'+e.getMessage()+' line '+e.getLineNumber());
-        //      throw new AuraHandledException(e.getMessage());
-        // }
         
     }
     
@@ -253,6 +220,7 @@ public class QuoteCreationCMPController {
         
         System.debug('addionalMargin --- >'+ QuoteAdditionalMargin);
         System.debug('**quoteToClone** '+quoteToClone);
+        System.debug('**currencyName** '+currencyName);
         System.debug('**clonedQuoteName** '+clonedQuoteName);
         System.debug('**recordId** '+recordId);
         System.debug('**cRate (Exchange Rate)** '+cRate);

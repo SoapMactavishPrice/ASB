@@ -26,6 +26,7 @@
     <aura:attribute name="AllowQuoteToCreate" type="Boolean" default="false"/>
     <aura:attribute name="pricebookOptions" type="List" />
     <aura:attribute name="selectedPricebook" type="String" />
+    <aura:attribute name="sourceQuotePricebookName" type="String" default="" description="Pricebook name of selected source quote" />
 
     <!--Aura Libraries/Components-->
     <lightning:notificationsLibrary aura:id="notifLib"/>
@@ -197,6 +198,9 @@
                             <c:MultiselectCombobox searchOnVal="true" options="{!v.cloneQuoteOptions}" value="{!v.selectedCloneQuote}" label="Clone From" cloneQuoteEvent="{!c.handleSelectedCloneQuote}"/>
                         </div>
                         <lightning:input aura:id="cloneQtName" class="slds-col slds-size_1-of-2" type="text" name="Quote Name" label="Quote Name" />
+                        
+                        <lightning:input disabled='true' aura:id="sourceQuotePricebook" class="slds-col slds-size_1-of-2" type="text" name="Source Quote Pricebook" label="Source Quote Pricebook" value="{!v.sourceQuotePricebookName}" style="padding-top: 7px;" />
+                        
 						<div class="slds-col slds-size_1-of-2 slds-m-top_small">
                         		<lightning:recordEditForm  objectApiName="Opportunity">
                                      <label>Currency</label>

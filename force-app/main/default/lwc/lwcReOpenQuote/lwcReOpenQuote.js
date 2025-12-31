@@ -69,6 +69,15 @@ export default class LwcReOpenQuote extends NavigationMixin(LightningElement) {
                 this.wrapList.push(element);
             });
 
+            // Check if all items have isShowCancel = false
+            const allCancelHidden = this.wrapList.every(item => item.isShowCancel === false);
+            
+            if (allCancelHidden) {
+                // Don't show the modal, directly proceed to save
+                this.isOpen = false;
+                this.saveProjects();
+            }
+
         })
     }
     @track OpenPopUp = false;
@@ -236,7 +245,7 @@ checkAllAreAcanclled(){
             this.showSpinner = false;
             for (let key in result) {
                 if (key == 'Id') {
-                    this.ShowToastMessage('Success', 'Quote Reopen Successfully !');
+                    this.ShowToastMessage('Success', 'Quote Reopened Successfully !');
                     this[NavigationMixin.Navigate]({
                         type: 'standard__recordPage',
                         attributes: {

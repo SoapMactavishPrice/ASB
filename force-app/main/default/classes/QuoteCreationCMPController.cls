@@ -72,7 +72,7 @@ public class QuoteCreationCMPController {
                 order by Quote_Number__c desc  ,QU_REVISION_NUMBER__c desc];
         Decimal AddionalMargin = objoppty.Subsidiary__r.Additional_Margin__c;
             system.debug('lstQt'+lstQt.size());
-        DataWrapper objDataWrapper  = new DataWrapper(objoppty,lstQt,ctype.ConversionRate, AddionalMargin, givePermission);
+        DataWrapper objDataWrapper  = new DataWrapper(objoppty, lstQt, 1, AddionalMargin, givePermission);
             system.debug('objDataWrapper'+objDataWrapper);
            result.put('data',objDataWrapper);
             return result;

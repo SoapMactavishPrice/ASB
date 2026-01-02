@@ -456,17 +456,8 @@ public class QuoteCreationCMPController {
                     system.debug('dis'+pro1.Discount_Type__c+'  '+ pro1.Discount_in_Value__c+'  '+pro1.Discount__c+'  '+pro1.Discount_Allowed_New__c);
                     cli.Discount_Allowed_New__c = pro1.Discount_Allowed_New__c;
                     cli.Discount_Type__c = pro1.Discount_Type__c;
-                    if(pro1.Discount_Type__c =='Percent'){
                     cli.Discount__c = pro1.Discount__c;
-                    }else{
-                        cli.Discount__c = null;
-                    }
-                    
-                    if(pro1.Discount_Type__c =='Value'){
                     cli.Discount_in_Value__c = pro1.Discount_in_Value__c;
-                    }else{
-                        cli.Discount_in_Value__c = null;
-                    }
                     system.debug('dis after'+cli.Discount_Type__c+'  '+ cli.Discount_in_Value__c+'  '+cli.Discount__c+''+cli.Discount_Allowed_New__c);
                     
                     if(pro1.Discount_Approval_Note__c != null){

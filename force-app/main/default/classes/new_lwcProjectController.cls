@@ -9,7 +9,7 @@ public with sharing class new_lwcProjectController {
         set<Id> conId = new set<Id>();
         conId.add(contLst.Id);
         if(string.isNotBlank(contLst.Original_Contract__c)){conId.add(contLst.Original_Contract__c);
-        }
+                                                           }
         system.debug('conId'+conId);
         Map<Id,Id> currentContractMap = new Map<Id,Id>();
         Map<Id,Id> masterContractMap = new Map<Id,Id>();
@@ -17,7 +17,7 @@ public with sharing class new_lwcProjectController {
         
         if(contLst != null){
             if(contLst.Expiration_Date__c < System.today()){result.put('Information','Contract is Expired');
-            }
+                                                           } 
             
         }
         
@@ -31,13 +31,13 @@ public with sharing class new_lwcProjectController {
         }else{
             if(contLst != null){
                 if(contLst.Total_Payment_Received_Roll_Up__c < contLst.Total_Advance_Required_In_Amount__c ){result.put('Warning','Project can be created if Advance Payment is received. Should Project be Created ?');
-                }
+                                                                                                            }
             }
             
             List<String> quoteIds = new List<String> ();
             if(string.isNotBlank(contLst.Project_Management_Quote_Id__c)){quoteIds= contLst.Project_Management_Quote_Id__c.split(',');
-            }else{quoteIds.add(contLst.Quote__c);
-            }
+                                                                         }else{quoteIds.add(contLst.Quote__c);
+                                                                              }
             
             Map<string,List<ProjectManageMent__c>> exiProjectMap = new Map<string,List<ProjectManageMent__c>>();
             Map<string,List<ProjectManageMent__c>> exiProjectMap1 = new Map<string,List<ProjectManageMent__c>>();
@@ -52,14 +52,14 @@ public with sharing class new_lwcProjectController {
                                                  //Quote_Name__c IN : quoteIds 
                                                  and Phase__c !='Cancelled' 
                                                  order by Contract_Line_Item__r.Original_SQ_No__c asc
-                                                 /*or Contract__c =:contLst.Master_Contract__c*/];
-            system.debug('pmList-->'+pmList.size());
+                                                 /*or Contract__c =:contLst.Master_Contract__c*/]; 
+            system.debug('pmList-->'+pmList.size());    
             for(ProjectManageMent__c pm : pmList){
                 string  key = pm.Project_Unique_No__c;//+'_'+pm.Contract_Line_Item__r.Original_SQ_No__c;
                 if(exiProjectMap.containsKey(key)){ exiProjectMap.get(key).add(pm);
-                }else {
-                    exiProjectMap.put(key,new List<ProjectManageMent__c>{pm});
-                }
+                                                  }else {
+                                                      exiProjectMap.put(key,new List<ProjectManageMent__c>{pm});
+                                                  }
             }
             
             system.debug('exiProjectMap'+exiProjectMap.size());
@@ -93,7 +93,7 @@ public with sharing class new_lwcProjectController {
                         wrp.YourPONumber =pmo.PO_No_to_HQ_3rd_Party__c;
                         wrp.YourPOIssueDate=pmo.PO_issued_date_to_HQ_3rd_Party__c;
                         wrapList.add(Wrp);
-                    }
+                    }                
                     List<ProjectManageMent__c> pmoList  = exiProjectMap.get(key);
                     Integer qty  = Integer.valueOf(obj.Quantity__c) - pmoList.size();
                     
@@ -122,7 +122,7 @@ public with sharing class new_lwcProjectController {
                         wrapList.add(Wrp1);
                     }
                     
-                }
+                }    
                 
                 else{
                     for(Integer i = 0 ; i < obj.Quantity__c ; i++){
@@ -134,7 +134,7 @@ public with sharing class new_lwcProjectController {
                         if(string.isBlank(obj.Product_Name_2__c)){
                             wrp.proName = obj.Product_Name__c+'('+string.valueOf(obj.LineNumber__c)+')';
                         }else{ wrp.proName = obj.Product_Name_2__c+'('+string.valueOf(obj.LineNumber__c)+')';
-                        }
+                             }
                         wrp.salesPrice = null;
                         wrp.proLineId = Null;
                         wrp.proNumber = null;
@@ -170,14 +170,14 @@ public with sharing class new_lwcProjectController {
             ObjCont = [select id,CurrencyIsoCode,REGION1__c,Expiration_Date__c,name,ExpirationDate__c,AccountId,Revision_Number__c,Country_Text__c,FY__c,SUBSIDARY__c,COUNTRY__c,REGION__c,ContractNumber,Quote__c,
                        Contact__r.name,DATE__c,SOLD_TO__r.name,SHIP_TO__c,SHIP_TO__r.name,SHIP_TO__r.Customer_Category__c,SHIP_TO__r.Global_Customer_ID__c, SOLD_TO__c,
                        INCO_TERMS__c,MFG_AT__c,TYPE__c,END_CUSTOMER_NAME__c,ADVANCE_PAYMENT__c,Total_Advance_Required_In_Amount__c, Opportunity__c,
-                       Opportunity__r.Source__c,PO_Number__c,PO_Date__c,Signed_SC_PO_receipt_date__c,Project_Management_Quote_Id__c,PO_No_from_customer__c,FY1__c,Subsidiary__c,Global_Region__c,Global_SubRegion__c from Contract where id = : ContractId];
+                       Opportunity__r.Source__c,PO_Number__c,PO_Date__c,Signed_SC_PO_receipt_date__c,Project_Management_Quote_Id__c,PO_No_from_customer__c,FY1__c,Subsidiary__c,Global_Region__c,Global_SubRegion__c from Contract where id = : ContractId];           
             List<wrapper> wrpJs =  new_lwcProjectController.parse(js);
             Integer totalQty = wrpJs.size();
             Map<Id,List<wrapper>> LineItemId = new Map<Id,List<wrapper>>();
             set<Id> ExistingProjectId = new  set<Id>();
             
             List<String> quoteIds = new List<String> ();
-            if(string.isNotBlank(ObjCont.Project_Management_Quote_Id__c)){
+            if(string.isNotBlank(ObjCont.Project_Management_Quote_Id__c)){  
                 quoteIds= ObjCont.Project_Management_Quote_Id__c.split(',');
                 system.debug('quoteIds-->'+quoteIds);
             }else{
@@ -190,11 +190,11 @@ public with sharing class new_lwcProjectController {
                 
                 if(wrp.isSelect && String.isBlank(wrp.proLineId) && !wrp.isDisabled) {
                     if(LineItemId.containsKey(wrp.LineNumberId)) {                        LineItemId.get(wrp.LineNumberId).add(wrp);
-                    } else {
-                        LineItemId.put(wrp.LineNumberId, new List<wrapper>{wrp});
-                    }
-                } else if(wrp.isSelect && String.isNotBlank(wrp.proLineId) && wrp.isDisabled) {                ExistingProjectId.add(wrp.proLineId);                     wrpJs.remove(i);                    i--;
-                }
+                                                                 } else {
+                                                                     LineItemId.put(wrp.LineNumberId, new List<wrapper>{wrp});
+                                                                 }
+                } else if(wrp.isSelect && String.isNotBlank(wrp.proLineId) && wrp.isDisabled) {                ExistingProjectId.add(wrp.proLineId);                     wrpJs.remove(i);                    i--; 
+                                                                                              }
             }
             
             
@@ -238,7 +238,7 @@ public with sharing class new_lwcProjectController {
             }
             
             if(pmglist.size() > 0){                update pmglist;
-            }
+                                  }
             
             
             system.debug('Test Payment' +ObjCont.ADVANCE_PAYMENT__c);
@@ -253,12 +253,12 @@ public with sharing class new_lwcProjectController {
             
             List<ProjectManagement__c> ObjProToNew = new  List<ProjectManagement__c>();
             //for(Contract_Line_Item__c ObjCli : conList){
-                
-                //string  key = ObjCli.Project_Unique_No__c;
-                //system.debug('key  --  '+key);
-                
-                if(test.isRunningtest()){
-                    ObjCont.Expiration_Date__c  = system.today().addDays(1);
+            
+            //string  key = ObjCli.Project_Unique_No__c;
+            //system.debug('key  --  '+key);
+            
+            if(test.isRunningtest()){
+                ObjCont.Expiration_Date__c  = system.today().addDays(1);
                 }
                 if(ObjCont.Expiration_Date__c >= System.today())
                 {
@@ -301,12 +301,12 @@ public with sharing class new_lwcProjectController {
                             }
                             
                             if(string.valueOf(ObjCli.Sr_No__c) != null){                                ObjPro.Sq_No__c =  ObjCli.Sr_No__c;
-                            }
+                                                                       }
                             if(ObjCli.LineNumber__c != null && ObjCli.LineNumber__c != ''){
                                 ObjPro.LINE_ITEM_NUMBER__c =  ObjCli.LineNumber__c;
                             }
                             if(ObjCont.FY__c != null && ObjCont.FY__c != ''){                                ObjPro.FY__c = ObjCont.FY__c;
-                            }
+                                                                            }
                             if(ObjCont.FY1__c != null){
                                 ObjPro.FY1__c =  ObjCont.FY1__c;
                             }
@@ -320,16 +320,16 @@ public with sharing class new_lwcProjectController {
                                 ObjPro.Contract__c = ObjCont.id;
                             }
                             if(ObjCont.SUBSIDARY__c != null && ObjCont.SUBSIDARY__c != ''){                                ObjPro.SUBSIDARIY__c = ObjCont.SUBSIDARY__c;
-                            }
+                                                                                          }
                             if(ObjCont.Subsidiary__c != null){
                                 ObjPro.Subsidiary__c =  ObjCont.Subsidiary__c;
-                            }
+                            }    
                             if(ObjCont.Country_Text__c != null && ObjCont.Country_Text__c != ''){                                ObjPro.COUNTRY__c = ObjCont.Country_Text__c;
-                            }
+                                                                                                }
                             if(ObjCont.REGION1__c != null && ObjCont.REGION1__c != ''){                                ObjPro.REGION__c = ObjCont.REGION1__c;
-                            }
+                                                                                      }
                             if(ObjCont.Contact__r.name != null){                                ObjPro.SALES_PERSON__c = ObjCont.Contact__r.name;
-                            }
+                                                               }
                             if(ObjCont.date__C != null){
                                 ObjPro.date__C = ObjCont.date__C;
                             }
@@ -342,49 +342,49 @@ public with sharing class new_lwcProjectController {
                             }
                             
                             if(ObjCont.SOLD_TO__c != null){                                ObjPro.Sold_to_party__c = ObjCont.SOLD_TO__c;
-                            }
+                                                          }
                             
                             if(ObjCont.INCO_TERMS__c != null && ObjCont.INCO_TERMS__c != ''){                                ObjPro.INCO_TERMS__c = ObjCont.INCO_TERMS__c;
-                            }
+                                                                                            }
                             if(ObjCli.Zero_Cooling__c != null && ObjCli.Zero_Cooling__c != ''){                                ObjPro.Zero_Cooling__c = ObjCli.Zero_Cooling__c;
-                            }
+                                                                                              }
                             if(ObjCli.Drawing_No__c != null && ObjCli.Drawing_No__c != ''){                                ObjPro.CONTAINER_DRG_NO__c = ObjCli.Drawing_No__c;
-                            }
+                                                                                          }
                             if(ObjCli.Dept_Collection_date__c != null){                                ObjPro.DEBT_COLLECTION_DATE__c = ObjCli.Dept_Collection_date__c;
-                            }
+                                                                      }
                             /*if(ObjCli.Payment_Terms__c != null && ObjCli.Payment_Terms__c != ''){
-                                ObjPro.PAYMENT_TERMS__c = ObjCli.Payment_Terms__c;
-                            }*/
+ObjPro.PAYMENT_TERMS__c = ObjCli.Payment_Terms__c;
+}*/
                             if(ObjCli.MFG_Location__c != null && ObjCli.MFG_Location__c != ''){                                ObjPro.MFG_AT__c = ObjCli.MFG_Location__c;
-                            }
+                                                                                              }
                             if(ObjCli.L_C__c != null && ObjCli.L_C__c != ''){                                ObjPro.LC_TERMS__c = ObjCli.L_C__c;
-                            }
+                                                                            }
                             if(ObjCli.APPLICATION__c != null && ObjCli.APPLICATION__c != ''){                                ObjPro.APPLICATION__c = ObjCli.APPLICATION__c;
-                            }
+                                                                                            }
                             if(ObjCli.CLASS__c != null && ObjCli.CLASS__c != ''){                             ObjPro.CLASS__c = ObjCli.CLASS__c;
-                            }
+                                                                                }
                             if(ObjCli.Description__c != null && ObjCli.Description__c != ''){                                ObjPro.COMMENT__c = ObjCli.Description__c;
-                            }
+                                                                                            }
                             if(ObjCont.TYPE__c != null && ObjCont.TYPE__c != ''){                                ObjPro.TYPE__c = ObjCont.TYPE__c;
-                            }
+                                                                                }
                             
                             if(ObjCont.Opportunity__c != null){
                                 ObjPro.SOURCE__c = ObjCont.Opportunity__r.Source__c;
                             }
                             
                             if(ObjCont.END_CUSTOMER_NAME__c != null && ObjCont.END_CUSTOMER_NAME__c != ''){                                ObjPro.END_USER__c = ObjCont.END_CUSTOMER_NAME__c;
-                            }
+                                                                                                          }
                             
                             if(ObjCli.Division__c != null && ObjCli.Division__c != ''){                                ObjPro.Division__c =  ObjCli.Division__c;
-                            }
+                                                                                      }
                             /*if(ObjCli.Product2Id__c != null){
-                                ObjPro.MATERIAL_CODE__c =  ObjCli.Product2Id__r.ProductCode;
-                            }
-                            if(ObjCli.Product2Id__c != null){
-                                ObjPro.MATERIAL_DESCRIPTIO__c =  ObjCli.Product2Id__r.Description;
-                            }*/
+ObjPro.MATERIAL_CODE__c =  ObjCli.Product2Id__r.ProductCode;
+}
+if(ObjCli.Product2Id__c != null){
+ObjPro.MATERIAL_DESCRIPTIO__c =  ObjCli.Product2Id__r.Description;
+}*/
                             //if(ObjCli.Quantity__c != null){
-                                ObjPro.QTY__c =  1;
+                            ObjPro.QTY__c =  1;
                             //}
                             if(ObjCli.Product2Id__c != null){
                                 system.debug('ObjCli.Product2Id__r.name --->>> ' + ObjCli.Product2Id__r.name);                                ObjPro.PRODUCT__c =  ObjCli.Product2Id__r.name;
@@ -393,14 +393,14 @@ public with sharing class new_lwcProjectController {
                                 ObjPro.PRODUCT__c = ObjCli.Product_Name_2__c;
                             }
                             if(ObjCli.Scope__c != null){                                ObjPro.SCOPE__c =  ObjCli.Scope__c;
-                            }
+                                                       }
                             if(ObjCli.Cavity__c != null){                                ObjPro.CAVITY__c =  ObjCli.Cavity__c;
-                            }
+                                                        }
                             if(ObjCli.QTY__c != null){                                ObjPro.QTY__c =  1;//ObjCli.QTY__c;
-                            }
+                                                     }
                             /*if(ObjCli.UnitPrice__c != null){
-                                ObjPro.UNIT_PRICE__c =  ObjCli.UnitPrice__c;
-                            }*/
+ObjPro.UNIT_PRICE__c =  ObjCli.UnitPrice__c;
+}*/
                             if(ObjCli.Total_Sales_Price2__c != null){
                                 ObjPro.TOTAL_PRICE__c =  ObjCli.Total_Sales_Price2__c /ObjCli.Quantity__c;
                             }
@@ -418,148 +418,148 @@ public with sharing class new_lwcProjectController {
                         }
                     }
                 }
-            //}
-            
-            system.debug('ObjProToNew'+ObjProToNew.size());
-            if(ObjProToNew.size() > 0){
-                insert ObjProToNew;
-            }
-            
-            map<id,Integer> contractLineItemAndQty=new map<id,Integer>();
-            AggregateResult[] groupedResults= [SELECT Contract_Line_Item__c, count(id) cLineCount FROM ProjectManagement__c 
+                //}      
+                
+                system.debug('ObjProToNew'+ObjProToNew.size());
+                if(ObjProToNew.size() > 0){
+                    insert ObjProToNew;
+                }
+                
+                map<id,Integer> contractLineItemAndQty=new map<id,Integer>();
+                AggregateResult[] groupedResults= [SELECT Contract_Line_Item__c, count(id) cLineCount FROM ProjectManagement__c 
                                                    where Contract_Line_Item__c=:LineItemId.keyset()  and Phase__c!='Cancelled' 
                                                    group BY Contract_Line_Item__c];
-            System.debug('groupedResults'+groupedResults);
-            for (AggregateResult ar : groupedResults)  {
-                contractLineItemAndQty.put((Id)ar.get('Contract_Line_Item__c'), (Integer)ar.get('cLineCount'));
-                System.debug('contractLineItemAndQty ' +contractLineItemAndQty);
-                
-            }
-            
-            List<Contract_Line_Item__c> objCliList = new List<Contract_Line_Item__c>();
-            for(Contract_Line_Item__c ObjCli : conList){
-                
-                if(ObjCont.Expiration_Date__c > System.today() && LineItemId.containsKey(ObjCli.Id)){
-                    if(contractLineItemAndQty.containskey(ObjCli.Id))
-                        ObjCli.Number_of_project_created__c = contractLineItemAndQty.get(ObjCli.Id)+1;
-                    else
-                        ObjCli.Number_of_project_created__c = 1;
-                    ObjCli.Project_Created__c = true;
+                System.debug('groupedResults'+groupedResults);
+                for (AggregateResult ar : groupedResults)  {
+                    contractLineItemAndQty.put((Id)ar.get('Contract_Line_Item__c'), (Integer)ar.get('cLineCount'));
+                    System.debug('contractLineItemAndQty ' +contractLineItemAndQty);
                     
-                    objCliList.add(ObjCli);
                 }
-            }
-            
-            if(objCliList.size() > 0){
-                update objCliList;
-            }
-            
-            //Map<Id,Integer> contractLineQuantity = new Map<Id,Integer>();
-            Map<Id,Contract> updateContractStatus = new Map<Id,Contract>();
-            /*AggregateResult[] groupedAllResults= [SELECT Contract__c, count(id) cLineCount FROM ProjectManagement__c where 
+                
+                List<Contract_Line_Item__c> objCliList = new List<Contract_Line_Item__c>();
+                for(Contract_Line_Item__c ObjCli : conList){
+                    
+                    if(ObjCont.Expiration_Date__c > System.today() && LineItemId.containsKey(ObjCli.Id)){
+                        if(contractLineItemAndQty.containskey(ObjCli.Id))
+                            ObjCli.Number_of_project_created__c = contractLineItemAndQty.get(ObjCli.Id)+1;
+                        else
+                            ObjCli.Number_of_project_created__c = 1;
+                        ObjCli.Project_Created__c = true;
+                        
+                        objCliList.add(ObjCli);
+                    }
+                }
+                
+                if(objCliList.size() > 0){
+                    update objCliList; 
+                }
+                
+                //Map<Id,Integer> contractLineQuantity = new Map<Id,Integer>(); 
+                Map<Id,Contract> updateContractStatus = new Map<Id,Contract>(); 
+                /*AggregateResult[] groupedAllResults= [SELECT Contract__c, count(id) cLineCount FROM ProjectManagement__c where 
 Contract__c=:ContractId    group BY Contract__c];
-            for (AggregateResult ar : groupedAllResults)  {
-                contractLineQuantity.put((Id)ar.get('Contract__c'), (Integer)ar.get('cLineCount'));
-            }*/
-            //system.debug('contractLineQuantity :::: > '+contractLineQuantity);
-            
-            if(Contractid !=null){
-                List<Contract> conelist =  [Select Id,Total_Quantity_Of_Products__c,Count_of_PM__c,(SELECT Id, Product_Name__c,Project_Created__c,Product_Name_2__c, LineNumber__c,Quantity__c
+for (AggregateResult ar : groupedAllResults)  {
+contractLineQuantity.put((Id)ar.get('Contract__c'), (Integer)ar.get('cLineCount'));
+}*/
+                //system.debug('contractLineQuantity :::: > '+contractLineQuantity);
+                
+                if(Contractid !=null){
+                    List<Contract> conelist =  [Select Id,Total_Quantity_Of_Products__c,Count_of_PM__c,(SELECT Id, Product_Name__c,Project_Created__c,Product_Name_2__c, LineNumber__c,Quantity__c
                                                                                                         FROM Contract_Line_Item__r where Cancelled__c =: false)
                                                 from contract
                                                 WHERE Id =: Contractid];
-                
-                if(conelist.size() > 0){
                     
-                    ReOpenQuoteFromContract.isbypassRule =  true;
-                    for(Contract obj :conelist)
+                    if(conelist.size() > 0){
                         
-                    {
-                        system.debug('TotalProgram'+TotalProgram);
-                        obj.Count_of_PM__c = TotalProgram;
-                        obj.Total_Quantity_Of_Products__c = totalQty;
-                        system.debug('obj.Count_of_PM__c-->'+obj.Count_of_PM__c);
-                        if(obj.Total_Quantity_Of_Products__c > obj.Count_of_PM__c){
-                            system.debug('inside obj-->'+obj.Count_of_PM__c);
-                            obj.Status = 'Converted to PM – Partial';
-                            updateContractStatus.put(obj.Id,obj);
-                        }else if(obj.Total_Quantity_Of_Products__c  == obj.Count_of_PM__c){
-                            system.debug('else obj-->'+obj.Count_of_PM__c);
-                            obj.Status = 'Converted to PM – Complete';
-                            updateContractStatus.put(obj.Id,obj);
+                        ReOpenQuoteFromContract.isbypassRule =  true;
+                        for(Contract obj :conelist)
+                            
+                        {
+                            system.debug('TotalProgram'+TotalProgram);
+                            obj.Count_of_PM__c = TotalProgram;
+                            obj.Total_Quantity_Of_Products__c = totalQty; 
+                            system.debug('obj.Count_of_PM__c-->'+obj.Count_of_PM__c);
+                            if(obj.Total_Quantity_Of_Products__c > obj.Count_of_PM__c){
+                                system.debug('inside obj-->'+obj.Count_of_PM__c);
+                                obj.Status = 'Converted to PM – Partial'; 
+                                updateContractStatus.put(obj.Id,obj);
+                            }else if(obj.Total_Quantity_Of_Products__c  == obj.Count_of_PM__c){
+                                system.debug('else obj-->'+obj.Count_of_PM__c);
+                                obj.Status = 'Converted to PM – Complete';
+                                updateContractStatus.put(obj.Id,obj);
+                            }
                         }
+                        
+                        if(updateContractStatus.size() > 0){
+                            update updateContractStatus.values();
+                        }
+                        result.put('Success','Project Management Created Successfully');
                     }
-                    
-                    if(updateContractStatus.size() > 0){
-                        update updateContractStatus.values();
-                    }
-                    result.put('Success','Project Management Created Successfully');
                 }
+                //result.put('status','true');
+                return result;
+                
             }
-            //result.put('status','true');
-            return result;
-            
+            catch(exception e){
+                result.put('Error',e.getMessage());
+                // result.put('status','false');
+                system.debug('err ' + e.getLineNumber() +' msg '+e.getMessage());
+                return result;
+            }
         }
-        catch(exception e){
-            result.put('Error',e.getMessage());
-            // result.put('status','false');
-            system.debug('err ' + e.getLineNumber() +' msg '+e.getMessage());
-            return result;
-        }
-    }
-    
-    @AuraEnabled
-    public static Map<string,Object> createUniqueNo(string conId){
         
-        Map<string,Object> result = new Map<string,Object>();
-        try{
+        @AuraEnabled
+        public static Map<string,Object> createUniqueNo(string conId){
             
-            //Quote qt = [SELECT Id, Project_Management_Quote_Id__c FROM Quote WHERE Id IN :projIds];
-            
-            List<Quote_Line_Item_Custom__c> lineItems = [
+            Map<string,Object> result = new Map<string,Object>(); 
+            try{
+                
+                //Quote qt = [SELECT Id, Project_Management_Quote_Id__c FROM Quote WHERE Id IN :projIds];
+                
+                List<Quote_Line_Item_Custom__c> lineItems = [
                     SELECT Id, Quote__c, Project_Unique_No__c, Product_Name__c, Product_Code__c, Manual_Product_Code__c
                     FROM Quote_Line_Item_Custom__c
                     WHERE Quote__c IN (Select Quote__c from Contract where Id=:conId) 
                     
-                ];
-            
-            List<Quote_Line_Item_Custom__c> toUpdate = new List<Quote_Line_Item_Custom__c>();
-            map<string,string> uniqueMap =new map<string,string>();
-            Map<String, Integer> uniquenessCounter = new Map<String, Integer>();
-            
-            for (Quote_Line_Item_Custom__c qle : lineItems) {
-                if (String.isBlank(qle.Project_Unique_No__c)) {
-                    String baseUniqueNo = '';
-                    
-                    if (String.isNotBlank(qle.Product_Name__c)) {
-                        baseUniqueNo += qle.Product_Name__c + '_';
-                    }
-                    if (String.isNotBlank(qle.Product_Code__c)) {
-                        baseUniqueNo += qle.Product_Code__c + '_';
-                    }
-                    if (String.isNotBlank(qle.Manual_Product_Code__c)) {
-                        baseUniqueNo += qle.Manual_Product_Code__c + '_';
-                    }
-                    
-                    // Use date for partial uniqueness
-                    baseUniqueNo += DateTime.now().format('dd_MM_yyyy_HH_mm_ss');
-                    
-                    // Track how many times this base ID has been seen
-                    Integer count = uniquenessCounter.containsKey(baseUniqueNo) ? uniquenessCounter.get(baseUniqueNo) + 1 : 1;
-                    uniquenessCounter.put(baseUniqueNo, count);
-                    
-                    // Append count to ensure uniqueness
-                    String finalUniqueNo = baseUniqueNo + '_' + String.valueOf(count);
-                    
-                    qle.Project_Unique_No__c = finalUniqueNo;
-                    toUpdate.add(qle);
-                } else {
-                    uniqueMap.put(qle.Id, qle.Project_Unique_No__c);
-                }
-            }
-            
-            
-            //if (!toUpdate.isEmpty()) {
+                ]; 
+                
+                List<Quote_Line_Item_Custom__c> toUpdate = new List<Quote_Line_Item_Custom__c>();
+                map<string,string> uniqueMap =new map<string,string>(); 
+                Map<String, Integer> uniquenessCounter = new Map<String, Integer>();
+
+for (Quote_Line_Item_Custom__c qle : lineItems) {
+    if (String.isBlank(qle.Project_Unique_No__c)) {
+        String baseUniqueNo = '';
+
+        if (String.isNotBlank(qle.Product_Name__c)) {
+            baseUniqueNo += qle.Product_Name__c + '_';
+        }
+        if (String.isNotBlank(qle.Product_Code__c)) {
+            baseUniqueNo += qle.Product_Code__c + '_';
+        }
+        if (String.isNotBlank(qle.Manual_Product_Code__c)) {
+            baseUniqueNo += qle.Manual_Product_Code__c + '_';
+        }
+
+        // Use date for partial uniqueness
+        baseUniqueNo += DateTime.now().format('dd_MM_yyyy_HH_mm_ss');
+
+        // Track how many times this base ID has been seen
+        Integer count = uniquenessCounter.containsKey(baseUniqueNo) ? uniquenessCounter.get(baseUniqueNo) + 1 : 1;
+        uniquenessCounter.put(baseUniqueNo, count);
+
+        // Append count to ensure uniqueness
+        String finalUniqueNo = baseUniqueNo + '_' + String.valueOf(count);
+
+        qle.Project_Unique_No__c = finalUniqueNo;
+        toUpdate.add(qle);
+    } else {
+        uniqueMap.put(qle.Id, qle.Project_Unique_No__c);
+    }
+}
+
+                
+                //if (!toUpdate.isEmpty()) {
                 update toUpdate;
                 for (Quote_Line_Item_Custom__c qle : toUpdate) {
                     uniqueMap.put(qle.Id,qle.Project_Unique_No__c);
@@ -572,7 +572,7 @@ Contract__c=:ContractId    group BY Contract__c];
                                                               AND Project_Unique_No__c=null];
                     for(Contract_Line_Item__c conLine : conLineList){
                         if(uniqueMap.containsKey(conLine.Quote_Line_Item_Name__c)){
-                            conLine.Project_Unique_No__c =uniqueMap.get(conLine.Quote_Line_Item_Name__c);
+                            conLine.Project_Unique_No__c =uniqueMap.get(conLine.Quote_Line_Item_Name__c);  
                             conLinetoUpdate.add(conLine);
                         }
                     }
@@ -583,92 +583,92 @@ Contract__c=:ContractId    group BY Contract__c];
                     
                 }
                 
-            //}
-            result.put('Message','Data Updated Successfully');
-            result.put('Status','Success');
-        }catch(exception e){
-            result.put('Message',e.getMessage());
-            result.put('Status','Failed');
+                //}
+                result.put('Message','Data Updated Successfully');
+                result.put('Status','Success');
+            }catch(exception e){
+                result.put('Message',e.getMessage());
+                result.put('Status','Failed');
+            }
+            return result;
         }
-        return result;
-    }
-    
-    
-    
-    
-    
-    Public static UserSetup getQuoteNumber()
-    {
-        //updated This logic to assign fy and Subsidiary
-        UserSetup us=new UserSetup();
-        Fiscal_Year_Master__c f=[select id,name from Fiscal_Year_Master__c where Active__c=true limit 1];
-        system.debug('f '+f);
-        Map<id,Unique_No__c> sMap=new Map<id,Unique_No__c>();
-        // Get Last Count
-        for(Unique_No__c u:[select id,name,Serial_No__c,Object_Name__c,Subsidiary__c,Fiscal_Year__c from Unique_No__c where Fiscal_Year__c=:f.id and 
-                                Object_Name__c='Project Management' For Update])
-        { sMap.put(u.Subsidiary__c,u);}
         
         
         
-        User_Setup__c u=[select id,name,User__c,Subsidiari__c,Subsidiari__r.name,Default_Language__c  from User_Setup__c where User__c =: Userinfo.getUserId()];
-        system.debug('f '+f);
-        system.debug('User_Setup__c '+u);
-        if(sMap.containskey(u.Subsidiari__c)){
-            Unique_No__c un=sMap.get(u.Subsidiari__c);
-            String temp='';
-            
-            for(Integer i=6;i>String.valueof(un.Serial_No__c+1).length();i--)
-            {temp=temp+'0';}
-            temp=temp+String.valueof(un.Serial_No__c+1);us.ContractNo='PRJ'+u.Subsidiari__r.name+'-'+temp;
-            un.Serial_No__c=un.Serial_No__c+1; sMap.put(u.Subsidiari__c,un);
-        }
-        else
+        
+        
+        Public static UserSetup getQuoteNumber()
         {
-            us.ContractNo='PRJ'+u.Subsidiari__r.name +'-'+'000001';
-            Unique_No__c un=new Unique_No__c();
-            un.Object_Name__c='Project Management';
-            un.Subsidiary__c=u.Subsidiari__c;
-            un.Fiscal_Year__c=f.id;
-            un.Serial_No__c=1;
-            sMap.put(u.Subsidiari__c,un);
+            //updated This logic to assign fy and Subsidiary
+            UserSetup us=new UserSetup();
+            Fiscal_Year_Master__c f=[select id,name from Fiscal_Year_Master__c where Active__c=true limit 1];
+            system.debug('f '+f);
+            Map<id,Unique_No__c> sMap=new Map<id,Unique_No__c>();
+            // Get Last Count
+            for(Unique_No__c u:[select id,name,Serial_No__c,Object_Name__c,Subsidiary__c,Fiscal_Year__c from Unique_No__c where Fiscal_Year__c=:f.id and 
+                                Object_Name__c='Project Management' For Update])
+            { sMap.put(u.Subsidiary__c,u);}
+            
+            
+            
+            User_Setup__c u=[select id,name,User__c,Subsidiari__c,Subsidiari__r.name,Default_Language__c  from User_Setup__c where User__c =: Userinfo.getUserId()];
+            system.debug('f '+f);
+            system.debug('User_Setup__c '+u);
+            if(sMap.containskey(u.Subsidiari__c)){
+                Unique_No__c un=sMap.get(u.Subsidiari__c);
+                String temp='';
+                
+                for(Integer i=6;i>String.valueof(un.Serial_No__c+1).length();i--)
+                {temp=temp+'0';}
+                temp=temp+String.valueof(un.Serial_No__c+1);us.ContractNo='PRJ'+u.Subsidiari__r.name+'-'+temp;
+                un.Serial_No__c=un.Serial_No__c+1; sMap.put(u.Subsidiari__c,un);
+            }
+            else
+            {
+                us.ContractNo='PRJ'+u.Subsidiari__r.name +'-'+'000001';
+                Unique_No__c un=new Unique_No__c();
+                un.Object_Name__c='Project Management';
+                un.Subsidiary__c=u.Subsidiari__c;
+                un.Fiscal_Year__c=f.id;
+                un.Serial_No__c=1;  
+                sMap.put(u.Subsidiari__c,un);
+            }
+            upsert sMap.values();
+            system.debug(' us.ContractNo '+ us.ContractNo);
+            us.FY=f.id;  
+            us.Subsidiari=u.Subsidiari__c;
+            return us;
         }
-        upsert sMap.values();
-        system.debug(' us.ContractNo '+ us.ContractNo);
-        us.FY=f.id;
-        us.Subsidiari=u.Subsidiari__c;
-        return us;
-    }
-    
-    
-    Public Class UserSetup {
-        public String FY;
-        Public String Subsidiari;
-        Public String ContractNo;
-    }
-    
-    public static List<wrapper> parse(string js){
-        return ((List<wrapper>)system.JSON.deserialize(js,List<wrapper>.class));
-    }
-    
-    
-    
-    public class wrapper{
-        public Id LineNumberId {get;set;}
-        public string key {get;set;}
-        public string LineNumberIdClone {get;set;}
-        public boolean isSelect{get;set;}
-        public Integer qty{get;set;}
-        public string p_currency {get;set;}
-        public string proName {get;set;}
-        public string proLineId {get;set;}
-        public string proNumber {get;set;}
-        public Date ExpectedSalesMonth {get;set;}
-        public string YourPONumber {get;set;}
-        public date YourPOIssueDate {get;set;}
-        public string LineNumber {get;set;}
-        public boolean isDisabled {get;set;}
-        public decimal salesPrice {get;set;}
         
+        
+        Public Class UserSetup {
+            public String FY;
+            Public String Subsidiari;
+            Public String ContractNo;
+        }
+        
+        public static List<wrapper> parse(string js){
+            return ((List<wrapper>)system.JSON.deserialize(js,List<wrapper>.class));
+        }
+        
+                                
+        
+        public class wrapper{
+            public Id LineNumberId {get;set;}
+            public string key {get;set;}
+            public string LineNumberIdClone {get;set;}
+            public boolean isSelect{get;set;}
+            public Integer qty{get;set;}
+            public string p_currency {get;set;}
+            public string proName {get;set;}
+            public string proLineId {get;set;}
+            public string proNumber {get;set;}
+            public Date ExpectedSalesMonth {get;set;}
+            public string YourPONumber {get;set;}
+            public date YourPOIssueDate {get;set;}
+            public string LineNumber {get;set;}
+            public boolean isDisabled {get;set;}
+            public decimal salesPrice {get;set;}
+            
+        }
     }
-}

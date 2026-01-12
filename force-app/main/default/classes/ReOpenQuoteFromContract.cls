@@ -2,16 +2,29 @@
 Created Rishikesh Korade.
 Desc: Used in VF Page to Revise the Quote.
 
-
-
 ----------------------------------------------------------------------
 Version  Date         Author             Remarks
 =======   ==========   =============  ==================================
 V1.1      26-08-2024   Rishikesh Korade      Re-OpenQuote
+V1.2      31-12-2024   Updated               Added getQuoteId method
 *********************************************/
 public class ReOpenQuoteFromContract {
     public static boolean isbypassRule = false;
     public static boolean isPassValidationRule = false;
+    
+    /**
+     * Get Quote Id from Contract - Added for scenario when no projects need amendment
+     */
+    @AuraEnabled
+    public static String getQuoteId(String contractId) {
+        try {
+            Contract cont = [SELECT Id, Quote__c FROM Contract WHERE Id = :contractId LIMIT 1];
+            return cont.Quote__c;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error retrieving Quote: ' + e.getMessage());
+        }
+    }
+    
     @AuraEnabled
     public static  string getProjectDetail(string CurrentId){
         Map<Id,Id> lmcMap = new Map<Id,Id>();

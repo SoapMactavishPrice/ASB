@@ -99,7 +99,7 @@ public class SaveQuoteAsPdf {
         if (qobj.Subsidiary__r.Name == 'ASI') {
             showOptionsModal = true;
         } else {
-            showOptionsModal = false;
+            showOptionsModal = true;
         }
     // show options modal on page load if there are options available
     }

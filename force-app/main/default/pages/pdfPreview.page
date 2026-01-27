@@ -171,9 +171,7 @@
                             <tbody>
                                 <apex:repeat value="{!terms}" var="qTerms">
                                     <tr>
-                                        <td class="section-4" style="text-align:justify;">
-                                            <apex:outputText value="{!qTerms.Content_2__c}" escape="false"/>
-                                        </td>
+                                        <td class="section-4" style="text-align:justify;"><apex:outputField value="{!qTerms.Content_2__c}"/></td>
                                     </tr>
                                 </apex:repeat>
                             </tbody>
@@ -621,9 +619,7 @@ escape="false" value="{!QLOpt.Description}">
                     </tr>
                     <apex:repeat value="{!gRemark}" var="remark">
                         <tr>
-                            <td class="section-4" style="text-align:justify;">
-                                <apex:outputText value="{!remark.Content_2__c}" escape="false"/>
-                            </td>
+                            <td class="section-4" style="text-align:justify;"><apex:outputField value="{!remark.Content_2__c}"/></td>
                         </tr> 
                     </apex:repeat>                            
                 </tbody>
@@ -715,9 +711,7 @@ escape="false" value="{!QLOpt.Description}">
                     </tr>
                     <apex:repeat value="{!gProvision}" var="provision">
                         <tr>
-                            <td class="section-4" style="text-align:justify;">
-                                <apex:outputText value="{!provision.Content_2__c}" escape="false"/>
-                            </td>
+                            <td class="section-4" style="text-align:justify;"><apex:outputField value="{!provision.Content_2__c}"/></td>
                         </tr>
                     </apex:repeat>
                 </tbody>

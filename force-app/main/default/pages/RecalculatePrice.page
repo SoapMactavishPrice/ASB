@@ -1,0 +1,5 @@
+<apex:page standardController="Quote" extensions="RelcalculateQuotePriceController" action="{!Recalculate}" lightningStylesheets="true">
+     <apex:form >
+                <apex:pageMessages ></apex:pageMessages>
+    </apex:form>
+</apex:page>

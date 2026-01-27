@@ -1,0 +1,24 @@
+<apex:page standardController="Quote" extensions="copyLineItem_Controller" lightningStylesheets="true" docType="html-5.0">
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageBlockSection columns="1">
+                <apex:pageMessages ></apex:pageMessages>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Choose Your Line Item">
+                
+                <apex:selectList value="{!strSelected}" multiselect="false" size="1" required="true">
+                    <apex:outputText value="Choose your Item from Here :  " />
+                    <apex:selectOptions value="{!options}" />
+                </apex:selectList>
+                
+                <tr>
+                    <td> <apex:outputText value="Total Copy of records : "/></td>
+                    <td><apex:input value="{!inputValue}" id="theTextInput" required="true"/></td>
+                    <td><apex:commandButton title="Copy" value="Copy" action="{!copyItems}"  /></td>
+                </tr>
+            </apex:pageBlockSection>
+            
+        </apex:pageBlock>
+        
+    </apex:form>
+</apex:page>

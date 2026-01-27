@@ -1,0 +1,14 @@
+<apex:page standardController="Quote" extensions="QuotePDFAttachment" lightningStylesheets="true" standardStylesheets="false" >
+    <apex:pageBlock >
+    	<apex:pageBlockTable value="{!lstAttachment}" var="att">
+        	<apex:column headerValue="Action">
+            	<apex:outputLink value="/servlet/servlet.FileDownload?file={!att.id}" title="View">
+                	View
+                </apex:outputLink>
+            </apex:column>
+            <apex:column value="{!att.Name}"/>
+            <apex:column value="{!att.createdby.name}"/>
+            <apex:column value="{!att.Createddate}"/>
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+</apex:page>

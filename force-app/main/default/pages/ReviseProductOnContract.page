@@ -1,0 +1,2 @@
+<apex:page standardController="Quote" extensions="ReviseProductOnContract" action="{!UpdateProductOnContract}" lightningStylesheets="true">
+</apex:page>

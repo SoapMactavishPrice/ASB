@@ -1,0 +1,1056 @@
+<!--
+vf Page which rendered as pdfPreview when we click on create pdf Button
+Created By-Kartik Bindal
+-->
+<apex:page standardController="Quote" extensions="SaveQuoteAsPdf" showHeader="false" applyHtmlTag="false" applyBodyTag="false" >
+    <!--<apex:pageBlock >-->
+    <head>
+        <title>{!ObjAccount.name} R{!ObjQuote.QU_REVISION_NUMBER__c}</title>
+        <style type="text/css" media="print">
+            
+            
+            @page {size: A4 portrait; margin-top: 20px; margin-right: 20px; margin-bottom: 40px; margin-left: 60px;}
+            @page {
+            @bottom-center {
+            
+            content: "Page " counter(page) " of " counter(pages);
+            }
+            }
+            
+            .repeatTableFooter{-fs-table-paginate: paginate;}
+            div.break {page-break-before:always;}
+            
+            .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            color: black;
+            font-size: 13px;
+            text-align: center;
+            }
+            
+            
+            
+            
+        </style>
+        
+    </head>
+    <apex:form >
+        <body>
+            <div style="overflow-x: auto;">
+                <div style = "position:relative; top:-21px;">
+                    <table width="100%" border="0" style="font-family: Helvetica,Arial,Roboto,RobotoDraft,sans-serif;padding: 0;font-size: 14px">
+                        <thead>
+                            <td valign="top" style="text-align: center,top;width: 0%;">
+                                <apex:image value="{!$Resource.ASBPdfHeader_2}" style="width:700px;height:130px"/>
+                                <!--
+<apex:image value="{!$Resource.Asb_Logo}" style="width: 170px;"/> 
+-->
+                            </td>
+                            <!--
+<td style="text-align: left;font-size: 10px;">
+<table style="border-left: 2px solid #333;padding: 10px;float:right;width:60%; height:30%;">
+<tbody>
+<tr>
+<td>
+<h4 style="margin: 0;">ASB INTERNATIONAL PVT.LTD (100% E.O.U)</h4>
+</td>
+</tr>
+<tr>
+<td>(An ISO 9001:2008 Certified Company)</td>
+</tr>
+<tr>
+<td>A Wholly Owned Subsidiary of <strong>NISSEI ASB MACHINE CO.LTD,JAPAN</strong></td>
+</tr>
+<tr>
+<td>Resigterd Office  Factory:</td>
+</tr>
+<tr>
+<td>E-9,MIDC Additional Ambarnath Industrial Area,Anand Nagar</td>
+</tr>
+<tr>
+<td>Ambarnath (East), District Thane - 421506, Maharastra, India,</td>
+</tr>
+<tr>
+<td><strong>Tel.:</strong>+91-251-2625000 / 6485070</td>
+</tr>
+<tr>
+<td><strong>Fax:</strong>+91-251-2625035 / 2625055</td>
+</tr>
+<tr>
+<td><strong>E-mail:</strong>mail@asbl.co.in Website : http://www.asbindia.com</td>
+</tr>
+<tr>
+<td><strong>CIN : U25209MH1997PTC134840</strong></td>
+</tr>
+</tbody>
+</table>
+</td>
+-->
+                            
+                        </thead>
+                    </table>
+                    <table width="100%">
+                        <tbody>
+                            <tr>
+                            </tr>
+                            <tr>
+                                <th colspan="2" style="font-size: 17px;text-align: center;"><u>QUOTATION</u></th>
+                            </tr>
+                            <tr>
+                                <td style="padding-top: 20px;font-size: 14px">Ref No. : ASB-{!ObjQuote.Quote_Number__c}-R{!ObjQuote.QU_REVISION_NUMBER__c}</td>
+                                <td align="right" style="padding-top: 20px;font-size: 14px;padding-right: 130px">
+                                    <apex:outputText value="{0,date,dd.MM.yyyy}" > Date: &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <apex:param value="{!ObjQuote.Quote_Release_Date__c}"/>
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="padding-top: 20px;">TO, </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"><strong>{!ObjAccount.name}</strong> </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">{!ObjAccount.ADDRESS_LINE_1__c}, {!ObjAccount.ADDRESS_LINE_2__c}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">{!ObjQuote.CityCustom__c}, {!ObjQuote.StateCustom__c} </td>
+                            </tr>
+                            <!-- <tr>
+<td colspan="2">{!ObjQuote.CityCustom__c} </td>
+</tr>-->
+                            <!-- <tr>
+<td colspan="2">{!ObjAccount.City__c} {!ObjAccount.Pin_Code__c}
+</td>
+</tr>-->
+                            <!--<tr>
+<td colspan="2" style="padding: 20px 0;"><strong> Attn : {!ObjQuote.Contact__r.name}</strong>
+</td>
+</tr>-->
+                            <tr>
+                                <td colspan="2" style="padding: 10px 0;">Dear Sir,</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">We (the Seller) have the pleasure of submitting you (the Buyer) the Quotation as
+                                    follows:
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table border="0" width="100%" style="margin-top: 5px;font-size: 12.5px; vertical-align:top;border-spacing:5px;">
+                        <tbody>
+                            <tr>
+                                <td style="width: 35%;vertical-align:top;">Place of Delivery </td>
+                                <td style="width: 5%;vertical-align:top;">:</td>
+                                <td style="width: 60%;vertical-align:top;"> Ex-Works our Factory at  Ambarnath, Thane, Maharashtra, India
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td style="width: 35%;vertical-align:top;">Time of Delivery </td>
+                                <td style="width: 5%;vertical-align:top;">:</td>
+                                <td style="width: 60%;vertical-align:top;"> Machine shall be ready within {!ObjQuote.Machine_Delivery__c} months and First trial sample of any Mold Order
+                                    shall be ready within {!ObjQuote.Mould_Delivery__c} months from the date of Confirmed Purhase Order /Sales Contract, 
+                                    subject to the receipt of timely approved design and advance payment. For machine &amp; mold, shipment/Dispatch from Seller's factory will be made, about one week after inspection concluded by the seller subject to receipt of full payment.  
+                                    Please note that above said timelines are tentative and based on certain assumption. Further, timelines mentioned hereinabove are subject to change in case of unforeseen issues etc.
+
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td style="width: 35%;vertical-align:top;">Price Basis </td>
+                                <td style="width: 5%;vertical-align:top;">:</td>
+                                <td style="width: 60%;vertical-align:top;"> The prices offered in our quotation are Ex-Works.
+                                    Ambarnath, Thane excluding Packing Charges, GST, Freight and Transit Insurance.
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td style="width: 35%;vertical-align:top;">Taxes &#38; Duties </td>
+                                <td style="width: 5%;vertical-align:top;">:</td>
+                                <td style="width: 60%;vertical-align:top;"> The Buyer is required to pay extra on the quotation price to Seller. 
+                                    GST at actual as may be applicable and shall be payable before shipment, for Domestic sale 
+                                    from 100% Export Oriented Unit in India.
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td style="width: 35%;vertical-align:top;">Transportation </td>
+                                <td style="width: 5%;vertical-align:top;">:</td>
+                                <td style="width: 60%;vertical-align:top;">Freights shall be borne by the Buyer and shall be payable to seller before shipment. 
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td style="width: 35%;vertical-align:top;">Transit Insurance </td>
+                                <td style="width: 5%;vertical-align:top;">:</td>
+                                <td style="width: 60%;vertical-align:top;">To be arranged by / borne by the Buyer. At a request of Buyer, Insurance can be arranged 
+                                    by seller, subject to payment by Buyer before shipment.
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td style="width: 35%;vertical-align:top;">Packing Charges </td>
+                                <td style="width: 5%;vertical-align:top;">:</td>
+                                <td style="width: 60%;vertical-align:top;">Specific requirement of Wooden Case packing, if any, needs to be mentioned in Purchase
+                                    Order and cost of such packing shall be communicated by Seller and to be paid by the Buyer, before the shipment
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td style="width: 35%;vertical-align:top;">Terms of Payment </td>
+                                <td style="width: 5%;vertical-align:top;">:</td>
+                                <td style="width: 60%;vertical-align:top;"> Production shall start only after receipt of 30% advance payable along with the Confirmed
+                                    Purchase Order or Sales Contract. Balance amount including GST, Freight and Insurance is payable before shipment of the Order, 
+                                    from Seller's Factory in Ambarnath, Thane, Maharashtra, India.In case Buyer is entering into some Financial Arrangement for 
+                                    making payment against Ordered Machines / Moulds, same shall be communicated at least 15 days before dispatch, along with all
+                                    necessary purporting documents, which shall be required by seller.  
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td style="width: 35%;vertical-align:top;">Specifications </td>
+                                <td style="width: 5%;vertical-align:top;">:</td>
+                                <td style="width: 60%;vertical-align:top;"> As per catalogues unless otherwise agreed.
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td style="width: 35%;vertical-align:top;">Inspection </td>
+                                <td style="width: 5%;vertical-align:top;">:</td>
+                                <td style="width: 60%;vertical-align:top;">The Seller shall conduct the inspection in it&#39;s factory in  
+                                    accordance with the sellers standard inspection practice and sellers
+                                    inspection prior to shipment will be final.
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td style="width: 35%;vertical-align:top;">Validity </td>
+                                <td style="width: 5%;vertical-align:top;">:</td>
+                                <td style="width: 60%;vertical-align:top;"> Thirty days from the date above-written.
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td style="width: 35%;vertical-align:top;">Cancellation </td>
+                                <td style="width: 5%;vertical-align:top;">:</td>
+                                <td style="width: 60%;vertical-align:top;"> Cancellation charges are  as follows:  <br/>        
+                                    Within 30 days from the order - 30% of the basic value <br/>    
+                                    After 30 days from the order    - 100% of the basic value 
+                                    
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                   <!-- <table width="100%" style="padding-top: 4%;z-index:1;background-color:white;position:fixed;" >
+                        <tbody>
+                            <tr>
+                                <td colspan="3" style="border-top:2px solid #A9A9A9;text-align: right;padding-top: 7px;"></td>
+                            </tr>
+                            
+                            <tr>
+                                <td style="border-top:0px solid #A9A9A9;text-align: right;padding-top: 8px;">
+                                    <apex:image value="{!$Resource.ASB_ANAB}" style="width: 70px;hieght : 70px;"/>
+                                </td>
+                                <td style="border-top:0px solid #A9A9A9; text-align: center;padding-top: 8px;">
+                                    <strong>AN ISO 9001: 2008 CERTIFIED COMPANY</strong>
+                                </td>
+                                <td style="border-top:0px solid #A9A9A9;text-align: left;padding-top: 8px;">
+                                    <apex:image value="{!$Resource.UL_Certified}" style="width: 70px;hieght : 70px;"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>-->
+                </div>
+                <div class="break"/>
+                <div style = "position:relative; top:-11px;">
+                <table width="100%">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <apex:image value="{!$Resource.Asb_Logo}" height="40" width="110" /><br/>   <br/>
+                                <!-- td style="font-size: 40px; color:Blue; turquoise; font-weight: bold;">ASB</td -->
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:50%;"><strong>{!ObjAccount.name} </strong></td>
+                            <td style="width:50%;text-align: left; padding-left: 15px;">Quotation No. : ASB-{!ObjQuote.QuoteNumber}-R{!ObjQuote.QU_REVISION_NUMBER__c} </td>
+                        </tr>
+                        <tr>
+                            <td>{!ObjQuote.CityCustom__c}</td>
+                            <td style="width:50%;text-align: left; padding-left: 15px;">
+                                <apex:outputText value="{0,date,dd.MM.yyyy}" > Date: &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <apex:param value="{!TodayDate}"/>
+                                </apex:outputText>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                    <br/>
+                <table width="100%" border="0" style="padding-top: 20px;border-collapse: 0;font-size:12px">
+                    <tbody>
+                        <tr>
+                            <td style="text-align: center;font-size: 20px;" colspan="5"><strong>SCOPE OF SUPPLY &amp; PRICES</strong></td>
+                        </tr>
+                        
+                        <table style="border-collapse: collapse;font-size: 14px;border-spacing: 10px;">
+                            <tr>
+                                <th align="center" style="text-align: left; border-bottom: 1px solid #A9A9A9;width:13%;">Item</th>
+                                <th align="center" style="text-align: left; border-bottom: 1px solid #A9A9A9;width:40%;">Product Name</th>
+                                <!--<th align="center" style="text-align: left; border-bottom: 1px solid #A9A9A9;width:40%;">Description</th> 12, 25-->
+                                <th align="right" style="text-align: right; border-bottom: 1px solid #A9A9A9;width:17%;">Qty</th>
+                                
+                                <th align="right" style="text-align: right; border-bottom: 1px solid #A9A9A9;width:17%;">List Price(INR)</th>
+                                <th align="right" style="text-align: right; border-bottom: 1px solid #A9A9A9;width:10%;">Discount</th>
+                                <th align="right" style="text-align: right; border-bottom: 1px solid #A9A9A9;width:17%;">Total Price(INR)</th>
+                            </tr>
+                            <apex:repeat value="{!QlineItm}" var="qLine">
+                                <tr>
+                                    <td >{!qLine.Line_Item_Id__c}</td>
+                                    <td style="text-align: centre; color: #000 !important;">
+                                        {!qLine.Product_Description__c}<br/>
+                                        <!-- {!qLine.Description}<br/>
+Include Option* -->
+                                    </td>
+                                    <td align="left" style="text-align: right; color: #000 !important;">{!qLine.Quantity__c } {!qLine.UOM__c }</td>
+                                   
+                                    <td align="left" style="text-align: right; color: #000 !important;"> <apex:outputText value="{0, number,  ###,###,###,##0.00}">
+                                        <apex:param value="{!qLine.Total_List_Price__c}" />
+                                        </apex:outputText></td>
+                                     <td align="left" style="text-align: center; color: #000 !important;">{!qLine.Overall_Discount__c } % </td>
+                                    <td align="right" style="text-align: right; color: #000 !important;"><apex:outputText value="{0, number,  ###,###,###,##0.00}">
+                                        <apex:param value="{!qLine.Ceiling_Total_Sales_Price__c}" />
+                                        </apex:outputText></td>
+                                </tr>
+                                
+                                <!--   <tr>
+<th style="padding-left: 100px;padding-top: 10px;">Name</th>
+<th align="center" style="padding-left:50px;padding-top: 10px;text-align: center;">Option Price</th>
+<th align="center" style="padding-left: 50px;padding-top: 10px;text-align: center;">Discount</th>
+<th align="center" style="padding-left: 50px;padding-top: 10px;text-align: center;">Sub Total</th>
+</tr>  -->
+                                
+                                <apex:repeat value="{!qLine.Quote_Line_Options__r}" var="QLOpt">
+                                    <tr>
+                                        <td></td>
+                                        
+                                        <td align="left" style="font-size: 12px;">
+                                            <li style="list-style-type: square;  margin-bottom: 10px;">{!QLOpt.Description__c}</li>
+                                        </td>
+                                        <!--      <td align="right" style="text-align: right; font-size: 12px;">-{!QLOpt.Manual_Option_Base_Price__c }</td>
+<td align="right" style="text-align: right; font-size: 12px;">{!QLOpt.Discount__c }</td>
+<td align="right" style="font-size: 12px;">{!QLOpt.Final_Price__c }</td> -->
+                                        <!--<td></td>
+                                        <td></td>-->
+                                        
+                                    </tr>
+                                </apex:repeat>
+                                <!-- /table -->
+                                <!-- <tr>
+<td colspan="4" align="right" style="border: 1px solid #000; border-left: 0; border-right: 0;">Total Price = {!qLine.TotalPrice}</td>
+</tr> -->
+                                
+                            </apex:repeat>
+                            <td colspan="2" style="border: 1px solid #A9A9A9; border-left: 0; border-right: 0;">
+                                Total Ex-Works,Ambarnath,Thane,India Price.
+                            </td>
+                            <td colspan="4" align="right" style="border: 1px solid #A9A9A9; border-left: 0; border-right: 0;">
+                                Total Price : 
+                                <apex:outputText value="{0, number,  ###,###,###,##0.00}">
+                                    <apex:param value="{!ObjQuote.Quote_Total_Summary_of_Sales_Price__c}" />
+                                </apex:outputText>
+                                
+                            </td>
+                            <tr>
+                                <td colspan="6" align="left" style="border: 1px solid #A9A9A9; border-left: 0; border-right: 0;">
+                                    Price in Word:   {!no2words}  Rupees Only.
+                                </td>
+                            </tr>
+                        </table>
+                        <tr>
+                            <td colspan="6" style="text-align: right; font-size : 13px;">End of this page. Continued on next page..</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <footer>
+                    <div class="footer" name="footer">
+                        <table width="100%">
+                            <tbody>
+                                <!--<tr>
+<td colspan="3" style="text-align:center;padding-top: 5%;">Page : 3 of 5 </td>
+</tr>-->
+                                <tr>
+                                    <td colspan="3" style="border-top:2px solid #A9A9A9;text-align: right;padding: 5px;"></td>
+                                </tr>
+                                <tr>
+                                    
+                                    <td style="padding:5px;border-top:0px solid #A9A9A9;width: 30%;text-align:left;vertical-align:top;">
+                                        <p style="margin: 0;">Prepared By : {!ObjUser.name}</p>
+                                        <p style="margin: 0;">{!ObjUser.email}</p>
+                                    </td>
+                                    <td style="padding:5px;border-top:0px solid #A9A9A9;width: 40%;text-align: center;font-size:12px">
+                                        <img src="https://www.barcodesinc.com/generator/image.php?code={!ObjQuote.Quote_Number__c}&style=325&type=C128B&width=200&height=50&xres=1&font=3"/>
+                                        <br/>
+                                        <!--{!ObjQuote.Quote_Number__c}-->
+                                        <!-- apex:image value="https://www.barcodesinc.com/generator/image.php?code={!ObjQuote.QuoteNumber}&style=325&type=C128B&width=200&height=50&xres=1&font=3"/-->
+                                        <!--
+<apex:image value="{!$Resource.ASB_Barcode}" style="width: 140px;hieght : 60px"/>
+-->
+                                    </td>
+                                    <td style="text-align: right;padding: 5px;border-top:0px solid #A9A9A9;width: 30%;vertical-align:top;">F/MK/09D</td>
+                                    
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </footer>
+                <div class="break"/>    
+                <div style = "position:relative; top:-30px;">
+                    <table width="100%" style="padding-top: 5%;">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <apex:image value="{!$Resource.Asb_Logo}" height="40" width="110" /><br/>    <br/>
+                                    <!-- td style="font-size: 40px; color:Blue; turquoise; font-weight: bold;">ASB</td -->
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:50%;padding-top: 20px;"><strong>{!ObjAccount.name}</strong></td>
+                                <td style="width:50%;padding-top: 20px;text-align: left; padding-left: 15px;">Quotation No. :  ASB-{!ObjQuote.Quote_Number__c}-R{!ObjQuote.QU_REVISION_NUMBER__c} </td>
+                            </tr>
+                            <tr>
+                                <td style="width:50%;">{!ObjQuote.CityCustom__c}</td>
+                                <td style="width:50%;text-align: left; padding-left: 15px;">
+                                    <apex:outputText value="{0,date,dd.MM.yyyy}" > Date: &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <apex:param value="{!TodayDate}"/>
+                                    </apex:outputText>
+                                </td>
+                                
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                    <br/>
+                    
+                    <table width="100%" border="0" style="font-size:12px; position:relative; top:-30px;">
+                        <tbody>
+                            <tr>
+                                <td><strong>GENERAL REMARKS: </strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>1. &nbsp;&nbsp;&nbsp;&nbsp; TAXES &#38; DUTIES: </strong></td>
+                            </tr>
+                            <tr>
+                                <td>The prevailing rate of GST payable extra at actuals before Shipment on the Ex-Works prices quoted above. </td>
+                            </tr>
+                            <!-- <tr>
+<td style="padding-left:15px;"><strong>a)</strong> Basic Custom Duty @ 7.5% or 3.75% as applicable at the time of dispatch.<br/>
+Taxation for Intrastate<br/>
+- SGST @ 9% on Basic Price <br/>
+- CGST @ 9% on Basic Price<br/>
+OR<br/>
+Taxation for Interstate <br/>
+- IGST @ 18% on Basic Price <br/>
+</td>
+</tr>-->
+                            <tr>
+                                <td><strong>2. &nbsp;&nbsp;&nbsp;&nbsp; TRAINING: </strong></td>
+                            </tr>
+                            <tr>
+                                <td>We recommend that you send 1 engineer to our plant to attend our training during the    
+                                    molding trial on machine.  The expenses of his/her Travel, Lodging &#38; Boarding would be borne by the buyer.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>3. &nbsp;&nbsp;&nbsp;&nbsp; START-UP SERVICES: </strong></td>
+                            </tr>
+                            <tr>
+                                <td>This offer includes start up service of machine by our engineer. The visit of the engineer will be arranged for startup, 
+                                    only upon receipt of written communication from the buyer confirming that all the electrical, air, water, piping and wiring 
+                                    work (peripheral arrangements) has been duly done. The cost for piping, wiring, air, water arrangement shall be solely borne by 
+                                    the Buyer and does not form part of this offer. Further, any on site waiting period that may cause due to lack of proper 
+                                    peripheral arrangement shall be subject to charges at normal engineering rates.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>4. &nbsp;&nbsp;&nbsp;&nbsp; SCOPE OF SUPPLY: </strong></td>
+                            </tr>
+                            <tr>
+                                <td>Our Scope of Supply does not include provision of following equipment unless mentioned: </td>
+                            </tr>
+                            <tr>
+                                <td>- &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; PET Resin Dehumidifying Dryer </td>
+                            </tr>
+                            <tr>
+                                <td>- &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; Mold Chiller </td>
+                            </tr>
+                            <tr>
+                                <td>- &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; Mold Dehumidifier </td>
+                            </tr>
+                            <tr>
+                                <td>- &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; Dosing Unit for colored bottle </td>
+                            </tr>
+                            <tr>
+                                <td>- &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; Mold Temperature Controller </td>
+                            </tr>
+                            <tr>
+                                <td>- &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; Operation Air Compressor with Air Dryer &#38; Receiver </td>
+                            </tr>
+                            <tr>
+                                <td>- &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; Blow Air Compressor with Air Dryer &#38; Receiver </td>
+                            </tr>
+                            <tr>
+                                <td>- &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; Voltage Stablizer </td>
+                            </tr>
+                            <tr>
+                                <td>- &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; Hydraulic Oil for Machine </td>
+                            </tr>
+                            <tr>
+                                <td>- &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; PET Grinder </td>
+                            </tr>
+                            <tr>
+                                <td>- &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; Cooling Tower Water Supply </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>Our scope of supply does not include supply of any and all erection materials including     
+                                    water and air  piping, electrial cabling and control system for air, water and electricity supply 
+                                    for operation of Machine and Auxiliary equipment.  Our offer also does not include erection services.
+                                    
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>5. &nbsp;&nbsp;&nbsp;&nbsp; Final technical specifications and drawings of the molded products are subject to our confirmation
+                                    prior to concluding contract.</td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    6. &nbsp;&nbsp;&nbsp;&nbsp; Since the above  price is based on the information you have given us to date, the above written,
+                                    and the price is subject to change depending on the container's final design. In case the shape and
+                                    design of the required container changes, including logos on the Container body and/or bottom, the
+                                    price is subject to change according to the additional machining processes that become necessary.
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    7. &nbsp;&nbsp;&nbsp;&nbsp; In the event of any changes, additions or deletions on the container's logo, specifications
+                                    or design that are required by the buyer after signing of contract, all costs for such  
+                                    alteration works of any shall be borne by the buyer, unless such change is mutually     
+                                    agreed in writing by both parties before concluding the contract.
+                                    Additional samples will be charged extra unless agreed in writing by both parties before concluding the contract.
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    8. &nbsp;&nbsp;&nbsp;&nbsp; Specifications in the catalogues are subject to change for improvement without notice to Buyer.
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    9. &nbsp;&nbsp;&nbsp;&nbsp; <strong>Delivery :</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>The stated delivery time is subject to change dependent upon our receipt of full payment before dispatch, availability of your 
+                                    transporter for receipt of consignment at our works. If we are required to dispatch the goods on your behalf, we can arrange to 
+                                    do so by road transport to a destination as mentioned by you on your Purchase Order, on freight-to-pay basis. Any further changes
+                                    in the destination shall be mentioned atleast 15days before dispatch through modified Purchase Order.  Seller will not have any 
+                                    liability after the machine &amp; mold has been loaded on the truck. The freight charges contracted by us on your behalf will be
+                                    treated as negotiated under your authority and shall be final.
+                                </td>
+                            </tr>
+                            <tr>
+                                
+                                <td>10. &nbsp;&nbsp;&nbsp;&nbsp;  Some Machines may require 40ft. Open top containers for Shipment to your destination and same need to be arranged 
+                                    by you or Seller can arrange the same. However, the cost for arranging Container and Transportation to be borne by Buyer &amp;
+                                    same shall be payable to  Seller prior to Shipment.</td>
+                            </tr>
+                            <td></td>
+                            <td></td>
+                            <!-- <tr>
+<td><u>Mold/Mold Parts </u></td>
+</tr>
+<tr>
+<td><strong>a)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>Up to 30% within 30 days of ASB receiving the
+go ahead on the project with requisite advance and approved drawing in place. </td>
+</tr>
+<tr>
+<td><strong>b)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> 100% of basic value, if the order is cancelled
+after 30 days from the receipt of the order. </td>
+</tr>
+<tr>
+<td><u>Machine </u></td>
+</tr>
+<tr>
+<td><strong>a)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> 30% of the machine value would be applied as
+cancellation charges.
+</td>
+</tr>-->
+                          <!--  <tr>
+                                <td><strong>GENERAL PROVISION: </strong></td>
+                            </tr>
+                            <tr><td>
+                                The following terms and conditions shall apply to terms and conditions of the Quotation and the Sales contract unless otherwise specified on the face of the 
+                                Sales Contract and/or agreed in writing executed by duly authorized representative of Seller. If Buyer uses its own purchase form, 
+                                it is understood that such form is subject to and deemed to include the terms and conditions hereof.
+                                
+                                </td></tr>
+                            <tr>
+                                <td>
+                                    <strong>1. &nbsp;&nbsp;&nbsp;&nbsp; ACCEPTANCE OF ORDERS: </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Orders based on such Quotation/Sales Contract are subject to Seller's written acceptance and no contract shall be deemed to have been created until such acceptance has been delivered to Buyer by Seller.
+                                    Buyer shall make an advance payment as provided on the face of the Sales Contract. Buyer shall also provide Seller with the specifications of the product which Buyer intends to make using the machine (the "Machine") and/or the mold ("the Mold") manufactured by Seller.
+                                    If the specifications are going to be revised, the delivery schedule and sales amount specified on the face of the Sales Contract shall be re-quoted or revised.
+                                    Buyer may terminate the Sales Contract only before Seller begins designing and/or manufacturing the Machine or the Mold, provided that, even in such case, advance payment shall not be refunded to Buyer.
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>2. &nbsp;&nbsp;&nbsp;&nbsp; DELAYED PAYMENT: </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    In case Buyer delays in paying any amount under the Sales Contract by any cause or reason whatsoever,
+                                    Buyer shall be liable to pay to Seller an overdue interest of 14% p.a. over the period of such delay.
+                                    In case the L/C should get dishonored, Buyer shall be liable to pay to Seller an overdue interest of 14% p.a.
+                                    over the period from the L/C due date until the sum is paid by Buyer to Seller. 
+                                </td>
+                            </tr> -->
+                            
+                          <!--  <tr>
+                                <td><strong>3. &nbsp;&nbsp;&nbsp;&nbsp; TERMINATION: </strong></td>
+                            </tr>
+                            <tr>
+                                <td>Seller may terminate the Sales Contract forthwith by giving a written notice, if Buyer fails to make balance
+                                    payment or to open L/C (wherever applicable) required under the Sales Contract within the period
+                                    reasonably specified by Seller or sixty (60) days before the expected shipment date, whichever is earlier, or
+                                    if Buyer violates any provisions of the Sales Contract. In such case, Seller may claim compensation for all
+                                    damages to Seller in respect of the Sales Contract and the amount of advance payment paid to Seller by 
+                                    Buyer shall be forfeited.
+                                </td>
+                            </tr> -->
+                            
+                        </tbody>
+                    </table>
+                    
+                    <div class="footer" name="footer">
+                        <table width="100%">
+                            <tbody>
+                                <!--<tr>
+<td colspan="3" style="text-align:center;padding-top: 5%;">Page : 4 of 5 </td>
+</tr>-->
+                                <tr>
+                                    <td colspan="3" style="border-top:2px solid #A9A9A9;text-align: right;padding: 5px;"></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:5px;border-top:0px solid #A9A9A9;width: 30%;text-align:left;vertical-align:top;">
+                                        <p style="margin: 0;">Prepared By : {!ObjUser.name}</p>
+                                        <p style="margin: 0;">{!ObjUser.email}</p>
+                                    </td>
+                                    <td style="padding:5px;border-top:0px solid #A9A9A9;width: 40%;text-align: center;font-size:12px">
+                                        <img src="https://www.barcodesinc.com/generator/image.php?code={!ObjQuote.Quote_Number__c}&style=325&type=C128B&width=200&height=50&xres=1&font=3"/>
+                                        <br/>
+                                        <!--{!ObjQuote.QuoteNumber}-->
+                                        <!-- apex:image value="https://www.barcodesinc.com/generator/image.php?code={!ObjQuote.QuoteNumber}&style=325&type=C128B&width=200&height=50&xres=1&font=3"/-->
+                                        <!--
+<apex:image value="{!$Resource.ASB_Barcode}" style="width: 140px;hieght : 60px"/>
+-->
+                                    </td>
+                                    <td style="text-align: right;padding: 5px;border-top:0px solid #A9A9A9;width: 30%;vertical-align:top;">F/MK/09D</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="break"/>
+                <div style = "position:relative; top:-30px;">
+                    <table width="100%" style="padding-top: 5%;">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <apex:image value="{!$Resource.Asb_Logo}" height="40" width="110" /><br/>    <br/>
+                                    <!-- td style="font-size: 40px; color:Blue; turquoise; font-weight: bold;">ASB</td -->
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:50%;padding-top: 20px;"><strong>{!ObjAccount.name}  </strong></td>
+                                <td style="width:50%;padding-top: 20px;text-align: left; padding-left: 15px;">Quotation No. :  ASB-{!ObjQuote.Quote_Number__c}-R{!ObjQuote.QU_REVISION_NUMBER__c} </td>
+                            </tr>
+                            <tr>
+                                <td style="width:50%;">{!ObjQuote.CityCustom__c}</td>
+                                <td style="width:50%;text-align: left; padding-left: 15px;">
+                                    <apex:outputText value="{0,date,dd.MM.yyyy}" > Date: &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <apex:param value="{!TodayDate}"/>
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br/>
+                    <table width="100%" border="0" style="font-size:11.5px">   
+                        <tbody>
+                            
+                            <!--<tr>
+<td><strong>3. &nbsp;&nbsp;&nbsp;&nbsp; TERMINATION: </strong></td>
+</tr>
+<tr>
+<td>Seller may terminate the Sales Contract forthwith by giving a written notice, if Buyer fails to make balance
+payment or to open L/C (wherever applicable) required under the Sales Contract within the period
+reasonably specified by Seller or sixty (60) days before the expected shipment date, whichever is earlier, or
+if Buyer violates any provisions of the Sales Contract. In such case, Seller may claim compensation for all
+damages to Seller in respect of the Sales Contract and the amount of advance payment paid to Seller by 
+Buyer shall be forfeited.
+</td>
+</tr>-->
+                            
+                            <tr>
+                                <td><strong>GENERAL PROVISION: </strong></td>
+                            </tr>
+                            <tr><td>
+                                The following terms and conditions shall apply to terms and conditions of the Quotation and the Sales contract unless otherwise specified on the face of the 
+                                Sales Contract and/or agreed in writing executed by duly authorized representative of Seller. If Buyer uses its own purchase form, 
+                                it is understood that such form is subject to and deemed to include the terms and conditions hereof.
+                                
+                                </td></tr>
+                            <tr>
+                                <td>
+                                    <strong>1. &nbsp;&nbsp;&nbsp;&nbsp; ACCEPTANCE OF ORDERS: </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Orders based on such Quotation/Sales Contract are subject to Seller's written acceptance and no contract shall be deemed to have been created until such acceptance has been delivered to Buyer by Seller.
+                                    Buyer shall make an advance payment as provided on the face of the Sales Contract. Buyer shall also provide Seller with the specifications of the product which Buyer intends to make using the machine (the "Machine") and/or the mold ("the Mold") manufactured by Seller.
+                                    If the specifications are going to be revised, the delivery schedule and sales amount specified on the face of the Sales Contract shall be re-quoted or revised.
+                                    Buyer may terminate the Sales Contract only before Seller begins designing and/or manufacturing the Machine or the Mold, provided that, even in such case, advance payment shall not be refunded to Buyer.
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>2. &nbsp;&nbsp;&nbsp;&nbsp; DELAYED PAYMENT: </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    In case Buyer delays in paying any amount under the Sales Contract by any cause or reason whatsoever,
+                                    Buyer shall be liable to pay to Seller an overdue interest of 14% p.a. over the period of such delay.
+                                    In case the L/C should get dishonored, Buyer shall be liable to pay to Seller an overdue interest of 14% p.a.
+                                    over the period from the L/C due date until the sum is paid by Buyer to Seller. 
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>3. &nbsp;&nbsp;&nbsp;&nbsp; TERMINATION: </strong></td>
+                            </tr>
+                            <tr>
+                                <td>Seller may terminate the Sales Contract forthwith by giving a written notice, if Buyer fails to make balance
+                                    payment or to open L/C (wherever applicable) required under the Sales Contract within the period
+                                    reasonably specified by Seller or sixty (60) days before the expected shipment date, whichever is earlier, or
+                                    if Buyer violates any provisions of the Sales Contract. In such case, Seller may claim compensation for all
+                                    damages to Seller in respect of the Sales Contract and the amount of advance payment paid to Seller by 
+                                    Buyer shall be forfeited.
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>4. &nbsp;&nbsp;&nbsp;&nbsp; DELIVERY: </strong></td>
+                            </tr>
+                            <tr>
+                                <td>         The date of Invoice/ Bill of Lading shall be accepted as the date of shipment. Seller can appoint any 
+                                    steamship company, carrier or vessel for shipment. Neither Seller nor its Suppliers shall be responsible
+                                    or liable for failure in performing the obligation for shipment and any other obligations under the Sales
+                                    Contract if such failure is caused by Force Majeure, including but not limited to strikes, labor disputes,
+                                    floods, civil commotion, war ,riot, act of god, rules, laws, orders, restrictions, embargoes, quotas or 
+                                    actions of any government, foreign or domestic, or any agency or subdivision thereof, causalities, fires, 
+                                    accidents, shortage of transportation facilities, detention of goods by Tax/customs authorities; loss of goods
+                                    in public or private warehouses, or other casualty or contingency beyond Seller's reasonable control or the control of 
+                                    Seller's supplier or otherwise unavoidable. In any such event Seller shall have the right, at its election and without any
+                                    liability to Buyer, to (a) cancel all or any portion of the Sales contract, or (b) perform the Sales Contract as so 
+                                    restricted or modified to the extent determined by Seller in its sole and absolute discretion or (c)perform the 
+                                    Sales Contract within a reasonable time after the causes for the non performance or delay have ceased. The
+                                    delivery date or the quotation is only an estimate based on present scheduling requirements and requires the
+                                    Seller only to use its best efforts to meet such date.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>5. &nbsp;&nbsp;&nbsp;&nbsp; INSPECTION: </strong></td>
+                            </tr>
+                            <tr>
+                                <td>       Inspection by Seller shall be considered final, unless otherwise agreed in writing between Seller and Buyer, by
+                                    duly authorized representatives of the parties.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>6. &nbsp;&nbsp;&nbsp;&nbsp; INSTALLATION: </strong></td>
+                            </tr>
+                            <tr>
+                                <td>       Seller shall provide, upon Buyer's request, recommendable installation specifications and, where possible, a 
+                                    functional check of the machine after it has properly been installed by Buyer and prior to it being placed in service.
+                                    
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>7. &nbsp;&nbsp;&nbsp;&nbsp; INDEMNIFICATION AND DAMAGES: </strong></td>
+                            </tr>
+                            <tr>
+                                <td>Buyer shall use and shall require his employees to use all safety devices, guards, and proper safe operating
+                                    procedures as set forth in the machine's manual and specifications sheet.  Buyer shall not remove or modify 
+                                    any such devices or guards or warning signs.  Buyer shall not perform any changes and modifications to the 
+                                    machine (s), mold (s) and ancillary equipment (s) supplied by Seller without Seller's written recommendations 
+                                    or requests. Buyer shall not permit any person other than qualified operating personnel to remain within 
+                                    arm's length of any machine or ancillary equipment manufactured or supplied by Seller during operation thereof.  
+                                    If Buyer fails to strictly observe each and every one of the obligations set forth in this paragraph with regard to  
+                                    any products manufactured or supplied by Seller, Buyer agrees to indemnify and save Seller harmless 
+                                    from any liabilities and obligations incurred by Seller to persons injured directly or indirectly in connection 
+                                    with the operation of such products.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>8. &nbsp;&nbsp;&nbsp;&nbsp; WARRANTY:  </strong></td>
+                            </tr>
+                            <tr>
+                                <td>The Warranty period shall be as per Annexure-I. The scope of warranty which the Seller shall undertake is as
+                                    per the Seller's Guarantee Standards for Machine and Mold. The Warranty only extends to those parts of the 
+                                    Machine originally engineered or manufactured by Seller. With the exception of normal routine maintenance
+                                    service and repair parts and expendable items, Seller shall repair or replace, at its option, those original parts
+                                    which are found and acknowledged by Seller to be defective in manufacture or workmanship. This warranty is in
+                                    lieu of all other warranties, both express and implied, including WARRANTIES OF FITNESS FOR A PARTICULAR
+                                    PURPOSE or WARRANTIES OF MERCHANTABILITY. Neither Seller's agent nor Seller shall be responsible
+                                    for special or consequential damages.
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>9. &nbsp;&nbsp;&nbsp;&nbsp; SPECIFICATIONS:  </strong></td>
+                            </tr>
+                            <tr>
+                                <td>All working drawings or other material provided by Seller are for informational purpose only. Seller shall only be
+                                    responsible for the specifications contained therein. Seller reserves the right to make, at any time, such changes
+                                    in detail of design or construction as shall, in Seller's sole Judgment, constitute an improvement over former 
+                                    designs. Any proposals, prints, brochures, drawings or other information furnished to Buyer by Seller are intended
+                                    for confidential use by Buyer, shall remain the property of Seller; and shall not be used to detriment of Seller's
+                                    competitive position.
+                                    
+                                </td>
+                            </tr>
+                            
+                     <!--       <tr>
+                                <td><strong>10. &nbsp;&nbsp;&nbsp;&nbsp; MOLD TRIAL:  </strong></td>
+                            </tr>
+                            <tr>
+                                <td>Our responsibility in mold-trail in India is to make containers that meet the major dimensions (overall height, width,
+                                    depth, major neck dimensions), weight and capacity specified on our container drawing, unless otherwise agreed
+                                    upon.
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>11. &nbsp;&nbsp;&nbsp;&nbsp; INFRINGEMENT:  </strong></td>
+                            </tr>
+                            <tr>
+                                <td>Buyer shall indemnify Seller for, and hold Seller harmless from any liability or alleged liability for infringement 
+                                    of rights of third parties as a result of the use of any patent, trademark, design and/or copyright originating 
+                                    from or chosen by Buyer on products produced on the Machine. Buyer shall also defend Seller in any such 
+                                    action at Buyer's sole expense.  This provision only applies to the products produced on the Machine and in 
+                                    no way relieves Seller from full and sole responsibility for patents, trademarks, designs or copyrights relating 
+                                    to the Machine and manufacturing process.
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>12. &nbsp;&nbsp;&nbsp;&nbsp; ARBITRATION:  </strong></td>
+                            </tr>
+                            <tr>
+                                <td>Any dispute arising out of or in connection with this Quotation, including any question regarding its existence,
+                                    validity or termination, shall be referred to and finally resolved by arbitration in Mumbai, India in accordance
+                                    with the Arbitration Rules of India for the time being in force, which rules are deemed to be incorporated by 
+                                    reference in this clause. The language of the arbitration shall be in English.
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>13. &nbsp;&nbsp;&nbsp;&nbsp; ENTIRE AGREEMENT:  </strong></td>
+                            </tr>
+                            <tr>
+                                <td>The Sales Contract shall constitute the entire agreement between the parties. No statement subsequent to the
+                                    acceptance of the Sales Contract purporting to modify the said terms and conditions shall be binding upon the 
+                                    parties unless otherwise consented to in writing by duly authorized representative of Seller.
+                                    
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>14. &nbsp;&nbsp;&nbsp;&nbsp; GOVERNING LAWS:  </strong></td>
+                            </tr>
+                            <tr>
+                                <td>The Quotation shall be governed in all respects by the Laws of India.
+                                </td>
+                            </tr> -->
+                            <br/><br/>
+                         
+                            
+                            <!--   <tr>
+<td style="font-size:16px">ASB INTERNATIONAL PVT. LTD.  </td>
+</tr>
+<tr>
+<td style="font-size:16px">TEL. NO.  : {!ObjUser.MobilePhone}</td>
+</tr>
+<tr>
+<td style="font-size:14px">EMAIL ID : {!ObjUser.email}
+</td>
+</tr> -->
+                        </tbody>
+                    </table>
+                    <div class="footer" name="footer">
+                        <table width="100%">
+                            <tbody>
+                                <!--<tr>
+<td colspan="3" style="text-align:center;padding-top: 5%;">Page : 5 of 5 </td>
+</tr>-->
+
+                                <tr>
+                                    <td colspan="3" style="border-top:2px solid #A9A9A9;text-align: right;padding: 5px;"></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:5px;border-top:0px solid #A9A9A9;width: 30%;text-align:left;vertical-align:top;">
+                                        <p style="margin: 0;">Prepared By : {!ObjUser.name}</p>
+                                        <p style="margin: 0;">{!ObjUser.email}</p>
+                                    </td>
+                                    <td style="padding:5px;border-top:0px solid #A9A9A9;width: 40%;text-align: center;font-size:12px">
+                                        <img src="https://www.barcodesinc.com/generator/image.php?code={!ObjQuote.Quote_Number__c}&style=325&type=C128B&width=200&height=50&xres=1&font=3"/>
+                                        <br/>
+                                        <!--{!ObjQuote.QuoteNumber}-->
+                                        <!-- apex:image value="https://www.barcodesinc.com/generator/image.php?code={!ObjQuote.QuoteNumber}&style=325&type=C128B&width=200&height=50&xres=1&font=3"/-->
+                                        <!--
+<apex:image value="{!$Resource.ASB_Barcode}" style="width: 140px;hieght : 60px"/>
+-->                                        </td>
+                                    <td style="text-align: right;padding: 5px;border-top:0px solid #A9A9A9;width: 30%;vertical-align:top;">F/MK/09D</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="break"/>
+                <div style = "position:relative; top:-30px;">
+                    <table width="100%" style="padding-top: 5%;">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <apex:image value="{!$Resource.Asb_Logo}" height="40" width="110" /><br/>    <br/>
+                                    <!-- td style="font-size: 40px; color:Blue; turquoise; font-weight: bold;">ASB</td -->
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:50%;padding-top: 20px;"><strong>{!ObjAccount.name}  </strong></td>
+                                <td style="width:50%;padding-top: 20px;text-align: left; padding-left: 15px;">Quotation No. :  ASB-{!ObjQuote.Quote_Number__c}-R{!ObjQuote.QU_REVISION_NUMBER__c} </td>
+                            </tr>
+                            <tr>
+                                <td style="width:50%;">{!ObjQuote.CityCustom__c}</td>
+                                <td style="width:50%;text-align: left; padding-left: 15px;">
+                                    <apex:outputText value="{0,date,dd.MM.yyyy}" > Date: &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <apex:param value="{!TodayDate}"/>
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <br/>
+                    </table>
+                    <table width="100%" border="0" style="font-size:12px">   
+                        <tbody>
+                            <tr>
+                                <td><strong>10. &nbsp;&nbsp;&nbsp;&nbsp; MOLD TRIAL:  </strong></td>
+                            </tr>
+                            <tr>
+                                <td>Our responsibility in mold-trail in India is to make containers that meet the major dimensions (overall height, width,
+                                    depth, major neck dimensions), weight and capacity specified on our container drawing, unless otherwise agreed
+                                    upon.
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>11. &nbsp;&nbsp;&nbsp;&nbsp; INFRINGEMENT:  </strong></td>
+                            </tr>
+                            <tr>
+                                <td>Buyer shall indemnify Seller for, and hold Seller harmless from any liability or alleged liability for infringement 
+                                    of rights of third parties as a result of the use of any patent, trademark, design and/or copyright originating 
+                                    from or chosen by Buyer on products produced on the Machine. Buyer shall also defend Seller in any such 
+                                    action at Buyer's sole expense.  This provision only applies to the products produced on the Machine and in 
+                                    no way relieves Seller from full and sole responsibility for patents, trademarks, designs or copyrights relating 
+                                    to the Machine and manufacturing process.
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>12. &nbsp;&nbsp;&nbsp;&nbsp; ARBITRATION:  </strong></td>
+                            </tr>
+                            <tr>
+                                <td>Any dispute arising out of or in connection with this Quotation, including any question regarding its existence,
+                                    validity or termination, shall be referred to and finally resolved by arbitration in Mumbai, India in accordance
+                                    with the Arbitration Rules of India for the time being in force, which rules are deemed to be incorporated by 
+                                    reference in this clause. The language of the arbitration shall be in English.
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>13. &nbsp;&nbsp;&nbsp;&nbsp; ENTIRE AGREEMENT:  </strong></td>
+                            </tr>
+                            <tr>
+                                <td>The Sales Contract shall constitute the entire agreement between the parties. No statement subsequent to the
+                                    acceptance of the Sales Contract purporting to modify the said terms and conditions shall be binding upon the 
+                                    parties unless otherwise consented to in writing by duly authorized representative of Seller.
+                                    
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>14. &nbsp;&nbsp;&nbsp;&nbsp; GOVERNING LAWS:  </strong></td>
+                            </tr>
+                            <tr>
+                                <td>The Quotation shall be governed in all respects by the Laws of India.
+                                </td>
+                            </tr>
+                            
+                              <br/><br/>
+                            <tr>
+                                
+                                <td style="padding-top: 50px;font-size:16px"><b> {!ObjUser.name}</b> </td>
+                            </tr>
+                            <tr>
+                                <td style="font-size:16px">{!ObjUser.title}</td> <!-- SR. MANAGER - CENTRAL PLANNING -->
+                            </tr>
+                            <tr>
+                                <td style="font-size:16px">ASB INTERNATIONAL PVT. LTD.  </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </body>
+    </apex:form>
+    <!--</apex:pageBlock>-->
+</apex:page>

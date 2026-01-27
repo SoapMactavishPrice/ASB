@@ -1,0 +1,304 @@
+@media print {
+  html{
+    height:0%;
+  }
+  body{
+    height:99%;
+  }
+  }
+  .slds-modal__container {
+        width: 90% !important;
+        max-width: 100rem !important;;
+        }
+  
+  /* Quote Pdf CSS */
+  
+  /* page:1 */
+  .on_img_div{
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 45%;
+  font-family:Arial Unicode MS;
+  /*color:#126687;*/
+  color:#000000;
+  font-weight:bold;
+  }
+  
+  @page {
+  size: 8.5in 11.0in;
+  /* padding-top: 20px;   */
+  margin-right: 40px;
+  margin-left: 40px;
+  margin-top: 0px; 
+  page-break-inside:avoid;
+   margin-bottom: 2.8cm;
+  @top-left {
+  content: element(header);
+  }
+   @bottom-left {
+  content: element(footer);
+  }
+  }
+  
+  /* page:1 */
+  .page1{
+  page:second;
+  
+  }
+  
+  one{
+  }
+  
+  /* page:2 */
+  .page2{
+  page:second;
+  page-break-before: avoid;
+  }
+
+ .page2_a{
+     page:second_a;
+  }
+
+@page second_a{
+    size: 8.5in 11.0in;;
+    margin-top: 3.4cm;
+    margin-right: 40px;  
+    margin-left: 40px !important;
+   /* margin-bottom: 1.2cm; */
+    @top-left {
+        content: element(header);
+    }
+    @bottom-left {
+        content: element(footer);
+    }
+}
+  
+  
+  @page second{
+  page-break-inside:avoid;
+  size: 8.5in 11.0in;;
+  margin-top: 3.5cm;
+  margin-right: 40px;  margin-left: 40px !important;
+  margin-bottom: 2.8cm;
+  @top-left {
+  content: element(header);
+  }
+  @bottom-left {
+  content: element(footer);
+  }
+  }
+  
+  
+  .page3_4{
+  page:three;
+  page-break-after: auto;
+  }
+
+
+  @page three{
+  size: 8.5in 11.0in;
+  margin-bottom:2.8cm;
+  margin-top: 5.1cm;
+  margin-right: 40px;  margin-left: 40px;
+  @top-left {
+  content: element(header);
+  }
+  @bottom-left {
+  content: element(footer);
+  }
+  }
+  
+  
+  /* page: common to all pages */
+  .common_page_style{
+  page:common_All;
+  Page-break-before:auto; 
+  }
+  
+  @page common_All{
+  size: 8.5in 11.0in;
+  margin-bottom:2.2cm;
+  margin-top: 5.1cm;
+  margin-right: 40px;  margin-left: 40px;
+  @top-left {
+  content: element(header);
+  }
+  @bottom-left {
+  content: element(footer);
+  }
+  }
+  
+  div.header {
+  margin-top:0.1cm;
+  
+  position: running(header);
+  /* width: 100%; */
+  width: 720px;
+  /* height:120px; */
+  margin-left: 8px;
+  }
+  
+  
+  div.footer {
+  display: block;
+  margin-bottom:0.0cm;
+  
+  padding-top: 0px;
+  position: running(footer);
+  font-size: 12px;
+  
+  }
+  
+  .pagenumber:before {
+  content: counter(page);
+  }
+  .pagecount:before {
+  content: counter(pages);
+  }
+  
+  .repeatTableFooter{-fs-table-paginate: paginate;}
+  
+  .font_PDF{
+  font-family: Arial Unicode MS;
+  font-size: 14px;
+  }
+  .label_size{
+  font-size: 14px;
+  font-weight: bold;
+  }
+  
+  .qlineitemOptions span{
+  margin: 0 !important; padding: 0 !important; display: block;
+  }
+  .qlineitemOptions ul{
+  margin: 0 !important;padding-left: 13px;
+  }
+  .section-4 div{
+  margin-top: 0px;
+  margin-bottom:0px;
+  padding: 0px;
+  }
+  .section-4 div p{
+  padding: 0px;
+  margin: 0px;
+  }
+  .section-4 p{
+  margin: 0px;
+  padding: 0px;
+  }
+  /* .section-4 p span{
+    display: none;
+    } */
+  
+  .section-2 table{
+  width: 100%;
+  text-align: center;
+  margin: 0px;
+  }
+  .section-2 u{
+  color: black;
+  margin: 0px;
+  }
+  .section-3 table{
+  width: 100%;
+  text-align: center;
+  }
+  
+  .page2_Both_Check{
+       page:second_Both_Check;
+  }
+  
+  
+  @page second_Both_Check{
+  size: 8.5in 11.0in;
+  margin-top: 3.5cm;
+  margin-right: 40px;  margin-left: 40px !important;
+  margin-bottom: 5.5cm;
+  page-break-after: always;
+  @top-left {
+  content: element(header);
+  }
+  @bottom-left {
+  content: element(footer);
+  }
+  }
+  
+  .page2_Img-Text_Check{
+  page:second_Img-Text_Check;
+  }
+  
+  @page second_Img-Text_Check{
+  size: 8.5in 11.0in;
+  margin-top: 3.5cm;
+  margin-right: 40px; margin-left: 40px !important;
+  margin-bottom: 4cm;
+  @top-left {
+  content: element(header);
+  }
+  @bottom-left {
+  content: element(footer);
+  }
+  }
+  
+  .page3_4_Both_Check{
+  page:three_Both_Check;
+  page-break-after: auto;
+  }
+  
+  @page three_Both_Check{
+  size: 8.5in 11.0in;
+  margin-bottom: 5.5cm;
+  margin-top: 5.1cm;
+  margin-right: 40px;  margin-left: 40px;
+  
+  @top-left {
+  content: element(header);
+  }
+  @bottom-left {
+  content: element(footer);
+  }
+  }
+  
+  .page3_4_Img-Text_Check{
+  page:three_Img-Text_Check;
+  page-break-after: auto;
+  }
+  
+  @page three_Img-Text_Check{
+  size: 8.5in 11.0in;
+  margin-bottom: 4cm;
+  margin-top: 5.1cm;
+  margin-right: 40px;  margin-left: 40px;
+  @top-left {
+  content: element(header);
+  }
+  @bottom-left {
+  content: element(footer);
+  }
+  }
+  
+  .richText_ftr p{
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding: 0px;
+  } 
+  
+  /* .richText_ftr div{
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding: 0px;
+  } */
+  
+.scope-th {-fs-table-paginate: paginate;}
+
+
+.signspace{
+    max-height: 10rem !important; /* Adjust as needed */
+    position: relative; /* Establish positioning context */
+    /*background-color: #f0f0f0;  Example background color */
+    padding: 2px; /* Example padding */
+    width: 90%;
+}
+
+

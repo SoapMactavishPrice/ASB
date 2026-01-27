@@ -1,0 +1,111 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" 
+                controller = "Create_Finanace_Controller">
+    
+    <aura:html tag="style">
+        .slds-modal__container{
+        height : auto; width: 180%; max-width: 180vh;
+        }
+        .modal-body{
+        height : 85vh !important;
+        max-height: 85vh !important;
+        }
+        .slds-modal__footer{
+        display: inline !important;
+        }
+        .last{
+        text-align: left;
+        vertical-align: middle;
+        }
+    </aura:html>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name = "data" type = "list"/>
+    <aura:attribute name="selectedCount" type="integer" default="0"/>
+    
+    <div class="demo-only" style="padding:0.5rem;background:#16325c">
+        <div class="slds-text-color_inverse">Choose Your Line Items</div>
+    </div>
+    <br/>
+    <!--<div class="slds-grid slds-gutters">
+        <div class="slds-col">
+            <lightning:input aura:id="inputOne" type="number" label="Period of Loan(In Months)" placeholder="Enter Here..." value = ""/>
+        </div>
+        <div class="slds-col">
+            <lightning:input aura:id="inputTwo" type="text" label="Interest Rate" placeholder="Enter Here..." value = "" />
+        </div>
+    </div><br/>-->
+    <table id="myTable" class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered" >
+        <thead>
+            <tr class="slds-line-height_reset">
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Product"> </div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Name">PRODUCT NAME</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Name">LINE ITEM NAME</div>
+                </th>
+                <!--<th class="" scope="col">
+                    <div class="slds-truncate" title="Name">GRAND TOTAL</div>
+                </th>-->
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Name">BALANCE PAYMENT</div>
+                </th>
+                 <th class="" scope="col">
+                    <div class="slds-truncate" title="Name">CREDIT REQUIRED</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Name">Period of Loan(In Months)</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Name">Interest Rate</div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration items = "{!v.data}" var = "prods" indexVar="index">
+                <tr aria-selected="false" class="slds-hint-parent">
+                    <td scope="row">
+                        <ui:inputCheckbox value="{!prods.isChecked}" change="{!c.checkboxSelect}"/>
+                    </td>
+                    <td scope="row">
+                        <div class="slds-truncate" title="{!prods.Product2.Name}">
+                            {!prods.objprod.Product_Name_2__c} </div>
+                    </td>
+                    <td scope="row">
+                        <div class="slds-truncate" title="{!prods.Product2.Name}">
+                            {!prods.objprod.Name} </div>
+                    </td>
+                    <!--<td scope="row">
+                        <div class="slds-truncate" title="{!prods.Product2.Name}">
+                            {!prods.objprod.Product_Name_2__c} </div>
+                    </td>-->
+                    <td scope="row">
+                        <div class="slds-truncate" title="{!prods.Product2.Name}">
+                            {!prods.objprod.Balance_Payment__c} </div>
+                    </td>
+                    <td>
+                        <lightning:input  name="{!index}" type="phone" maxlength="10" label="" value="{!prods.objprod.Balance_Payment__c}"/>
+                    </td>
+                    <td>
+                        <lightning:input  name="{!index}" type="phone" maxlength="10" label="" value="{!prods.objprod.Loan_Period__c}"/>
+                    </td>
+                    <td>
+                        <lightning:input  name="{!index}" type="phone" maxlength="10" label="" value="{!prods.objprod.Interest_Rate__c}"/>
+                    </td>
+                    <!--<td scope="row">
+                        <div class="slds-truncate" title="{!prods.Product2.Name}">
+                            {!prods.objprod.Balance_Payment__c} </div>
+                    </td>-->
+                </tr>
+            </aura:iteration>
+        </tbody>
+    </table>
+    <div class="slds-p-top_small">
+        <center>
+            <lightning:button variant="brand" label="Create Finance" onclick="{! c.doSave }" />
+            <lightning:button variant="brand" label="Cancel" onclick="{! c.Onclose }" />
+        </center>
+    </div>
+</aura:component>

@@ -1,0 +1,450 @@
+<apex:page standardController="Performa_Invoice__c" extensions="performaInvoicePdfController" renderAs="PDF" lightningStylesheets="false" showHeader="false" applyHtmlTag="false" applyBodyTag="false" standardStylesheets="false">
+  
+    <head>
+        <style type="text/css" media="print">
+            @page {size: A4 portrait; margin-right: 20px;margin-left: 60px;
+            margin-bottom: 2cm;
+            margin-top: 2cm;
+                @top-left {
+                content: element(header);
+            }
+            @bottom-left {
+            content: element(footer);
+            }
+        } 
+        @page:first {
+            size: A4 portrait; margin-top: 20px; margin-right: 20px; margin-bottom: 90px; margin-left: 60px;
+                @top-left {
+                content:none;
+            }
+        }
+        div.header {
+             margin-top:1cm;
+            position: running(header);
+            width: 200%;
+            height:130px;
+            margin-right: 10px;
+        }
+             div.footer {
+                display: block;
+            	padding-top: 0px;
+            	height: 100px;
+                position: running(footer);
+               border-top: 1px solid Black;
+            }
+            
+            .pagenumber:before {
+            content: counter(page);
+            }
+            .pagecount:before {
+            content: counter(pages);
+            }
+            @page {
+                <!--margin-bottom: 2cm;
+                margin-top: 2cm;
+
+            @bottom-center {
+            font-family: sans-serif !important;
+            font-size: 14px;
+            width: 100%;
+            content: " Page " counter(page) " of " counter(pages);
+            }-->
+            }
+            .repeatTableFooter{-fs-table-paginate: paginate;}
+            div.break {page-break-before:always;}
+            .footer {
+            <!--position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            color: black;
+            font-size: 13px;
+            text-align: center;
+           -->
+            }  
+            
+            .txt-bold{
+                font-family: Arial Unicode MS;
+                width: 100%;
+                font-weight: bold; 
+                font-size:13px;
+            }
+            
+            .wrap{
+                display:inline-block;
+                width: 200px;
+                overflow-wrap: break-word;
+            }
+
+            body { font-family: Arial Unicode MS !important; }
+			font { font-family: Arial Unicode MS !important; }
+        </style>
+    </head>
+    <apex:form > 
+         <body>
+            <div class="header">
+                <apex:image value="{!$Resource.Asb_Logo}" height="40" width="110" /><br/>   <br/>
+            </div>
+             <div class="footer">
+                <table style="width: 100%">
+                    <tr>
+                        <td style="width: 33%">
+                            Prepared By:{!ObjInvoice.CreatedBy.name} <br/>
+                            {!ObjInvoice.Contact__r.Owner.Email}
+                        </td>
+                        <td style="width: 33%; text-align: center"><div>Page <span class="pagenumber"/> of <span class="pagecount"/></div></td>
+                        <td style="width: 33%"></td>
+                    </tr>
+                    <tr>
+                    <td style="padding: 10%"></td>
+                    </tr>
+                </table>
+                <div>
+                </div>
+            </div>
+            <table class="repeatTableHeader">
+            <div style = "position:relative; top:-24px;">
+                <td valign="top" style="text-align: center,top;width: 0%; position:relative; top:-2px;">
+                    <apex:image value="{!invoiceTemplate.Logo__c}" style="width:700px;height:130px"/>
+                </td>
+                
+                <div>
+                    <table width="100%">
+                        <tbody>
+                            <tr>
+                                <th colspan="2" style="font-size: 12px;text-align: right;"><u><span class="txt-bold">{!invoiceTemplate.Label_For_GST_No__c}</span>&nbsp;{!ObjInvoice.Subsidiary__r.GST_Number__c} </u></th>
+                            </tr>
+                            <tr>
+                                <th colspan="2" style="font-size: 16px;text-align: center;"><u>{!invoiceTemplate.Label__c}</u></th>
+                            </tr>
+                            <tr>			
+                                <th colspan="2" style="font-size: 14px;text-align: right;"><span class="txt-bold">{!invoiceTemplate.Label_For_Proforma_Invoice_No__c}:</span> {!ObjInvoice.Name}</th>
+                            </tr>
+                            <tr>
+                                <th colspan="2" style="font-size: 14px;text-align: right;">
+                                    <apex:outputText value="{0,date,dd.MM.yyyy}" > <span class="txt-bold">{!invoiceTemplate.Label_for_Transaction_Date__c}</span> &nbsp;
+                                        <apex:param value="{!ObjInvoice.Transaction_Date__c}"/>
+                                    </apex:outputText></th>
+                            </tr><br/>
+                            <tr>
+                                <th>
+                                    <div style="font-size: 15px;"><span class="txt-bold">{!invoiceTemplate.Salutation__c}</span></div>
+                                    <tr>
+                                        <td style="font-size: 12px;">{!ObjInvoice.Account__r.Legal_Name__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-size: 12px; width: 200px;">{!ObjInvoice.ADDRESS_LINE_1__c}  {!ObjInvoice.ADDRESS_LINE_2__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-size: 12px;">{!ObjInvoice.ADDRESS_LINE_3__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-size: 12px;">{!ObjInvoice.City__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-size: 12px;">{!ObjInvoice.State__c}</td>
+                                    </tr>
+                               
+                          
+                                    <div style="position:relative;left:450.34px;top:-125.98px;font-size: 12px;"><span class="txt-bold">{!invoiceTemplate.Label_For_Consignee__c}</span></div>
+                                    <div style="position:relative;left:450.34px;top:-123.98px;font-size: 12px;">{!ObjInvoice.Ship_To_Party__r.name}</div>
+                                    <div style="position:relative;left:450.34px;top:-121.98px;font-size: 12px;">{!ObjInvoice.Ship_to_address_line_1__c} &nbsp; {!ObjInvoice.Ship_to_address_line_2__c}</div>
+                                    <div style="position:relative;left:450.34px;top:-119.98px;font-size: 12px;">{!ObjInvoice.Ship_to_address_line_3__c}</div>
+                                    <div style="position:relative;left:450.34px;top:-117.98px;font-size: 12px;">{!ObjInvoice.Ship_to_City__c}</div>
+                                    <div style="position:relative;left:450.34px;top:-115.98px;font-size: 12px;">{!ObjInvoice.Ship_to_State__c}</div>  <br/><br/>
+                                    <div style="position:relative;left:40;top:-65.98px;font-size: 12px;" ><span class="txt-bold">{!invoiceTemplate.Label_For_Contact_Name__c}</span>&nbsp;{!ObjInvoice.Salutations__c} {!ObjInvoice.Contact__r.Name}</div>
+                                    <div style="position:relative;left:40;top:-60.98px;font-size: 12px;" ><span class="txt-bold">{!invoiceTemplate.Label_For_Contract__c}</span> {!ObjInvoice.Contract__r.ContractNumber}, <span class="txt-bold">{!invoiceTemplate.Label_For_Contract_Revision__c}</span> {!ObjInvoice.Contract_Revision_No__c},<apex:outputText value="{0,date,dd.MM.yyyy}" > <span class="txt-bold">{!invoiceTemplate.Label_For_Contract_Creation_Date__c}</span> &nbsp;
+                                        <apex:param value="{!ObjInvoice.Contract_Creation_Date__c}"/>
+                                        </apex:outputText></div>
+                                </th>
+                            </tr>
+                        </tbody>  
+                    </table>
+                </div>
+                
+                <br/>
+                <apex:outputPanel rendered="{!ShowFreight}">
+                    <table style="border-collapse: collapse; width:100%;margin-top: -8%;height:auto" border=".5px" colspan="5">
+                        <tr>
+                            <th style="width:5%;font-size:11px" border="1px"><span class="txt-bold">{!invoiceTemplate.Label_For_Column_1__c}</span></th>
+                            <th style="width:40%;text-align: center;font-size:11px" ><span class="txt-bold">{!invoiceTemplate.Label_For_Column_2__c}</span></th>
+                            <th style="width:15%;text-align: center;font-size:11px "><span class="txt-bold">{!invoiceTemplate.Label_For_Column_3__c}</span></th>
+                            <th style="width:20%;text-align: center;font-size:11px"><span class="txt-bold">{!invoiceTemplate.Label_For_Column_5__c}({!ObjInvoice.CurrencyIsoCode})</span></th>
+                            <th style="width:20%;text-align: center;font-size:11px"><span class="txt-bold">{!invoiceTemplate.Label_For_Column_6__c}({!ObjInvoice.CurrencyIsoCode})</span></th>
+                        
+                        </tr>  
+                        <apex:variable value="{!0}" var="rowNum"/>
+                        <apex:repeat value="{!lstINVLI}" var="lst" >
+                            <apex:variable var="rowNum" value="{!rowNum + 1}"/>
+                            <tr>
+                                <td style="text-align: left;font-size:11px">{!rowNum}</td> 
+                                <td style="text-align: left;font-size:11px">{!lst.Product_Description__c}</td>
+                                <td style="text-align: Center;font-size:11px">{!lst.Quantity__c} {!lst.UOM__c}</td>
+                                <td style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!lst.Ceiling_Total_Sales_Price__c}" />
+                                    </apex:outputText></td>
+                                <td style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!lst.Ceiling_Total_Sales_Price__c}" />
+                                    </apex:outputText></td>
+                                <td style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!lst.Invoice_Amount__c}" />
+                                    </apex:outputText></td>
+                            </tr>
+                        </apex:repeat>
+
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px"><b>Sub Total 1 : </b></td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><b><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!subTotal_1}" />
+                                </apex:outputText></b></td>
+                        </tr>
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px">Add Freight : </td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!shipCharges}" />
+                                </apex:outputText></td>
+                        </tr>
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px">Add Transit Insurance :</td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!insuranceCharges}" />
+                                </apex:outputText></td>
+                        </tr>
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px">Add Packing Charges : </td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!packingCharges}" />
+                                </apex:outputText></td>
+                        </tr>
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px"><b>Sub Total 2 : </b></td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><b><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!subTotal_2}" />
+                                </apex:outputText></b></td>
+                        </tr>
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px">Add IGST @ {!lstINVLI[0].IGST__c}%: </td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!igst}" />
+                                </apex:outputText></td>
+                        </tr>
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px">Add CGST @ {!lstINVLI[0].CGST__c}%: </td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!cgst}" />
+                                </apex:outputText></td>
+                        </tr>
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px">Add SGST @ {!lstINVLI[0].SGST__c}%: </td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!sgst}" />
+                                </apex:outputText></td>
+                        </tr>
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px"><b>Sub Total 3 : </b></td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><b><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!subTotal_3}" />
+                                </apex:outputText></b></td>
+                        </tr>
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px">Add TCS @ {!lstINVLI[0].TCS__c}%: </td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!tcsAmt}" />
+                                </apex:outputText></td>
+                        </tr>
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px"><b>Grand Total : </b></td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><b><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!grandTotal}" />
+                                </apex:outputText></b></td>
+                        </tr>
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px">Less Advance : </td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!ObjInvoice.Total_Payment_Received__c}" />
+                                </apex:outputText></td>
+                        </tr>
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px"><b>Balance Amount To Pay : </b></td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><b><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!gtPay}" />
+                                </apex:outputText></b></td>
+                        </tr>
+                    </table>
+                </apex:outputPanel>
+                
+                <apex:outputPanel rendered="{!DontShowFreight}">
+                    <table style="border-collapse: collapse; width:100%;margin-top: -8%;height:auto" border=".5px" colspan="5">
+                        <tr>
+                            <th style="width:5%;font-size:11px" border="1px"><span class="txt-bold">{!invoiceTemplate.Label_For_Column_1__c}</span></th>
+                            <th style="width:50%;text-align: center;font-size:11px" ><span class="txt-bold">{!invoiceTemplate.Label_For_Column_2__c}</span></th>
+                            <th style="width:15%;text-align: center;font-size:11px"><span class="txt-bold">{!invoiceTemplate.Label_For_Column_3__c}</span></th>
+                            <th style="width:20%;text-align: center;font-size:11px"><span class="txt-bold">{!invoiceTemplate.Label_For_Column_5__c}({!ObjInvoice.CurrencyIsoCode})</span></th>
+                           <th style="width:20%;text-align: center;font-size:11px"><span class="txt-bold">{!invoiceTemplate.Label_For_Column_6__c}({!ObjInvoice.CurrencyIsoCode})</span></th>
+                        
+                        </tr>  
+                        <apex:variable value="{!0}" var="rowNum"/>
+                        <apex:repeat value="{!lstINVLI}" var="lst" >
+                            <apex:variable var="rowNum" value="{!rowNum + 1}"/>
+                            <tr>
+                                <td style="text-align: left;font-size:11px">{!rowNum}</td> 
+                                <td style="text-align: left;font-size:11px">{!lst.Product_Description__c}</td>
+                                <td style="text-align: Center;font-size:11px">{!lst.Quantity__c} {!lst.UOM__c}</td>
+                               
+                                <td style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!lst.Ceiling_Total_Sales_Price__c}" />
+                                    </apex:outputText></td>
+                                <td style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!lst.Invoice_Amount__c}" />
+                                    </apex:outputText></td>
+                            </tr>
+                        </apex:repeat>
+
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px"><b>Sub Total 1 : </b></td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><b><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!subTotal_1}" />
+                                </apex:outputText></b></td>
+                        </tr>
+
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px">Add Transit Insurance :</td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!insuranceCharges}" />
+                                </apex:outputText></td>
+                        </tr>
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px">Add Packing Charges : </td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!packingCharges}" />
+                                </apex:outputText></td>
+                        </tr>
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px"><b>Sub Total 2 : </b></td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><b><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!subTotal_2}" />
+                                </apex:outputText></b></td>
+                        </tr>
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px">Add IGST @ {!lstINVLI[0].IGST__c}%: </td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!igst}" />
+                                </apex:outputText></td>
+                        </tr>
+                        
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px">Add CGST @ {!lstINVLI[0].CGST__c}%: </td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!cgst}" />
+                                </apex:outputText></td>
+                        </tr>
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px">Add SGST @ {!lstINVLI[0].SGST__c}%: </td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!sgst}" />
+                                </apex:outputText></td>
+
+                        </tr>
+
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px"><b>Sub Total 3 : </b></td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><b><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!subTotal_3}" />
+                                </apex:outputText></b></td>
+                        </tr>
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px">Add TCS @ {!lstINVLI[0].TCS__c}%: </td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!tcsAmt}" />
+                                </apex:outputText></td>
+
+                        </tr>
+
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px"><b>Grand Total : </b></td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><b><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!grandTotal}" />
+                                </apex:outputText></b></td>
+                        </tr>
+
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px">Payment Recived Till Date: </td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!ObjInvoice.Total_Payment_Received__c}" />
+                                </apex:outputText></td>
+                        </tr>
+                        <tr>
+                            <td colspan ="4"  style="text-align: right;font-size:11px"><b>Invoice Amount To Pay : </b></td> 
+                            
+                            <td colspan ="1" style="text-align: Center;font-size:11px"><b><apex:outputText value="{0, number,  ###,###,###,##0.00}"><apex:param value="{!gtPay}" />
+                                </apex:outputText></b></td>
+                        </tr>
+                    </table>
+                </apex:outputPanel>
+                
+                <br/>
+                <table style="width:100%;padding-left: 2%;height:auto">
+                    <tr>
+                        <td style="text-align: left;font-size:13px"><strong>Freight cost mentioned in the Performa Invoice is valid for 4 weeks only.</strong></td>
+                    </tr>
+                </table>
+                <table style="width:100%;padding-left: 2%;height:auto">
+                    <tr>
+                        <td  style="text-align: left;font-size:13px"><u>Our collection A/C with {!bankDetails.Bank_Name__c} as per details given below</u></td> 
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;font-size:11px"><span class="txt-bold"> {!invoiceTemplate.Label_For_Beneficiary__c} </span> {!bankDetails.Beneficiary__c}, {!bankDetails.Location__c} - {!bankDetails.Pincode__c}</td> 
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;font-size:11px"><span class="txt-bold"> {!invoiceTemplate.Label_For_Bank_Name__c}</span> {!bankDetails.Bank_Name__c}</td> 
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;font-size:11px"><span class="txt-bold">  {!invoiceTemplate.Label_For_Bank_A_C_No__c}</span> {!bankDetails.Bank_A_C_No__c}, <span class="txt-bold"> {!invoiceTemplate.Label_For_IFSC_Code__c}</span> {!bankDetails.IFSC_CODE__c} </td> 
+                    </tr>
+                </table>
+                <div class="break"/>    
+
+
+                <table border="0" width="100%" style="margin-top: 5px;font-size: 12.5px; vertical-align:top;border-spacing:5px;">
+                    <tbody>
+                        <tr>
+                            <td><strong><span class="txt-bold">{!invoiceTemplate.Label_For_General_Conditions__c}</span></strong></td>
+                        </tr>
+                        <apex:repeat value="{!terms}" var="qTerms">
+                            <tr>
+                                <td style="width: 35%;vertical-align:top; font-weight: bold;"><span class="txt-bold">{!qTerms.Sr_No__c}.&nbsp;{!qTerms.Label__c}</span></td>
+                            </tr>
+                            <tr>
+                            <td style="width: 60%;vertical-align:top; text-align: justify;">{!qTerms.Content__c}</td>
+                            </tr>
+                    </apex:repeat>
+                    </tbody>
+                </table>
+
+                <div class="break"/>  
+                <table border="0" width="100%" style="margin-top: 5px;font-size: 12.5px; vertical-align:top;border-spacing:5px;">
+                    <tbody>
+                        <tr>
+                            <td><span class="txt-bold">{!invoiceTemplate.Label_For_General_Provisions__c}</span></td>
+                        </tr>
+                        <apex:repeat value="{!gProvision}" var="igProvision">
+                            <tr>
+                                <td style="width: 35%;vertical-align:top;font-weight: bold;"><span class="txt-bold">{!igProvision.Sr_No__c}.&nbsp;{!igProvision.Label__c}</span></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 60%;vertical-align:top; text-align: justify;">{!igProvision.Content__c}</td>
+                        </tr>
+                    </apex:repeat>
+                    </tbody>
+                </table>
+
+
+                <div>
+                    <div class="wrap" style="position:relative;left:470px;font-size:14px;margin-top:30px;" >{!invoiceTemplate.Subsidiary__r.Name__c}</div>
+                    <div style="position:relative;left:470px;width: 127px;height: 40px;" >
+                        <apex:outputField style="width: 127px;height: 40px;"  value="{!objuser.Signature_Image__c}"/>
+                    </div>
+                    <div style="position:relative;left:470px;font-size:14px" ><span>{!ObjInvoice.createdby.name}</span></div>
+                    <div style="position:relative;left:470px;font-size:14px"><span >{!objuser.Title} </span></div>
+                </div>
+
+            </div>
+            </table>
+        </body>
+    </apex:form>   
+</apex:page>

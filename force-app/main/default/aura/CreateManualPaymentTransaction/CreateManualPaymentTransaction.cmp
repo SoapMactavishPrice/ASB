@@ -1,0 +1,213 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" access="global" 
+                controller="CreatePaymentManual">	
+    <aura:html tag="style">
+        .slds-modal__container{
+        height : auto; width: 180%; max-width: 180vh;
+        }
+        .modal-body{
+        height : 85vh !important;
+        max-height: 85vh !important;
+        }
+        .slds-modal__footer{
+        display: inline !important;
+        }
+        .last{
+        text-align: left;
+        vertical-align: middle;
+        }
+    </aura:html>
+    <aura:attribute name="ContractList" type="Contract_Line_Item__c[]"/> 
+    <aura:attribute name="contractID" type="String"/>
+    <aura:attribute name="transaction" type="Boolean" default='false'/>
+    <aura:attribute name="blockPayment" type="Boolean" default='false'/>
+    <aura:attribute name = "show" type = "Boolean" default = "false"/>
+    <aura:attribute name="message" description="Message content, can be HTML" type="String"/>
+    <aura:attribute name="type" description="Message type, can be error/warning/info/success" type="String" default="info"/>
+    
+    <div class="demo-only" style="padding:0.5rem;background:#16325c">
+        <div class="slds-text-color_inverse">Create Payment Transactions</div>
+    </div>
+    <br/>
+    <lightning:select name= "PicklistId" label="Choose from here"  aura:id="PicklistId" onchange ="{!c.OnCheck}" >
+        <option value="null" text="-- CHOOSE FROM THE DROP DOWN --" />
+        <option value="Block Payment" text="Block Payment" />
+        <option value="Create Transactions" text="Create Transactions" />
+    </lightning:select>
+   
+    <aura:if isTrue="{!v.show}">
+         <br/>
+        <lightning:icon iconName="utility:error" variant="error" alternativeText="Error!" title="Error" />
+        <div class="errormsg">
+            <aura:unescapedHtml value="{!v.message}"/>
+        </div>
+    </aura:if>
+    <!--<div class="errormsg">
+        <aura:unescapedHtml value="{!v.message}"/>
+    </div> -->
+    <br/>
+    <aura:if isTrue="{!v.blockPayment}">
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col">
+                <lightning:input aura:id="inputOne" type="number" label="Payment Blocked" placeholder="Total Amount Blocked"/>
+            </div>
+            <div class="slds-col">
+                <lightning:input aura:id="inputTwo" type="text" label="Payment Block Reason" placeholder="Enter Reason" />
+            </div>
+        </div><br/>
+        <div class="slds-clearfix">
+            <lightning:button variant="destructive" class="btn-color" label="Block Payment" onclick="{!c.blockPay }" />
+            </div>
+    </aura:if>
+    <br/>
+    <aura:if isTrue="{!v.transaction}">
+        <div class="slds-clearfix slds-m-around_small">
+            <div class="slds-clearfix">
+                <div class="slds-float_right">
+                    <lightning:button variant="destructive"
+                                      class="btn-color"
+                                      label="Create Payment Transactions"
+                                      onclick="{!c.getSelectedRecords }" />
+                </div>
+                
+            </div>
+        </div>
+       <!-- <div class="slds-grid slds-gutters">
+            <div class="slds-col">
+                <lightning:input aura:id="inputOne" type="number" label="Payment Blocked" placeholder="Total Amount Blocked"/>
+            </div>
+            <div class="slds-col">
+                <lightning:input aura:id="inputTwo" type="text" label="Payment Block Reason" placeholder="Enter Reason" />
+            </div>
+        </div>-->
+        
+        <tr>
+            <div class="container-fluid">
+                <c:CustomLookup1 aura:id="compB" objectName="Contract" fieldName="Name" label="Contract"  placeholder="Search Contract" passMethod = "{!c.passToChildMethod}"  />
+            </div>
+        </tr>
+        <br/> <br/>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped" role="grid">
+            <thead>
+                <tr>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Name">Contract Number</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Name">Contract Line Item Name</div>
+                    </th>
+                    <!--  <th scope="col">
+                            <div class="slds-truncate" title="Contract Name">Contract Name</div>
+                        </th>  -->
+                    <th scope="col">
+                        <div class="slds-truncate" title="Product">Product</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Total price">Total Price</div>
+                    </th> 
+                    <th scope="col">
+                        <div class="slds-truncate" title="Advance Required">Advance Required</div>
+                    </th> 
+                    <th scope="col">
+                        <div class="slds-truncate" title="Total Amount Received">Amount Received</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Balance Payment">Balance Payment</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Allocated Amount">Allocated Amount</div>
+                    </th> 
+                    <!-- <th scope="col">
+                        <div class="slds-truncate" title="Balance Payment">Payment Description</div>
+                    </th> -->
+                    <th scope="col">
+                        <div class="slds-truncate" title="Balance Payment">Remove</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <aura:iteration items="{!v.ContractList}" var="obj" indexVar="index">
+                    <tr>
+                        <!--   <th scope="row" class="slds-text-align_right" style="width:3.25rem;">
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <label class="slds-checkbox" styleclass ="Padding:initial;padding-top:10px;">
+                                        <ui:inputCheckbox text="{!obj.objLead.Id}"
+                                                          value="{!obj.isChecked}"
+                                                          change="{!c.checkboxSelect}"/>
+                                        <span class="slds-checkbox_faux"></span>
+                                        <span class="slds-form-element__label text"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </th>-->
+                        <th scope="row">
+                            <div class="slds-truncate" >
+                                {!obj.ContractNumber}
+                                <!--<lightning:input  name="{!index}" type="text" required="true" maxlength="50"  value="{!obj.ContractId__c}" />-->
+                            </div>
+                        </th> 
+                        
+                        <th scope="row">
+                            <div class="slds-truncate" >
+                                {!obj.Contract_Name__c}
+                                <!--<lightning:input  name="{!index}" type="text" required="true" maxlength="50"  value="{!obj.ContractId__c}" />-->
+                            </div>
+                        </th> 
+                        <!-- <th scope="row">
+                                <div class="slds-truncate" title="{!obj.objLead.ContractId__r.Name}">
+                                    {!obj.objLead.ContractId__r.Name}
+                                </div>
+                            </th>   -->
+                        <th>
+                            <div class="slds-truncate" >
+                                {!obj.Product_Name_1__c}
+                            </div>
+                        </th>
+                        <th>
+                            <div class="slds-truncate" >
+                                {!obj.Total_List_Price__c}
+                            </div>
+                        </th>
+                        <th>
+                            <div class="slds-truncate" >
+                                {!obj.Advance_Amount_Required__c}
+                            </div>
+                        </th>
+                        <th>
+                            <div class="slds-truncate" >
+                                {!obj.Total_Amount_Received__c}
+                            </div>
+                        </th>
+                        <th>
+                            <div class="slds-truncate" >
+                                {!obj.Balance_Payment__c}
+                            </div>
+                        </th>
+                        <th scope="row">
+                            <div class="slds-truncate" >
+                                <lightning:input  name="{!index}" type="text" required="true" maxlength="50"  value="{!obj.Amount_Allocated__c}" />                           
+                            </div>
+                        </th> 
+                        <!--   <th scope="row">
+                            <div class="slds-truncate" >
+                                <lightning:select name="select1"  aura:id="inputOne" required="true">
+                                    <option value="{!obj.Payment_Description__c}">Basic Product Payment</option>
+                                    <option value="{!obj.Payment_Description__c}">Tax(GST Payment)</option>
+                                    <option value="{!obj.Payment_Description__c}">Shipping Charges Payment</option>
+                                    <option value="{!obj.Payment_Description__c}">Insurance Charges Payment</option>
+                                </lightning:select>                         
+                            </div>
+                        </th> -->
+                        <th>
+                            <a onclick="{!c.removeRow}" data-record="{!index}">
+                                <lightning:icon iconName="utility:delete" size="small" alternativeText="Delete"/>
+                                <span class="slds-assistive-text">Delete</span>
+                            </a>
+                        </th> 
+                        
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table>
+    </aura:if>
+</aura:component>

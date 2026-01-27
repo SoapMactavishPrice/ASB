@@ -1,0 +1,319 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" access="global" 
+                controller="CreatePaymentManual">
+    <aura:html tag="style">
+        .slds-button.slds-button--neutral.cuf-publisherCancelButton.uiButton--brand.uiButton {
+        display: none;
+        }
+        .slds-modal__container{
+        max-width: 80rem;
+        width: 100%;
+        }
+    </aura:html>
+    <!-- call doInit method on component load -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="recordId" type="string" />
+    <aura:attribute name="OptionList" type="Quote_Line_Options__c[]"/> 
+    <aura:attribute name="ContractList" type="Contract_Line_Item__c[]"/> 
+    <aura:attribute name="userInfo" type="user"/> 
+    <aura:attribute name="ContractLineItem" type="Contract_Line_Item__c[]" />
+    <aura:attribute name = "status" type = "boolean" default="false"/>
+    <!-- aura attributes to store data/values --> 
+    <aura:attribute name="listOfAllAccounts" type="list"/> 
+    <aura:attribute name="PaginationList" type="list"/> 
+    <aura:attribute name="selectedCount" type="integer" default="0"
+                    description="selected Records Count"/>
+    <aura:attribute name="startPage" type="Integer" />
+    <aura:attribute name="endPage" type="Integer"/>
+    <aura:attribute name="totalRecordsCount" type="Integer"/>
+    <aura:attribute name="pageSize" type="Integer" default="10"
+                    description="number of records to be display on per page"/>
+    <aura:attribute name="currentPage" type="integer" default="1"/>
+    <aura:attribute name="totalPagesCount" type="integer"/>
+    <aura:attribute name="bNoRecordsFound" type="boolean"/>
+    <aura:attribute name="selectedField" type="String" default="Name" />
+    <aura:attribute name="myBool" type="Boolean" default="false"/>
+    <aura:attribute name="myAttribute" type="String"/>
+    <aura:attribute name="myAttribute1" type="String"/>
+    <aura:attribute name="myAttribute2" type="String"/>
+    <aura:attribute name="contractID" type="String"/>
+    <aura:attribute name="ContCurrency" type="String"/>
+
+    <aura:attribute name="QuoteLineItmInstance" type="QuoteLineItem"/>
+    <aura:attribute name="PercentPick" type="QuoteLineItem[]" />
+    
+    
+    <aura:attribute name = "wrappedOptions" type="List"/>
+    <aura:attribute name="filter" type="String" />
+    
+    <aura:attribute name="message" description="Message content, can be HTML" type="String"/>
+    <aura:attribute name="type" description="Message type, can be error/warning/info/success" type="String" default="info"/>
+    
+    <aura:if isTrue="{!v.status}">
+        <aura:html tag="style">
+            .modal-footer.slds-modal__footer {
+            display: none;
+            }
+            .slds-modal__container{
+            max-width: 30rem;
+            width: 70%;
+            }
+            .modal-body.scrollable.slds-modal__content.slds-p-around--medium{height: 400px !important; max-height: 200px !important;}
+            .modal-body.slds-modal__content{position: relative; border-bottom-right-radius: 0.25em; border-bottom-left-radius: 0.25em; padding: 0;}
+            .modal-body.slds-modal__content .cuf-content{padding: 0;}
+        </aura:html>
+        <h1  style="font-size: 18px; color :red ;text-align: center; margin: 30px auto;">Payment is expired</h1>
+    
+    </aura:if>
+        <aura:html tag="style">
+            .slds-modal__container {
+            width : 90% !important;
+            max-width : 90% !important;
+            height : 100% !important;}
+            .lead_wrapper{overflow-x: auto; padding: 12px 0;}
+            .lead_wrapper .slds-size_1-of-12{width: auto; padding: 0 15px;}
+        </aura:html>
+        <!-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+        <aura:html tag="style">
+            .slds-modal__container {
+            width : 90% !important;
+            max-width : 90% !important;
+            height : 100% !important;}
+        </aura:html>
+        <aura:attribute name="textToFilter" type="String" />
+        <aura:attribute name="record" type="Object"/>
+        <aura:attribute name="gacRecord" type="Object"/>
+        <aura:attribute name="recordError" type="String"/>
+        <div class="demo-only" style="padding:0.5rem;background:#16325c">
+            <div class="slds-text-color_inverse">Payment Details</div>
+        </div>
+        <force:recordData aura:id="record"
+                          layoutType="FULL"
+                          recordId="{!v.recordId}"
+                          targetError="{!v.recordError}"
+                          targetRecord="{!v.record}"
+                          targetFields="{!v.gacRecord}"
+                          recordUpdated="{!c.doInit}" 
+                          mode="VIEW"/>
+        
+        
+        <!-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+        
+        <aura:html tag="style">
+            .slds-modal__container {
+            width : 90% !important;
+            max-width : 90% !important;
+            height : 100% !important;}
+        </aura:html>    
+        
+        
+        
+        <!-- ================================================================================================ -->  
+        <!--<td>
+        <lightning:select name= "PicklistId" label="Quote Item"  aura:id="PicklistId" onchange ="{!c.OnCheck}" >
+            <option value="" text="- None -" />
+            <aura:iteration items="{!v.PercentPick}" var="per">
+                <option value="{!per.Id}" text="{!per.Product2.Name}" /> 
+            </aura:iteration>
+        </lightning:select>  
+    </td>-->
+        <aura:handler name="init" value="{!this}" action="{!c.doInit1}" />
+        <div class="errormsg">
+            <aura:unescapedHtml value="{!v.message}"/>
+        </div>
+        
+        <!-- lightning:button to get selected rows data -->
+        <div class="slds-clearfix slds-m-around_small">
+            <div class="slds-clearfix">
+                <div class="slds-float_right">
+                    <lightning:button variant="destructive"
+                                      class="btn-color"
+                                      label="Create Payment"
+                                      onclick="{!c.getSelectedRecords}" />
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col">
+                <lightning:select name="select1" label="Mode of Payment" aura:id="inputOne" required="true">
+                    <option value="">Choose One...</option>
+                    <option value="Cheque">Cheque</option>
+                    <option value="Net Banking">Net Banking</option>
+                </lightning:select>
+                <lightning:input aura:id="inputTwo" type="text" label="Cheque No./Transection Id" placeholder="Enter Cheque No./Transection Id" required="true"/>
+                <lightning:input aura:id="inputSix" type="number" label="Currency" required="true" placeholder="{!v.ContCurrency}" disabled="true" />
+                <!-- <lightning:select name="select2" label="Currency" aura:id="inputSix" required="true" onchange="{!c.changeCurrency}">
+                    <option value="INR">INR - Indian Rupee</option>
+                    <option value="USD">USD - U.S. Dollar</option> 
+                </lightning:select>-->
+                <lightning:input aura:id="inputFour" type="number" label="Amount Received" placeholder="Total Amount Received" required="true" onfocusout="{!c.onFocOut}"/>
+                <lightning:input aura:id="inputNine" type="text" label="Invoice Number" placeholder="Invoice Number" onfocusout="{!c.onFocOut}"/>
+                <lightning:select name="select4" label="Payment Type" aura:id="inputEleven" required="true">
+                    <option value="">Choose One...</option>
+                    <option value="Actual">Actual</option>
+                    <option value="Advance">Advance</option>
+                    <option value="Commission Fees">Commission Fees</option>
+                    <option value="Freight">Freight</option>
+                    <option value="Insurance">Insurance</option>
+                </lightning:select>
+            </div>
+            
+            <div class="slds-col">
+                <lightning:input aura:id="inputThre" type="date" name="input4" label="Date" placeholder="Enter Payment Date" required="true"/>
+                
+                <!-- <lightning:select name="select3" label="Local Currency" aura:id="inputSeven" required="true"  disabled="true">
+                    <option value="INR">INR - Indian Rupee</option>
+                </lightning:select> -->
+                <lightning:input aura:id="inputSeven" type="number" label="Local Currency" required="true" placeholder="{!v.ContCurrency}" disabled="true" />
+                <lightning:input aura:id="inputFive" type="number" label="Exchange Rate" placeholder="Enter Exchange Rate" value="1" required="true" onchange="{!c.CurrencyExchange}"  disabled="true"/>
+                <lightning:input aura:id="inputEight" type="number" label="Amount In Local Currency" placeholder="Amount In Local Currency" disabled="true"/>
+                <lightning:input aura:id="inputTen" type="Date" label="Invoice Date" placeholder="Invoice Date" onfocusout="{!c.onFocOut}"/>
+            </div>
+        </div>
+        <br/>
+        <br/>
+        
+        <!--  <div class="slds-form-element__control">
+    <input type="text" id="text-input-id-1" placeholder="Placeholder text…" default="{ sobjectType: 'Contract__c' }" required="" class="slds-input" />
+  </div> -->
+        
+        <!--<lightning:recordEditForm objectApiName="Payment__c"  onsubmit = "{! c.handleSuccess }">
+            <lightning:messages />
+            <lightning:inputField aura:id="contractID" fieldName="Contract__c"/>
+            <lightning:button class="slds-m-top_small"   
+                              variant="brand"   
+                              type="submit"   
+                              name="Get Contract" label="Get Contract" /> 
+        </lightning:recordEditForm>-->
+        
+        <!-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+        
+        <div class="slds-m-around-xx-large">
+            <!-- <div class="slds-float_right slds-p-bottom_small">
+            <h1 class="slds-page-header__title">Add Row 
+                <lightning:buttonIcon iconName="utility:add"  size="large" variant="bare" alternativeText="Add" onclick="{!c.addRow1}"/>
+            </h1>
+        </div>-->
+            <!--<tr>
+                <div class="container-fluid">
+                    <c:CustomLookup1 aura:id="compB" objectName="Contract" fieldName="Name" label="Contract"  placeholder="Search Contract" passMethod = "{!c.passToChildMethod}"  />
+                </div>
+                
+            </tr>-->
+            <br/> <br/>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped" role="grid">
+                <thead>
+                    <tr>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Name">Contract Number</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Name">Contract Line Item Name</div>
+                        </th>
+                        <!--  <th scope="col">
+                            <div class="slds-truncate" title="Contract Name">Contract Name</div>
+                        </th>  -->
+                        <th scope="col">
+                            <div class="slds-truncate" title="Product">Product</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Total price">Total Price</div>
+                        </th> 
+                        <th scope="col">
+                            <div class="slds-truncate" title="Advance Required">Advance Required</div>
+                        </th> 
+                        <th scope="col">
+                            <div class="slds-truncate" title="Total Amount Received">Amount Received</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Balance Payment">Balance Payment</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Allocated Amount">Allocated Amount</div>
+                        </th> 
+                        <th scope="col">
+                            <div class="slds-truncate" title="Balance Payment">Remove</div>
+                        </th>
+                        
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    <aura:iteration items="{!v.ContractList}" var="obj" indexVar="index">
+                        <tr>
+                            <!--   <th scope="row" class="slds-text-align_right" style="width:3.25rem;">
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <label class="slds-checkbox" styleclass ="Padding:initial;padding-top:10px;">
+                                        <ui:inputCheckbox text="{!obj.objLead.Id}"
+                                                          value="{!obj.isChecked}"
+                                                          change="{!c.checkboxSelect}"/>
+                                        <span class="slds-checkbox_faux"></span>
+                                        <span class="slds-form-element__label text"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </th>-->
+                            <th scope="row">
+                                <div class="slds-truncate" >
+                                    {!obj.ContractNumber}
+                                    <!--<lightning:input  name="{!index}" type="text" required="true" maxlength="50"  value="{!obj.ContractId__c}" />-->
+                                </div>
+                            </th> 
+                            
+                            <th scope="row">
+                                <div class="slds-truncate" >
+                                    {!obj.Contract_Name__c}
+                                    <!--<lightning:input  name="{!index}" type="text" required="true" maxlength="50"  value="{!obj.ContractId__c}" />-->
+                                </div>
+                            </th> 
+                            <!-- <th scope="row">
+                                <div class="slds-truncate" title="{!obj.objLead.ContractId__r.Name}">
+                                    {!obj.objLead.ContractId__r.Name}
+                                </div>
+                            </th>   -->
+                            <th>
+                                <div class="slds-truncate" >
+                                    {!obj.Product_Name_1__c}
+                                </div>
+                            </th>
+                            <th>
+                                <div class="slds-truncate" >
+                                    {!obj.Final_Grand_Total__c}
+                                </div>
+                            </th>
+                            <th>
+                                <div class="slds-truncate" >
+                                    {!obj.Advance_Amount_Required__c}
+                                </div>
+                            </th>
+                            <th>
+                                <div class="slds-truncate" >
+                                    {!obj.Total_Amount_Received__c}
+                                </div>
+                            </th>
+                            <th>
+                                <div class="slds-truncate" >
+                                    {!obj.Balance_Payment__c}
+                                </div>
+                            </th>
+                            <th scope="row">
+                                <div class="slds-truncate" >
+                                    <lightning:input  name="{!index}" type="text" required="true" maxlength="50"  value="{!obj.Amount_Allocated__c}" />                           
+                                </div>
+                            </th> 
+                            <th>
+                                <a onclick="{!c.removeRow}" data-record="{!index}">
+                                    <lightning:icon iconName="utility:delete" size="small" alternativeText="Delete"/>
+                                    <span class="slds-assistive-text">Delete</span>
+                                </a>
+                            </th> 
+                            
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+                
+            </table>
+        </div>
+    
+</aura:component>

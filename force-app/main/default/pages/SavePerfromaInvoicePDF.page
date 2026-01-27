@@ -1,0 +1,83 @@
+<apex:page standardController="Performa_Invoice__c" sidebar="false" extensions="performaInvoicePdfController" title="Pdf" lightningStylesheets="true" applyBodyTag="false">
+    <apex:stylesheet value="{!$Resource.CustomCSS}"/>
+    <apex:form >
+        <style type="text/css">
+           
+            .custPopup{
+            background-color: white;
+            border-width: 1px;
+            border-style: solid;
+            z-index: 9999;
+            left: 25%;
+            padding:10px;
+            position: absolute;
+            width: 2000px;
+            height:1000px;
+            top: 10px;
+            //margin-left: -450px;
+            }
+            .popupBackground{
+            background-color:black;
+            opacity: 0.50;
+            filter: alpha(opacity = 30);
+            position: absolute;
+            width: 200%;
+            height: 350%;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+            }
+            .closeButton
+            {
+            width: 4%;
+            height: 1%;
+            float: right;
+            }
+        </style>
+        <apex:outputPanel id="popup">
+            <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayPopUp}"/>   
+            
+            <apex:outputPanel >
+                  <div style="font-size:20px;background-color:#A9A9A9; border-width: 1px;
+                            border-style: solid;"><strong>
+                    &nbsp;&nbsp;{!ObjInvoice.name}
+                    
+                    </strong>
+                </div>
+
+                <!-- SAVE, SAVE AND SEND -->
+            <div style="width:60%; padding-bottom: 2%; margin: 0 auto">
+                <apex:slds />
+                <div style="padding: 5px" class="slds-scope">
+                    <div style="padding: 5px">
+                        <apex:inputText html-placeholder="Email ID" value="{!emailId}" styleClass="slds-input" disabled="true" />
+                        <apex:inputText html-placeholder="CC Addresses  (Comma Seperated)" value="{!CC_Addresses}" styleClass="slds-input" style="margin-top: 5px; margin-left: 0px" />
+                        <apex:inputText html-placeholder="Subject" value="{!subject}"  styleClass="slds-input" style="margin-top: 5px; margin-bottom: 10px; margin-left: 0px" />
+                        <apex:inputTextarea richText="true" value="{!body}" styleClass="slds-input" />
+                    </div>
+
+                    <div style="margin: 10px 5px; text-align: right" >
+                        <apex:commandButton action="{!save}" value="Save" styleClass="slds-button slds-button_brand"></apex:commandButton>
+                        <apex:commandButton action="{!saveAndSend}" value="Save And Send" styleClass="slds-button slds-button_brand"></apex:commandButton>
+                        <apex:commandButton action="{!Cancel}" value="Cancel" styleClass="slds-button slds-button_destructive"></apex:commandButton>
+                    </div>
+                </div>
+            </div>
+
+
+
+                <apex:iframe src="/apex/PerformaInvoicePdf?Id={!ObjInvoice.id}" scrolling="false" id="theIframe" height="760"/>
+              
+                <!-- <br/>
+                <br/>
+                <br/>
+                <div align="Center">
+                    <apex:commandButton value="Save To Invoice" action="{!SaveToQuote}" style="background:#AFEEEE"/>&nbsp;&nbsp;
+                    <apex:commandButton value="Save and Email Quote" action="{!SaveAndEmailQuote}" style="background:#AFEEEE"/>&nbsp;&nbsp;
+                    <apex:commandButton value="Cancel" action="{!Cancel}" style="background:#AFEEEE"/>  
+                </div>  -->
+            </apex:outputPanel>
+            
+        </apex:outputPanel> 
+    </apex:form>
+</apex:page>

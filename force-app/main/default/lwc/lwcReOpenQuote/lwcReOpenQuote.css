@@ -1,0 +1,13 @@
+.lineItemAlign {text-align:center !important}
+            
+            .lineItemAlign input{text-align:right !important}
+            
+        table td {
+            padding: 0.5rem;
+            border: 1px solid black;
+        }
+        table th {
+            padding: 0.5rem;
+            border: 1px solid black;
+            background:#0070D2;
+        }

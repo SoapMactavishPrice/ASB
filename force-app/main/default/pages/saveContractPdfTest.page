@@ -1,0 +1,173 @@
+<apex:page standardController="Contract" sidebar="false" extensions="SaveContract" title="Pdf" action="{!CreateContract}" lightningStylesheets="true" applyBodyTag="false"> 
+    <apex:pageMessages ></apex:pageMessages>   
+        <apex:stylesheet value="{!$Resource.CustomCSS}"/>
+
+    <apex:form id="form1">
+        <style type="text/css">
+            .custPopup{
+            background-color: white;
+            border-width: 1px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            width: 800px;
+            height:600px;
+            top: 10px;
+            margin-left: -450px;
+            }
+            
+              .popupBackground{	
+            background-color:rgba(0,0,0,0.6);	
+            position: absolute;	
+            width: 100%;	
+            height: 100%;	
+            top: 0;	
+            left: 0;	
+            z-index: 999;	
+            }
+            
+            .closeButton
+            {
+            width: 4%;
+            height: 1%;
+            float: right;
+            }
+             .popupTable {
+            width: 100%;
+            padding: 10%
+            }
+            .popupTable thead tr th,
+            .popupTable thead tr td {
+            color: black;
+            border: 0.5px solid black;
+            font-size: 14px;
+            padding: 5px;
+            }
+        </style>
+         <script type="text/javascript">
+        var $j = jQuery.noConflict();
+        
+        function closeWindow_NoAction(){
+        $j('#popup').hide();
+        window.close();
+        console.log('clicked');
+    
+    }
+</script>
+        <apex:outputPanel id="popup">
+            <apex:outputPanel styleClass="popupBackground" layout="block" id="modal1" rendered="{!isModalOpen}">
+                <div style="background-color: white;position: relative; width: 50%; margin: auto; min-height: 100px; margin-top: 15%">
+                <table class="popupTable">
+                    <thead>
+                        <tr style="border-bottom: 1px solid #000;border-left: none;
+    border-right: none;">
+                            <th style="padding:10px;text-align:center;width: 18%;">Select</th>
+                            <th style="padding:5px 10px;">Document Name</th>
+                        </tr>
+                    </thead>
+                    <tbody style="border: 0.6px solid #000;">
+                        <apex:repeat value="{!addDocs}" var="item">
+                            <tr>
+                                <td style="padding:5px 10px;border-right:0.6px solid #000;text-align:center;">
+                                    <apex:inputCheckbox label="Test" value="{!item.isSelected}" />
+                                </td>
+                                <td style="padding:5px 10px;">{!item.addDoc.Name}</td>
+                            </tr>
+                        </apex:repeat>
+                        <apex:repeat value="{!noteslist}" var="nitem">
+                            <tr>
+                                <td style="padding:5px 10px;border-right:0.6px solid #000;text-align:center;">
+                                    <apex:inputCheckbox label="Test" value="{!nitem.isSelected}" />
+                                </td>
+                                <td style="padding:5px 10px;">{!nitem.Name}</td>
+                            </tr>
+                        </apex:repeat>
+                    </tbody>
+                </table>
+                <div style="text-align:right;padding:10px;">
+                <apex:commandButton action="{!SaveValues}" value="Save" styleClass="slds-button slds-button_brand" style="background-color: rgba(53, 93, 150, 1);color: rgb(255, 255, 255);"></apex:commandButton>
+                <apex:commandButton action="{!closePopup}" value="Cancel" styleClass="slds-button slds-button_brand" style="background-color: rgb(142, 3, 15);color: rgb(255, 255, 255);"></apex:commandButton>
+                     
+                </div>
+                </div>
+            </apex:outputPanel>
+        </apex:outputPanel>
+        <apex:outputPanel >
+            <div style="font-size:20px;background-color:#A9A9A9; border-width: 1px;
+                        border-style: solid;"><strong>
+                &nbsp;&nbsp;{!ContractNumber}           
+                </strong>
+            </div>
+            
+            <!-- SAVE, SAVE AND SEND -->
+            <div style="width:60%; padding-bottom: 2%; margin: 0 auto">
+                <apex:slds />
+                <div style="padding: 5px" class="slds-scope">
+                    <div style="padding: 5px">
+                        <apex:inputText html-placeholder="Email ID" value="{!emailId}" styleClass="slds-input" disabled="true" />
+                        <apex:inputText html-placeholder="CC Addresses  (Comma Seperated)" value="{!CC_Addresses}" styleClass="slds-input" style="margin-top: 5px; margin-left: 0px" />
+                        <apex:inputText html-placeholder="Subject" value="{!subject}" styleClass="slds-input" style="margin-top: 5px; margin-bottom: 10px; margin-left: 0px" />
+                        <apex:inputTextarea richText="true" value="{!body}" styleClass="slds-input" />
+                    </div>
+                    <div style="padding: 5px"> 
+                        <b>Additional Attached Files:</b> <br/>
+                            <apex:repeat value="{!addDocs}" var="item">
+                               {!item.addDoc.Name}<br/>
+                             </apex:repeat>
+                        </div>
+                    <div style="margin: 10px 5px; text-align: right" >
+                        <apex:commandbutton action="{!showModal}" rerender="popup, modal1" value="Attach Files" styleClass="slds-button slds-button_brand"></apex:commandbutton>
+                        <apex:commandButton action="{!save}" value="Save" styleClass="slds-button slds-button_brand"></apex:commandButton>
+                        <apex:commandButton action="{!saveAndSendcall}" value="Save And Send" styleClass="slds-button slds-button_brand"></apex:commandButton>
+                        <apex:commandButton action="{!Cancel}" value="Cancel" styleClass="slds-button slds-button_destructive"></apex:commandButton>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Spans do not add any additional formatting to the body of the outputPanel.  -->
+            <!--<apex:outputPanel rendered="{!showSaveQuote}">
+            <apex:iframe src="/apex/PdfPreviewContractV2?Id={!ObjQuote.id}" scrolling="false" height="760"/>
+                            <apex:iframe src="/apex/PdfPreviewContractV2?Id={!ObjQuote.id}" scrolling="false" height="760"/>             
+        
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!NOT(showSaveQuote)}" style="overflow-y: auto;">
+                <apex:iframe src="/apex/PdfPreviewContractV2?Id={!ObjQuote.id}#toolbar=0" scrolling="false" height="760"/>                
+            </apex:outputPanel>-->
+            
+            
+            <apex:outputPanel rendered="{!(ObjQuote.Is_DTA_Contract__c) && (showSaveQuote)}">
+                <apex:iframe src="/apex/PdfPreviewContractDTA?Id={!ObjQuote.id}" scrolling="false" height="760"/>                
+            </apex:outputPanel>
+            
+            <apex:outputPanel rendered="{!(ObjQuote.Is_DTA_Contract__c) && !(showSaveQuote)}">
+                <apex:iframe src="/apex/PdfPreviewContractDTA?Id={!ObjQuote.id}#toolbar=0" scrolling="false" height="760"/>                
+            </apex:outputPanel>
+            
+            <apex:outputPanel rendered="{!NOT(ObjQuote.Is_DTA_Contract__c) && (showSaveQuote)}" style="overflow-y: auto;">
+                <apex:iframe src="/apex/PdfPreviewContractV2?Id={!ObjQuote.id}" scrolling="false" height="760"/>                
+            </apex:outputPanel>
+            
+            <apex:outputPanel rendered="{!NOT(ObjQuote.Is_DTA_Contract__c) && !(showSaveQuote)}" style="overflow-y: auto;">
+                <apex:iframe src="/apex/PdfPreviewContractV2?Id={!ObjQuote.id}#toolbar=0" scrolling="false" height="760"/>                
+            </apex:outputPanel>
+
+            
+            
+            <!--  <apex:outputPanel rendered="{!ObjQuote.Is_DTA_Contract__c}" >
+                <apex:iframe src="/apex/PdfPreviewContractDTA?Id={!ObjQuote.id}" scrolling="false" height="760"/>                
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!NOT(ObjQuote.Is_DTA_Contract__c)}" style="overflow-y: auto;">
+                <apex:iframe src="/apex/PdfPreviewContractV2?Id={!ObjQuote.id}" scrolling="false" height="760"/>                
+            </apex:outputPanel>-->
+                    
+                    
+                    <!-- <div style="margin-top: 10px; margin-bottom: 10px;" align="center">
+        <apex:commandButton value="Save To Quote" action="{!SaveToQuote}" style="background:#AFEEEE" rendered="{!showSaveQuote}"  />&nbsp;&nbsp;
+        <apex:commandButton value="Save and Email Quote" action="{!SaveAndEmailQuote}" style="background:#AFEEEE" rendered="{!showSaveQuote}" />&nbsp;&nbsp;
+        <apex:commandButton value="Cancel" action="{!Cancel}" style="background:#AFEEEE"/>  
+</div> -->
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

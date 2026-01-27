@@ -1,0 +1,420 @@
+<!--
+vf Page which rendered as pdfPreview when we click on create pdf Button
+Created By-Kartik Bindal
+-->
+<!-- 
+/********* Edited By - Nitish Kumar *********/
+/********* Date 	 - 05 June, 2021 ********/
+/********* Date 	 - 15 June, 2021 ********/
+-->
+<apex:page standardController="Contract" extensions="SaveContractAsPdf" showHeader="false" applyHtmlTag="false" applyBodyTag="false" renderAs="pdf">
+    <!--<apex:pageBlock >-->
+    <head>
+        <title>{!ObjAccount.Legal_Name__c} R{!ObjContract.QU_REVISION_NUMBER__c}</title>
+        <style type="text/css" media="print">
+            
+            
+            @page {size: A4 portrait;  margin-right: 40px;  margin-left: 40px;
+            margin-bottom: 2cm;
+            margin-top: 4.2cm;
+                @top-left {
+                content: element(header);
+            }
+            @bottom-left {
+            content: element(footer);
+            }
+        }
+        @page:first {
+            size: A4 portrait; 
+            margin-top: -0.4cm;
+            margin-right: 40px; margin-bottom: 60px; margin-left: 40px;
+                @top-left {
+                content:none;
+            }
+        }
+        div.header {
+            margin-top:1cm;
+            padding-bottom: 3.6cm;
+            position: running(header);
+            width: 100%;
+            height:180px;
+            margin-right: 10px;
+        }
+            div.footer {
+                display: block;
+            	padding-top: 0px;
+            	height: 100px;
+                position: running(footer);
+             	border-top: 1px solid Black;
+            }
+            
+            .pagenumber:before {
+            content: counter(page);
+            }
+            .pagecount:before {
+            content: counter(pages);
+            }
+            @page {
+           <!--     margin-bottom: 73px;
+                margin-top: 2cm;
+
+            @bottom-center {
+            font-family: sans-serif !important;
+            font-size: 14px;
+            width: 100%;
+            content: {!contractTemplate.Label_for_Page_No__c} counter(page) {!contractTemplate.Label_for_Page_No_2__c} counter(pages);
+            } -->
+            }
+            
+            .repeatTableFooter{-fs-table-paginate: paginate;}
+            div.break {page-break-before:always;}
+            
+            .footer {
+            <!--position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            color: black;
+            font-size: 13px;
+            text-align: center;-->
+            }
+            .txt-bold{
+                font-family: Arial Unicode MS;
+                width: 100%;
+                font-weight: bold; 
+            }
+                        
+            .qlineitemOptions span{margin: 0 !important; padding: 0 !important; display: block;}
+            .qlineitemOptions ul{margin: 0 !important; padding-left: 40px !important;}
+            
+            body { font-family: Arial Unicode MS !important; font-size: 14px !important;}
+			font { font-family: Arial Unicode MS !important; font-size: 14px !important;}
+
+        </style>
+    </head>
+    <apex:form >
+        <body>
+            <apex:outputPanel rendered="{!IF(showSaveContract == true, true, false)}"> 
+                <div class="header">
+                    <apex:image value="{!$Resource.Asb_Logo}" height="40" width="110" />
+                    <table border="0" style="border-spacing:0px; " width="120%">
+                        <tbody>
+                            <tr>
+                                <td style="width: 50%;word-wrap: break-word;vertical-align:top;"><span class="txt-bold">{!Contract.SOLD_TO__r.Legal_Name__c}</span></td>
+                                <td style="width: 50%;word-wrap: break-word;vertical-align:top;"><span class="txt-bold">Contract No.:</span>  ASB-{!Contract_Number}-R{!ObjContract.Revision_Number__c} </td> 
+                            </tr>
+                            <tr>
+                                <td style="width: 50%;word-wrap: break-word;">{!ObjContract.City_Text__c}</td>
+                                <td style="width: 50%;word-wrap: break-word;">
+                                    <apex:outputText value="{0,date,dd.MM.yyyy}" ><span class="txt-bold">{!contractTemplate.Label_for_Date__c}</span>&nbsp;
+                                        <apex:param value="{!ObjContract.DATE__c}"/>
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!IF(showSaveContract == false, true, false)}">
+                <div class="header">
+                    <apex:image value="https://nisseiasb--finesseasb--c.documentforce.com/servlet/servlet.ImageServer?id=015C30000004W2v&oid=00DC30000003egr&lastMod=1660626608000" height="60" width="140" />
+                    <table border="0" style="border-spacing:0px" width="120%">
+                        <tbody>
+                            <tr>
+                                <td style="width: 50%;word-wrap: break-word;vertical-align:top;"><span class="txt-bold">{!Contract.SOLD_TO__r.Legal_Name__c}</span></td>
+                                <td style="width: 50%;word-wrap: break-word;vertical-align:top;"><span class="txt-bold">Contract No.:</span>  ASB-{!Contract_Number}-R{!ObjContract.Revision_Number__c} </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 50%;word-wrap: break-word;">{!ObjContract.City_Text__c}</td>
+                                <td style="width: 50%;word-wrap: break-word;">
+                                    <apex:outputText value="{0,date,dd.MM.yyyy}" ><span class="txt-bold">{!contractTemplate.Label_for_Date__c}</span>&nbsp;
+                                        <apex:param value="{!ObjContract.DATE__c}"/>
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </apex:outputPanel>
+			 <div class="footer">
+                <table style="width: 100%">
+                    <tr>
+                        <td style="width: 33%">
+                            Prepared By:{!Contract.CreatedBy.name} <br/>
+                            {!Contract.CreatedBy.Email}
+                        </td>
+                        <td style="width: 33%; text-align: center"><div>{!contractTemplate.Label_for_Page_No__c} <span class="pagenumber"/> {!contractTemplate.Label_for_Page_No_2__c} <span class="pagecount"/></div></td>
+                        <td style="width: 33%"></td>
+                    </tr>
+                    <tr>
+                    <td style="padding: 10%"></td>
+                    </tr>
+                </table>
+                <div>
+                </div>
+            </div>
+            <table class="repeatTableHeader" style="margin-bottom:20px">
+            <div style="overflow-x: auto;">
+                <div style = "position:relative; top:-21px;">
+                    <table width="100%" border="0" style="font-family: sans-serif !important;padding: 0;font-size: 14px">
+                <apex:outputPanel rendered="{!IF(showSaveContract == true, true, false)}"> 
+                    <thead>
+                        <td valign="top" style="text-align: center,top;width: 0%;">
+                            <apex:image value="{!contractTemplate.Logo__c}" style="width:700px;height:130px"/>
+                        </td>
+                    </thead>
+                    </apex:outputPanel>
+               <apex:outputPanel rendered="{!IF(showSaveContract == false, true, false)}">
+                        <thead>
+                            <td valign="top" style="text-align: center,top;width: 0%;">
+                                <apex:image value="https://nisseiasb--finesseasb--c.documentforce.com/servlet/servlet.ImageServer?id=015C30000004W2v&oid=00DC30000003egr&lastMod=1660626608000" style="width:200px;height:130px"/>
+                            </td>
+                        </thead>
+                    </apex:outputPanel>
+                    </table>
+                    <table width="100%">
+                        <tbody>
+                            <tr>
+                            </tr>
+                            <tr>
+                                <th colspan="2" style="font-size: 17px;text-align: center;"><u>{!contractTemplate.Label__c} </u></th>
+                            </tr>
+                            <tr>
+                                <td style="padding-top: 20px;font-size: 14px"><span class="txt-bold">{!contractTemplate.Label_For_Ref_No__c}</span> ASB-{!Contract_Number}-R{!ObjContract.Revision_Number__c}</td>
+                                <td align="right" style="padding-top: 20px;font-size: 14px;padding-right: 130px">
+                                    <apex:outputText value="{0,date,dd.MM.yyyy}" ><span class="txt-bold">{!contractTemplate.Label_for_Date__c}</span>&nbsp;
+                                        <apex:param value="{!ObjContract.DATE__c}"/>
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="padding-top: 20px;">{!contractTemplate.Label_For_TO__c}, </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"><span class="txt-bold">{!Contract.SOLD_TO__r.Legal_Name__c}</span> </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">{!ObjContract.ADDRESS_LINE_1__c}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">{!ObjContract.ADDRESS_LINE_2__c}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">{!ObjContract.ADDRESS_LINE_3__c}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">{!ObjContract.City_Text__c}, {!ObjContract.State_Text__c} {!ObjContract.POSTAL_CODE__c}
+                                </td>
+                            </tr>
+                            <tr>                                
+                                <td colspan="2" style="padding: 10px 0;">{!contractTemplate.Salutation__c}</td>
+                            </tr>
+                            <tr>                                
+                                <td colspan="2">{!contractTemplate.Introduction__c}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table border="0" width="100%" style="margin-top: 3px;font-size: 11.5px; vertical-align:top;border-spacing:0px;">
+                        <tbody>
+                            <apex:repeat value="{!terms}" var="qTerms">
+                                <tr>
+                                    <td style="width: 25%;vertical-align:top;"><span class="txt-bold">{!qTerms.Label__c}</span></td>
+                                    <td style="width: 5%;vertical-align:top;"><span class="txt-bold">:</span></td>
+                                <td style="width: 70%;vertical-align:top; text-align: justify;">{!qTerms.Content__c}</td>
+                            </tr>
+                        </apex:repeat>
+                        </tbody>
+                    </table>                   
+                </div>
+                <div class="break"/>
+                <div style = "position:relative; margin-top: 0.3cm;">
+                    <table width="100%" border="0" style="border-collapse: 0;font-size:12px">
+                        <tbody>
+                            <tr>
+                                <td style="text-align: center; font-size: 20px;" colspan="5"><span class="txt-bold">{!contractTemplate.Label_for_Product_table__c}</span></td>
+                            </tr>
+                            <table style="border-collapse: collapse;font-size: 14px">
+                                <tr>
+                                    <th align="center" style="text-align: left; border-bottom: 1px solid #A9A9A9;width:13%;"><span class="txt-bold">{!contractTemplate.Label_For_Colum_1__c}</span></th>
+                                    <th align="center" style="text-align: left; border-bottom: 1px solid #A9A9A9;width:38%;"><span class="txt-bold">{!contractTemplate.Label_For_Colum_2__c}</span></th>
+                                    <th align="right" style="text-align: right; border-bottom: 1px solid #A9A9A9;width:8%;"><span class="txt-bold">{!contractTemplate.Label_For_Colum_3__c}</span></th>
+                                    <th align="right" style="text-align: right; border-bottom: 1px solid #A9A9A9;width:18%;"><span class="txt-bold">{!contractTemplate.Label_For_Colum_4__c}&nbsp;({!ObjContract.CurrencyIsoCode})</span></th>
+                                    <th align="right" style="text-align: right; border-bottom: 1px solid #A9A9A9;width:25%;"><span class="txt-bold">{!contractTemplate.Label_For_Colum_5__c} &nbsp;({!ObjContract.CurrencyIsoCode})</span></th>
+                                </tr>
+                                <apex:repeat value="{!clineItm}" var="qLine">
+                                    <tr>
+                                        <td>{!qLine.LineNumber__c}</td>
+                                        <td style="text-align: centre; color: #000 !important;">
+                                            <apex:outputPanel rendered="{!if(qLine.Product_Description__c == '' , true ,false)}"> 
+                                                {!qLine.Product_Name_2__c}<br/>
+                                            </apex:outputPanel>
+                                            <apex:outputPanel rendered="{!if(qLine.Product_Description__c != '' , true ,false)}"> 
+                                                {!qLine.Product_Description__c}<br/>
+                                            </apex:outputPanel>
+                                        </td>
+                                        <td align="right" style="text-align: right; color: #000 !important;">{!qLine.Quantity__c }  {!qLine.UOM__c }</td>
+                                        <td align="right" style="text-align: right; color: #000 !important;"> 
+                                            <apex:outputText value="{0, number,  ###,###,###,##0.00}">
+                                                <apex:param value="{!(qLine.Ceiling_Total_Sales_Price__c)/(qLine.Quantity__c)}" />
+                                            </apex:outputText></td>
+                                        <td align="right" style="text-align: right; color: #000 !important;"><apex:outputText value="{0, number,  ###,###,###,##0.00}">
+                                            <apex:param value="{!qLine.Ceiling_Total_Sales_Price__c}" />
+                                            </apex:outputText></td>
+                                    </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td align="left" class="qlineitemOptions" style="font-size: 12px;">
+                                                <apex:repeat value="{!qLine.Contract_Line_Option__r}" var="QLOpt">
+                                                        <li style="list-style-type: square;  margin-bottom: 4px; padding: 0 !important; margin: 0 !important;">{!QLOpt.Option_Name__c}</li>
+                                                </apex:repeat>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                </apex:repeat>
+                                <td colspan="3" style="border: 1px solid #000; border-left: 0; border-right: 0;">
+                                    Total Ex-Works, {!contractTemplate.Subsidiary__r.Factory_Location__c}.
+                                </td>
+                                <td colspan="2" align="right" style="border: 1px solid #000; border-left: 0; border-right: 0;">
+                                    <span class="txt-bold">Total Price&nbsp;({!ObjContract.CurrencyIsoCode}) : </span> 
+                                    <apex:outputText value="{0, number,  ###,###,###,##0.00}">
+                                        <apex:param value="{!ObjContract.Grand_Total__c}" />
+                                    </apex:outputText>
+                                </td>
+                                <tr>
+                                    <td colspan="5" align="left" style="border: 1px solid #000; border-left: 0; border-right: 0;">
+                                        <span class="txt-bold">Price in Word:</span> {!no2words}
+                                    </td>
+                                </tr>
+                            </table>
+                            <br/>
+                            <apex:outputPanel rendered="{!IF(ObjContract.Insurance_Amount__c != null, true, false)}">
+                                <tr>
+                                    <td colspan="5" style="text-align: left; font-size : 13px;">Insurance - {!ObjContract.Insurance_Picklist__c} - {!ObjContract.Insurance_Amount__c} &nbsp;({!ObjContract.CurrencyIsoCode})</td>
+                                </tr>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(ObjContract.Freight_Amount1__c != null, true, false)}">
+                                <tr>
+                                    <td colspan="5" style="text-align: left; font-size : 13px;">Freight - {!ObjContract.Freight_Pick__c} - {!ObjContract.Freight_Amount1__c} &nbsp;({!ObjContract.CurrencyIsoCode})</td>
+                                </tr>                                
+                            </apex:outputPanel>
+                            <br/>
+                            <tr>
+                                <td colspan="5" style="text-align: right; font-size : 13px;">End of this page. Continued on next page..</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="break"/>   
+                <div style = "position:relative; margin-top: 0.3cm;">
+					<table width="100%" border="0" style="font-size:11.5px; position:relative;">
+                        <tbody>
+                            <tr>
+                                <td><span class="txt-bold">{!contractTemplate.Label_for_General_Remarks__c}</span></td>
+                            </tr>
+                            <apex:repeat value="{!gRemark}" var="remark">
+                            <tr>
+                                <td><span class="txt-bold">{!remark.Sr_No__c}.&#160;{!remark.Label__c}</span></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: justify;">{!remark.Content__c}</td>
+                            </tr> 
+                        </apex:repeat>                           
+                        </tbody>
+                    </table>                   
+                </div>
+                <div class="break"/>
+                <div style = "position:relative; margin-top: 0.3cm;">
+                    <table width="100%" border="0" style="font-size:11.5px; padding-bottom: 2%;">   
+                        <tbody>
+                            <tr>
+                                <td><span class="txt-bold">{!contractTemplate.Label_for_General_Provision__c}</span></td>
+                            </tr>
+                            <apex:repeat value="{!gProvision}" var="provision">
+                            <tr>
+                                <td>
+                                    <span class="txt-bold">{!provision.Sr_No__c}.&#160;{!provision.Label__c}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: justify;">{!provision.Content__c}</td>
+                            </tr>
+                        </apex:repeat>
+                        </tbody>
+                    </table>
+                </div>
+                    <table width="100%" style="padding-top:0%;width: 100%;page-break-inside: avoid;">
+                        <tbody style="font-size:12px">                                                       
+                            <tr>
+                                <td style="padding-top: 10px;padding-bottom: 10px;">
+                                 <div style="position:relative;top:0.42px;width: 127px;height: 70px;">
+                                    <apex:outputField style="width: 120px;height: 60px;"  value="{!Contract.CreatedBy.Signature_Image__c}"/>
+                                 </div>
+                                 </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 50%">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td style="padding-top: 40px;font-size:16px"><span class="txt-bold"> {!Contract.CreatedBy.name}</span> </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size:16px">{!Contract.CreatedBy.title}</td> 
+                                            
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size:16px">{!contractTemplate.Subsidiary__r.Name__c}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                </td>
+                                <td style="width: 50%">
+                                    <table style="text-align:right;width: 100%">
+                                        <tbody>
+                                            <tr><td></td></tr>
+                                            <tr>
+                                                <td style="padding-top: 40px;font-size:16px"><b>Authorised Signatory</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="word-wrap: break-word;font-size:16px;">{!Contract.SOLD_TO__r.Legal_Name__c}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size:16px">{!ObjContract.City_Text__c}, {!ObjContract.State_Text__c}, {!ObjContract.Country_Text__c}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    </td>
+                            </tr>
+
+
+                            <!-- <div style="width:50%;">
+                                <tr>
+                                    <td style="padding-top: 40px;font-size:16px"><span class="txt-bold"> {!Contract.CreatedBy.name}</span> </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size:16px">{!Contract.CreatedBy.title}</td> 
+                                    
+                                </tr>
+                                <tr>
+                                    <td style="font-size:16px">{!contractTemplate.Subsidiary__r.Name__c}</td>
+                                </tr>
+                            </div>
+                            <div style="float: right;text-align:right;padding-left:10%;padding-top: 8%;width: 50%;">
+                                <tr>
+                                    <td><b>Authorised Signatory</b></td>
+                                </tr>
+                                <tr>
+                                    <td style="word-wrap: break-word;">{!Contract.SOLD_TO__r.Legal_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td>{!ObjContract.City_Text__c}, {!ObjContract.State_Text__c}, {!ObjContract.Country_Text__c}</td>
+                                </tr>
+                            </div> -->
+                        </tbody>
+                    </table>
+            </div>
+            </table>
+        </body>
+    </apex:form>
+</apex:page>

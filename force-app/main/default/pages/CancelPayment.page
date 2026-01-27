@@ -1,0 +1,5 @@
+<apex:page standardController="Payment__c" extensions="CancelPaymentController" action="{!CancelPayment}" lightningStylesheets="true">
+     <apex:form >
+                <apex:pageMessages ></apex:pageMessages>
+    </apex:form>
+</apex:page>

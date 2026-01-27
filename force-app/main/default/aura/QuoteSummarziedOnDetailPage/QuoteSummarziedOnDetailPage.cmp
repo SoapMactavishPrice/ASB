@@ -1,0 +1,484 @@
+<aura:component controller="QuoteSummaryCompControllerApex" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <!--Declare Event Handlers--> 
+    <aura:attribute name="plname" type="String" />
+    <aura:attribute name="selectedIds" type="String[]" />
+
+    <aura:attribute name="plstage" type="String" />
+    <aura:attribute name="isDeleteVisible" type="Boolean" default="false" />
+    <aura:attribute name="isSelectVisible" type="Boolean" default="false" />
+    <aura:attribute name="colspan" type="Integer" default="3" />
+
+    <aura:attribute name="CurrencyIsoCode" type="String" />
+    <aura:attribute name="totalBasicPrice" type="decimal" />
+    <aura:attribute name="totalListPrice" type="decimal" />
+    <aura:attribute name="totalQuantity" type="decimal" />
+    <aura:attribute name="salesMargin" type="decimal" />
+    <aura:attribute name="totalAvgDiscount" type="decimal" />
+    <aura:attribute name="totalFinalSales" type="decimal" />
+    <aura:attribute name="totalSalesPrice" type="decimal" />
+    <aura:attribute name="QliItems" type="Object[]" />
+    <aura:attribute name="tempData" type="list" />
+    <aura:attribute name="up" type="boolean" />
+    <aura:attribute name="isDTA" type="boolean" />
+    <aura:attribute name="down" type="boolean" />
+    <aura:attribute name="LineItemPresent" type="boolean" default="false"/>
+    <aura:attribute name="LineItemNotPresent" type="boolean" default="false"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="loader" type="Boolean" default='false'/>
+    
+    
+    <aura:handler event="force:refreshView" action="{!c.onRefreshView}" />
+    
+    <aura:attribute name="filetype" type="List" default="['.png', '.jpg', '.jpeg']" />
+    <!--Declare Attributes-->
+    
+    
+    
+    <aura:html tag="style">
+        .modal-body.scrollable.slds-modal__content.slds-p-around--none{height: auto !important;}
+        .col-stick{position: sticky !important; top: 0; z-index: 10;}
+        @media only screen and (max-width: 480px){
+        .slds-modal__container {max-width: auto !important; width: auto !important;}
+        .slds-modal__content{height: 100% !important; max-height: 100% !important;}
+        .slds-modal__footer.slds-theme--default{bottom: inherit}
+        .textright{text-align-last: right !important;}
+        }
+    </aura:html>
+    <aura:if isTrue="{!v.loader}">
+        <div class="exampleHolder">
+            <lightning:spinner alternativeText="Loading" size="large" />
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.LineItemPresent}">
+        <!--<div style="max-height:300px;overflow-y:scroll">-->
+        <div >
+            <div class="slds-modal__content slds-p-around--x-small slds-size_1-of-1  slds-is-relative" aura:id="modalbody" id="modalbody" >
+                
+                <div style="border-radius:5px;" class="slds-border_top slds-border_right slds-border_bottom slds-border_left">
+                    <article class="slds-card">
+                        <div class="slds-page-header">
+                            <div class="slds-page-header__row">
+                                <div class="slds-page-header__col-title">
+                                    <div class="slds-media slds-media__figure">
+                                        <div class="slds-media__body slds-size_10-of-12">
+                                            <div class="slds-page-header__name">
+                                                <div class="slds-page-header__name-title">
+                                                    <h6>
+                                                        <span class="font-weight-bold slds-page-header__title slds-truncate">
+                                                            Quotation Summary
+                                                        </span>
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-media__body slds-size_2-of-12">
+                                            <div style="display:flex">
+                                                
+                                            <lightning:button variant="neutral" label="Export" class="slds-m-left_xx-large" title="Export" onclick="{! c.handleExportClick }" />
+                                            <aura:if isTrue="{!v.isDeleteVisible}">
+    <lightning:button label="Delete" onclick="{!c.handleDeleteSelected}" class="slds-m-left_xx-large" variant="destructive"/>
+</aura:if>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </article>
+                </div>
+                <br/>
+                <div style="border-radius:5px;" class="slds-border_top slds-border_right slds-border_bottom slds-border_left">
+                    <article class="slds-card">
+                        <div class="slds-page-header">
+                            <div class="slds-page-header__row">
+                                <div class="slds-page-header__col-title">
+                                    <div class="slds-media slds-media__figure">
+                                        <div class="slds-media__body">
+                                            <div class="slds-page-header__name">
+                                                <div class="slds-page-header__name-title">
+                                                    <h6>
+                                                        <span class="font-weight-bold slds-page-header__title slds-truncate">
+                                                            Quote Line Items
+                                                        </span>
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-border_top"></div>
+                        <div class="slds-container">
+                            <div class="slds-wrap slds-grid slds-m-around_x-small" style=""> 
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped" role="grid" style="table-layout: fixed; position: relative; background: #FAFAF9;">
+                                    <thead>  
+                                        <tr class="slds-text-title--caps" style="font-weight: 900;">
+                                            <aura:if isTrue="{!(v.isSelectVisible)}">
+                                            <th class="col-stick" style="width: 35px;" /> 
+                                                </aura:if>
+                                            <th class="col-stick" style="width: 75px;" > 
+                                                <div style="display:flex" class="slds-truncate">
+                                                    <div class="slds-truncate" title="Product Name">SQ NO</div>
+                                                    <!--<aura:if isTrue="{!v.up}">
+                                                   <div style="display:inline-block;" onclick="{!c.topToBottom }">
+                                                     <lightning:icon iconName="utility:arrowup" size="x-small"/>
+                                                       </div>
+                                                       </aura:if>
+                                                    <aura:if isTrue="{!v.down}">
+                                                   <div  onclick="{!c.bottomToTop}" >
+                                                        <lightning:icon iconName="utility:arrowdown" size="x-small"/>
+                                                   </div>
+                                                   </aura:if>-->
+                                                </div>
+                                                
+                                            </th>
+                                            <th class="col-stick" style="width: 400px;"> 
+                                                <div class="slds-truncate" title="Product Name">
+                                                    
+                                                    Product Name</div>
+                                            </th>
+                                            <th class="col-stick" scope="col" style="width: 120px !important;">
+                                                <div class="" style="text-wrap: balance;" title="Product Code">Product Code</div>
+                                            </th>
+                                            <aura:if isTrue="{!not(v.isDTA)}">
+                                                <th class="col-stick" scope="col" style="width: 101px;text-align: right !important;">
+                                                    <div class="" style="text-wrap: balance;" title="Base Price">Unit Base Price</div>
+                                                </th>
+                                            </aura:if>
+                                            <th class="col-stick" scope="col" style="width: 101px;text-align: right !important;">
+                                                <div class="" style="text-wrap: balance;" title="List price">Unit List price</div>
+                                            </th>
+                                            
+                                            <!--<th class="col-stick" scope="col" style="width: 130px;">
+                                                <div class="slds-truncate" title="Total List price">Total List price</div>
+                                            </th>
+                                          <th class="col-stick" scope="col" style="width: 100px;">
+                                                <div class="slds-truncate" title="Discount">Discount</div>
+                                            </th>
+                                            <th class="col-stick" scope="col" style="width: 100px;">
+                                                <div class="slds-truncate" title="Discount">Discount in Amount</div>
+                                            </th>-->
+                                            
+                                            <th class="col-stick" scope="col" style="width: 125px;text-align: right !important;">
+                                                <div class="" style="text-wrap: balance;white-space: normal;" title="Discount">Discount in Percentage%</div>
+                                            </th> 
+                                            <th class="col-stick" scope="col" style="width: 125px;text-align: right !important;">
+                                                <div class="" style="text-wrap: balance;white-space: normal;" title="Discount">Unit Discount Value</div>
+                                            </th>  
+                                            <th class="col-stick" scope="col" style="width: 101px;text-align: right !important;">
+                                                <div class="" style="text-wrap: balance" title="Sales Price">Unit Sales Price</div>
+                                            </th>
+                                            <th class="col-stick" scope="col" style="width: 50px;text-align: right !important;">
+                                                <div class="slds-truncate" title="Quantity">Qty</div>
+                                            </th>
+                                            <th class="col-stick" scope="col" style="width: 101px;text-align: right !important;">
+                                                <div class="" style="text-wrap: balance;" title="Final Sales Price">Total Sales Price</div>
+                                            </th>
+                                            <th class="col-stick" scope="col" style="width: 80px;text-align: right !important;">
+                                                <div  title="Sales Margin" class="" style="text-wrap: balance;">Sales Margin%</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>        
+                                        <aura:iteration items="{!v.QliItems}" var="exp" indexVar="pIndex">
+                                            <tr style="font-weight: 700;">
+                                                <aura:if isTrue="{!(v.isSelectVisible)}">
+                                                <th style="">
+                                                         <lightning:input type="checkbox" style="margin-left:-15px"
+                             aura:id="parentCheckbox"
+                             checked="{!exp.isSelected}"
+                             data-id="{!exp.Id}" value="{!exp.Id}"
+                             onchange="{!c.handleParentCheckbox}" />
+                                                    
+                                                </th>
+                                                </aura:if>
+                                                <th>
+                                                    <div class="slds-truncate" title="{!exp.Sr_No__c}">
+                                                        {!exp.Sr_No__c}
+                                                    </div>
+                                                </th>
+                                                <th style="width: 170px;font-weight: 700;text-overflow: ellipsis;overflow: hidden;">
+                                                    <div class="slds-truncate" title="{!exp.Product_Name__c}">
+                                                        <lightning:formattedUrl value="{!'/' + exp.Id}" tooltip="{!exp.Product_Name__c}" label="{!exp.Product_Name__c}" target="_blank" />
+                                                    </div>
+                                                </th>
+                                                
+                                                <aura:if isTrue="{!not(exp.Is_Manual__c)}">
+                                                    <th scope="row" style="width: 140px;font-weight: 700;">
+                                                        <div class="slds-truncate" title="{!exp.Product_Code__c}">{!exp.Product_Code__c}</div>
+                                                    </th>
+                                                </aura:if>
+                                                
+                                                <aura:if isTrue="{!(exp.Is_Manual__c)}">
+                                                    <th scope="row" style="width: 140px;font-weight: 700;">
+                                                        <div class="slds-truncate" title="{!exp.Manual_Product_Code__c}">{!exp.Manual_Product_Code__c}</div>
+                                                    </th>
+                                                </aura:if>
+                                                
+                                                
+                                                <aura:if isTrue="{!not(v.isDTA)}">
+                                                    <td style="width: 130px;font-weight: 700;text-align-last: right !important;" class="textright" if:false="{!v.isDTA}">
+                                                        <lightning:formattedNumber value="{!exp.Base_Price__c}"  style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2" ></lightning:formattedNumber>
+                                                        
+                                                    </td>
+                                                </aura:if>
+                                                <td style="width: 130px;font-weight: 700;text-align-last: right !important;">
+                                                    <lightning:formattedNumber value="{!exp.List_Price__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2" ></lightning:formattedNumber>
+                                                </td>
+                                                
+                                                <!--<td style="width: 130px;font-weight: 700;">
+                                                    <div class="slds-truncate" title="{!exp.List_Price__c * exp.Quantity__c}">{!exp.List_Price__c * exp.Quantity__c}</div>
+                                                </td>
+                                                <th scope="row" style="width: 100px;font-weight: 700;">
+                                                    <div class="slds-truncate" title="{!exp.Discount__c}">{!exp.Discount__c}</div>
+                                                </th>
+                                                <th scope="row" style="width: 100px;font-weight: 700;">
+                                                    <div class="slds-truncate" title="{!exp.Discount_in_Value__c}">{!exp.Discount_in_Value__c}</div>
+                                                </th>-->
+                                                
+                                                <!--<th scope="row" style="width: 100px;font-weight: 700;text-align-last: right !important;">
+                                                         <div class="slds-truncate" title="{!exp.Discount_in_Value_Percent__c}">{!exp.Discount_in_Value__c}</div>
+
+                                                </th>-->
+                                                
+                                                <td style="width:130px;font-weight: 700;text-align-last: right !important;"> 
+                                                    <div class="slds-truncate" title="{!exp.Discount_in_Value_Percent__c}">{!exp.Discount_in_Value_Percent__c}%</div> 
+                                                </td>
+                                                
+                                                <th scope="row" style="width: 100px;font-weight: 700;text-align-last: right !important;">
+                                                    <lightning:formattedNumber value="{!exp.Average_Discount_Value__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2" ></lightning:formattedNumber>
+                                                    
+                                                </th>
+                                                <td style="width:130px;font-weight: 700;text-align-last: right !important;">
+                                                    <lightning:formattedNumber value="{!exp.Average_Sales_Price__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2" ></lightning:formattedNumber>
+                                                    
+                                                </td>
+                                                <td style="width: 100px;font-weight: 700;text-align-last: right !important;">
+                                                    <div class="slds-truncate" title="{!exp.Quantity__c}">{!exp.Quantity__c}</div>
+                                                </td>
+                                                <td style="width:130px;font-weight: 700;text-align-last: right !important;">
+                                                    <lightning:formattedNumber value="{!exp.Sales_Price__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2" ></lightning:formattedNumber>
+                                                    
+                                                </td>
+                                                
+                                                <td style="width:130px;font-weight: 700;text-align-last: right !important;"> 
+                                                    <div class="slds-truncate" title="{!exp.Sales_Margin__c}">{!exp.Sales_Margin__c}%</div> 
+                                                </td>
+                                                
+                                            </tr>
+                                            <aura:iteration items="{!exp.Quote_Line_Options__r}" var="QLO" indexVar="cIndex">
+                                                <tr >
+                                                    <aura:if isTrue="{!(v.isSelectVisible)}">
+                                                    <th style="">
+                                                        
+                                                         <lightning:input type="checkbox" style="margin-left:-10px"
+                                 checked="{!QLO.isSelected}"
+                                                                          pid="{!exp.Id}"
+                                                                          value="{!QLO.vCheckId}"
+                                 onchange="{!c.handleChildCheckbox}"
+                                 data-parent="{!pIndex}"
+                                 data-index="{!cIndex}" />
+
+                                                        </th></aura:if>
+                                                    <th style="width: 80px;">
+                                                        <div class="slds-truncate slds-m-left_x-large" title="{!QLO.Serial_Number__c}">{!QLO.Serial_Number__c}</div>
+                                                    </th>
+                                                    <th style="width: 170px;text-overflow: ellipsis;overflow: hidden;">
+                                                        <lightning:formattedUrl value="{!'/' + QLO.Id}" tooltip="{!QLO.Product_Name__c}" label="{!QLO.Product_Name__c}" target="_blank" />
+                                                    </th>
+                                                    
+                                                    <aura:if isTrue="{!not(QLO.Select_Option__c)}">
+                                                        <th scope="row" style="width: 140px;">
+                                                            <div class="slds-truncate" title="{!QLO.Option_Product_Code__c}">{!QLO.Option_Product_Code__c}</div>
+                                                        </th>
+                                                    </aura:if>
+                                                    
+                                                    <aura:if isTrue="{!(QLO.Select_Option__c)}">
+                                                        <th scope="row" style="width: 140px;">
+                                                            <div class="slds-truncate" title="{!QLO.Manual_Product_Code__c}">{!QLO.Manual_Product_Code__c}</div>
+                                                        </th>
+                                                    </aura:if>
+                                                    
+                                                    <aura:if isTrue="{!not(v.isDTA)}">
+                                                        <td style="width: 130px;text-align-last: right !important;" if:false="{!v.isDTA}">
+                                                            <lightning:formattedNumber value="{!QLO.Manual_Option_Base_Price__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2" ></lightning:formattedNumber>
+                                                            
+                                                        </td>
+                                                    </aura:if>
+                                                    <td style="width: 130px;text-align-last: right !important;">
+                                                        <lightning:formattedNumber value="{!QLO.Manula_Option_List_Price__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
+                                                    </td>
+                                                    
+                                                    <!--<td style="width: 130px;">
+                                                        <div class="slds-truncate" title="{!QLO.List_Price_Quantity__c}">{!QLO.List_Price_Quantity__c}</div>
+                                                    </td>
+                                                    <th scope="row" style="width: 100px;">
+                                                        <div class="slds-truncate" title="{!QLO.Discount__c}">{!QLO.Discount__c}</div>
+                                                    </th>
+                                                    <th scope="row" style="width: 100px;">
+                                                        <div class="slds-truncate" title="{!QLO.Discount_in_Value__c}">{!QLO.Discount_in_Value__c}</div>
+                                                    </th>-->
+                                                    
+                                                    <!-- <th scope="row" style="width: 100px;font-weight: 700;text-align-last: right !important;">
+                                                         <div class="slds-truncate" title="{!QLO.Discount_in_Value_Percent__c}">{!QLO.Discount_in_Value__c}</div>
+
+                                                </th>-->
+                                                    
+                                                    <td style="width:130px;text-align-last: right !important;">
+                                                        
+                                                        <div class="slds-truncate" title="{!QLO.Discount_in_Value_Percent__c}">{!QLO.Discount_in_Value_Percent__c}%</div> 
+                                                    </td>
+                                                    <th scope="row" style="width: 150px;text-align-last: right !important;">
+                                                        <lightning:formattedNumber value="{!QLO.Average_Discount_Value__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
+                                                        
+                                                    </th>
+                                                    <td style="width:130px;text-align-last: right !important;">
+                                                        <lightning:formattedNumber value="{!QLO.Average_Sales_Price__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
+                                                    </td>
+                                                    <td style="width: 100px;text-align-last: right !important;">
+                                                        <div class="slds-truncate" title="{!QLO.Quantity__c}">{!QLO.Quantity__c}</div>
+                                                    </td>
+                                                    <td style="width:130px;text-align-last: right !important;">
+                                                        <lightning:formattedNumber value="{!QLO.Final_Sales_Price__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
+                                                    </td>
+                                                    <td style="width:130px;text-align-last: right !important;">
+                                                        
+                                                        <div class="slds-truncate" title="{!QLO.Sales_Margin__c}">{!QLO.Sales_Margin__c}%</div> 
+                                                    </td>
+                                                    
+                                                    
+                                                </tr>
+                                            </aura:iteration>
+                                            
+                                            <aura:if isTrue="{!(exp.isLineItem)}">
+                                                
+                                                <tr style="font-weight: 700;" >
+                                                    <th colspan="{!v.colspan}" style="width: 170px;font-weight: 700;text-overflow: ellipsis;overflow: hidden;background: #e8e8e8;">Sub Total</th>
+                                                    <th style="width: 170px;font-weight: 700;text-overflow: ellipsis;overflow: hidden;background: #e8e8e8;"></th>
+                                                    
+                                                    <aura:if isTrue="{!not(v.isDTA)}">
+                                                        <td style="width: 130px;font-weight: 700;text-align-last: right !important;background: #e8e8e8;" class="textright" if:false="{!v.isDTA}">
+                                                            <lightning:formattedNumber value="{!exp.sub_TotalBasicPrice__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2" ></lightning:formattedNumber>
+                                                        </td>
+                                                    </aura:if>
+                                                    
+                                                    
+                                                    <td style="width: 130px;font-weight: 700;text-align-last: right !important;background: #e8e8e8;" class="textright">
+                                                        <lightning:formattedNumber value="{!exp.sub_totalListPrice__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2" ></lightning:formattedNumber>
+                                                        
+                                                    </td>
+                                                    <td style="width: 130px;font-weight: 700;text-align-last: right !important;background: #e8e8e8;">
+                                                        -
+                                                    </td>
+                                                    <th scope="row" style="width: 100px;font-weight: 700;text-align-last: right !important;background: #e8e8e8;">
+                                                        <lightning:formattedNumber value="{!exp.sub_TotalAvgDiscount__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2" ></lightning:formattedNumber>
+                                                        
+                                                    </th>
+                                                    
+                                                    <td style="width: 100px;font-weight: 700;text-align-last: right !important;background: #e8e8e8;">
+                                                        <lightning:formattedNumber value="{!exp.sub_TotalFinalSales__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2" ></lightning:formattedNumber>
+                                                        
+                                                    </td>
+                                                    <td style="width: 100px;font-weight: 700;text-align-last: right !important;background: #e8e8e8;">
+                                                        <div class="slds-truncate" title="{!exp.sub_TotalQuantity__c}">{!exp.sub_TotalQuantity__c}</div>
+                                                    </td>
+                                                    <td style="width:130px;font-weight: 700;text-align-last: right !important;background: #e8e8e8;">
+                                                        <lightning:formattedNumber value="{!exp.sub_totalSalesPrice}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2" ></lightning:formattedNumber>
+                                                        
+                                                    </td>
+                                                    
+                                                    <td style="width:130px;font-weight: 700;text-align-last: right !important;background: #e8e8e8;"> 
+                                                        <div class="slds-truncate" title="{!exp.subMargin}">{!exp.subMargin}%</div>
+                                                    </td>
+                                                    
+                                                </tr>
+                                            </aura:if>
+                                            
+                                            
+                                        </aura:iteration>
+                                        
+                                        <tr style="font-weight: 700;" >
+                                            <th colspan="{!v.colspan}" style="width: 170px;font-weight: 700;text-overflow: ellipsis;overflow: hidden;background: #c2c2c2;">Grand Total</th>
+                                            <th style="width: 170px;font-weight: 700;text-overflow: ellipsis;overflow: hidden;background: #c2c2c2;"></th>
+                                            
+                                            <aura:if isTrue="{!not(v.isDTA)}">
+                                                <td style="width: 130px;font-weight: 700;text-align-last: right !important;background: #c2c2c2;" class="textright" if:false="{!v.isDTA}">
+                                                    <lightning:formattedNumber value="{!v.totalBasicPrice}" style="currency" currencyCode="{!v.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2" ></lightning:formattedNumber>
+                                                    
+                                                </td>
+                                            </aura:if>
+                                            
+                                            <td style="width: 130px;font-weight: 700;text-align-last: right !important;background: #c2c2c2;" class="textright">
+                                                <lightning:formattedNumber value="{!v.totalListPrice}" style="currency" currencyCode="{!v.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2" ></lightning:formattedNumber>
+                                                
+                                            </td>
+                                            <td style="width: 130px;font-weight: 700;text-align-last: right !important;background: #c2c2c2;">
+                                                -
+                                            </td>
+                                            <th scope="row" style="width: 100px;font-weight: 700;text-align-last: right !important;background: #c2c2c2;">
+                                                <lightning:formattedNumber value="{!v.totalAvgDiscount}" style="currency" currencyCode="{!v.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2" ></lightning:formattedNumber>
+                                                
+                                            </th>
+                                            
+                                            <td style="width: 100px;font-weight: 700;text-align-last: right !important;background: #c2c2c2;">
+                                                <lightning:formattedNumber value="{!v.totalFinalSales}" style="currency" currencyCode="{!v.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2" ></lightning:formattedNumber>
+                                                
+                                            </td>
+                                            <td style="width: 100px;font-weight: 700;text-align-last: right !important;background: #c2c2c2;">
+                                                <div class="slds-truncate" title="{!v.totalQuantity}">{!v.totalQuantity}</div>
+                                            </td>
+                                            <td style="width:130px;font-weight: 700;text-align-last: right !important;background: #c2c2c2;">
+                                                <lightning:formattedNumber value="{!v.totalSalesPrice}" style="currency" currencyCode="{!v.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2" ></lightning:formattedNumber>
+                                            </td>
+                                            <td style="width:130px;font-weight: 700;text-align-last: right !important;background: #c2c2c2;"> 
+                                                <div class="slds-truncate" title="{!v.salesMargin}">{!v.salesMargin}%</div>
+                                            </td>
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.LineItemNotPresent}">
+        
+        
+        <div style="border-radius:5px;" class="slds-border_top slds-border_right slds-border_bottom slds-border_left">
+            <article class="slds-card">
+                <div class="slds-page-header">
+                    <div class="slds-page-header__row">
+                        <div class="slds-page-header__col-title">
+                            <div class="slds-media slds-media__figure">
+                                <div class="slds-media__body">
+                                    <div class="slds-page-header__name">
+                                        <div class="slds-page-header__name-title">
+                                            <h6>
+                                                <span class="font-weight-bold slds-page-header__title slds-truncate">
+                                                    Quotation Summary
+                                                </span>
+                                            </h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+        
+        <span style="color:red;padding-left: 19%;font-size:16px;font-weight: 700;">Looks like the Quote is still Empty. Please Add Some Products!</span>
+    </aura:if>
+    
+    
+    
+    
+    
+</aura:component>

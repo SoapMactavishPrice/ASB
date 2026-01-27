@@ -1,0 +1,202 @@
+<!-- 
+/********* Edited By - Nitish Kumar *********/
+/********* Date 	 - 05 June, 2021 ********/
+-->
+
+<apex:page standardController="Quote" extensions="QuoteDiscountController" lightningStylesheets="true" sidebar="false" cache="false" >
+    <head>
+        <style>
+            #customers {
+            font-family: Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            }
+            
+            #customers td, #customers th {
+            border: 1px solid #ddd;
+            padding: 8px;
+            }
+            
+            #customers tr:nth-child(even){background-color: #f2f2f2;}
+            
+            #customers tr:hover {background-color: #ddd;}
+            
+            #customers th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #4CAF50;
+            color: white;
+            }
+            .lineItemCls label{color: #032d60; font-size: 13px;}
+            
+            .lineItemAlign {text-align:right !important}
+            
+            .lineItemAlign input{text-align:right !important}
+        </style>
+        
+    </head>
+    <script type="text/javascript">
+function foo(){    
+    alert("Call came ");//this is displyed
+    
+alert('********The field value is ********');// unable to get the value
+}
+ </script>
+
+    <apex:form id="fm">
+        <apex:outputPanel rendered="{!ShowpageBlockFlag2}">
+            <span style="font-weight: bold;font-size: 15px;color:red;text-align:center;padding-left: 35%;">{!errorMessage}</span>
+            <br/>
+            <!--     <div style="text-align:center ;">
+<apex:commandbutton value="Go Back" action="{!gotoquote}"/>
+
+</div> -->
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!isSuccess}">
+            <span style="font-weight: bold;font-size: 15px;color:green;text-align:center;padding-left: 23%;">{!successMsg}</span>
+            <br/>
+            
+        </apex:outputPanel>
+        
+        <apex:outputPanel rendered="{!ShowpageBlockFlag}" id="pb1">
+            <apex:pageBlock >
+                <apex:pageBlockSection >
+                    
+                    <span style="font-weight: bold;font-size: 15px;">Quote ({!qt.CurrencyIsoCode})- {!QT.name}&nbsp;({!QT.Quote_Number1__c})</span>
+                    
+                    <span style="font-weight: bold;font-size: 15px; display:{!if(QT.Subsidiary__r.Negative_Discount__c==null,'none','block')}">Negative Discount:&nbsp;{!QT.Subsidiary__r.Negative_Discount__c}</span>
+                    <br/>
+                    <br/>
+                </apex:pageBlockSection>
+                
+                <table  width="100%" id="customers"> 
+                    <thead>
+                        <tr>
+                             <td style="font-weight: bold;font-size: 12px; width:5%"><apex:outputText value="Sq Num"/></td>
+                            <td style="font-weight: bold;font-size: 12px;width:35%"><apex:outputText value="Name "/></td>
+                            <td style="font-weight: bold;font-size: 12px;" class="lineItemAlign"><apex:outputText value="Unit Base Price "/></td>
+                            <!--<td style="font-weight: bold;font-size: 12px;" class="lineItemAlign"><apex:outputText value="Qty "/></td>-->
+                            <td style="font-weight: bold;font-size: 12px;" class="lineItemAlign"><apex:outputText value="Unit List Price "/></td>
+                            <td style="font-weight: bold;font-size: 12px;" class="lineItemAlign"><apex:outputText value="Discount Type"/></td>
+                            <td style="font-weight: bold;font-size: 12px;width: 8%;" class="lineItemAlign"><apex:outputText value="Discount"/></td>
+                            <td style="font-weight: bold;font-size: 12px;width: 10%;" class="lineItemAlign"><apex:outputText value="Discount in value"/></td>
+                            <td style="font-weight: bold;font-size: 12px;" class="lineItemAlign"><apex:outputText value="Unit Discount Value"/></td> 
+                            <td style="font-weight: bold;font-size: 12px;" class="lineItemAlign"><apex:outputText value="Unit Sales Price"/></td>                     
+                            <td style="font-weight: bold;font-size: 12px;" class="lineItemAlign"><apex:outputText value="Discount Allowed "/></td>
+                            <!--<td style="font-weight: bold;font-size: 12px;"><apex:outputText value="Is Manual Option "/></td>-->
+                            <!--<td ><apex:outputText value="Discount Approval Note "/></td>-->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:repeat value="{!QlineItm}" var="e1" id="therepeat">
+                            <tr>
+                                <td style="font-weight: bold;"><apex:outputlabel value="{!e1.Sr_No__c}"></apex:outputlabel>  </td> 
+                                <td style="font-weight: bold;"><apex:outputlabel value="{!e1.Product_Name__c}"></apex:outputlabel>  </td>
+                                <td class="lineItemAlign">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                        <apex:param value="{!e1.Base_Price__c}"></apex:param>
+                                    </apex:outputText>
+                                    <!--<apex:outputlabel value="{!e1.List_Price__c}"></apex:outputlabel>-->
+                                </td>
+                                
+                                <!--<td class="lineItemAlign"><apex:outputlabel value="{!e1.Quantity__c}"></apex:outputlabel>  </td>-->
+                                <td class="lineItemAlign">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                        <apex:param value="{!e1.List_Price__c}"></apex:param>
+                                    </apex:outputText>
+                                    <!--<apex:outputlabel value="{!e1.List_Price__c}"></apex:outputlabel>-->
+                                </td>
+                                <td class="lineItemAlign">
+                                    <apex:inputfield value="{!e1.Discount_Type__c}" onchange="foo"/>&nbsp;
+                                </td>
+                                
+                                <td class="lineItemAlign"><apex:inputfield style="width:70%" value="{!e1.Discount__c}"/> %</td>
+                                <td class="lineItemAlign"><apex:inputfield style="width:70%" value="{!e1.Discount_in_Value__c}"/></td>
+                                <td class="lineItemAlign">	
+                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                        <apex:param value="{!e1.Average_Discount_Value__c}"></apex:param>
+                                    </apex:outputText>
+                                    <!--<apex:outputText value="{0, Number, ###,###,###,##0.00}" style="display:{!if(e1.Discount_Type__c=='Percent','block','none')}">
+                                        <apex:param value="{!(e1.List_Price__c) - ((e1.List_Price__c) * (e1.Discount__c)/100)}"></apex:param>
+                                    </apex:outputText>
+                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}" style="display:{!if(e1.Discount_Type__c=='Value','block','none')}">
+                                        <apex:param value="{!(e1.List_Price__c) - (e1.Discount_in_Value__c)}"></apex:param>
+                                    </apex:outputText>
+                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}" style="display:{!if(e1.Discount_Type__c=='','block','none')}">
+                                        <apex:param value="">0</apex:param>
+                                    </apex:outputText>-->
+                                </td>
+                                <td class="lineItemAlign">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                        <apex:param value="{!e1.Average_Sales_Price__c}"></apex:param>
+                                    </apex:outputText>
+                                </td>
+                                <td class="lineItemAlign"><apex:outputlabel value="{!e1.Discount_Allowed_New__c}">%</apex:outputlabel></td>
+                                <!--<td><apex:inputfield value="{!e1.Discount_Approval_Note__c}"/></td>-->
+                                <!--<td><apex:inputCheckbox value="{!e1.Is_Manual__c}" disabled="true"></apex:inputCheckbox></td>-->
+                            </tr>
+                            <apex:repeat value="{!e1.Quote_Line_Options__r}" var="QLOpt">
+                                <apex:variable value="{!1}" var="sr_no"/>
+                                <tr>
+                                    <td style=""><label style="margin-left:25px">{!QLOpt.Serial_Number__c}</label></td> 
+                                    <td><li style="list-style-type: square;padding-left:15px;">
+                                        <apex:outputlabel value="{!QLOpt.Manual_Product_Name__c}"></apex:outputlabel> </li> </td>
+                                    <td class="lineItemAlign">
+                                        <apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                            <apex:param value="{!QLOpt.Manual_Option_Base_Price__c}"></apex:param>
+                                        </apex:outputText>
+                                        <!--<apex:outputlabel value="{!QLOpt.Manula_Option_List_Price__c}"></apex:outputlabel>-->
+                                    </td>
+                                    <!--<td class="lineItemAlign"><apex:outputlabel value="{!QLOpt.Quantity__c}"></apex:outputlabel>  </td>-->
+                                    <td class="lineItemAlign">
+                                        <apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                            <apex:param value="{!QLOpt.Manula_Option_List_Price__c}"></apex:param>
+                                        </apex:outputText>
+                                        <!--<apex:outputlabel value="{!QLOpt.Manula_Option_List_Price__c}"></apex:outputlabel>-->
+                                    </td>
+                                    <td class="lineItemAlign"><apex:inputfield value="{!QLOpt.Discount_Type__c}"/></td>
+                                    <td class="lineItemAlign"><apex:inputfield style="width:70%" value="{!QLOpt.Discount__c}"/> %</td>
+                                    <td class="lineItemAlign"><apex:inputfield style="width:70%" value="{!QLOpt.Discount_in_Value__c}"/></td>
+                                    <td class="lineItemAlign"><apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                        <apex:param value="{!QLOpt.Average_Discount_Value__c}"></apex:param>
+                                    </apex:outputText>
+                                       <!-- <apex:outputText value="{0, Number, ###,###,###,##0.00}" style="display:{!if(QLOpt.Discount_Type__c=='Percent','block','none')}">
+                                        <apex:param value="{!(QLOpt.Manula_Option_List_Price__c) - ((QLOpt.Manula_Option_List_Price__c) * (QLOpt.Discount__c)/100)}"></apex:param>
+                                    </apex:outputText>
+                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}" style="display:{!if(QLOpt.Discount_Type__c=='Value','block','none')}">
+                                        <apex:param value="{!(QLOpt.Manula_Option_List_Price__c) - (QLOpt.Discount_in_Value__c)}"></apex:param>
+                                    </apex:outputText>
+                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}" style="display:{!if(QLOpt.Discount_Type__c=='','block','none')}">
+                                        <apex:param value="">0</apex:param>
+                                    </apex:outputText>-->
+                                    </td>
+                                    <td class="lineItemCls lineItemAlign">
+                                        <apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                            <apex:param value="{!(QLOpt.Average_Sales_Price__c)}"></apex:param>
+                                        </apex:outputText>
+                                        <!--<apex:outputlabel value="{!(QLOpt.Sales_Price__c)}"></apex:outputlabel>-->
+                                    </td>
+                                    <td class="lineItemAlign"><apex:outputlabel value="{!QLOpt.Discount_Allowed_New__c}">%</apex:outputlabel></td>
+                                    <!--<td><apex:inputCheckbox value="{!QLOpt.Select_Option__c}" disabled="true"></apex:inputCheckbox></td>-->
+                                    <!--<td><apex:inputfield value="{!QLOpt.Discount_Description__c}"/></td>-->
+                                    <apex:variable value="{!sr_no+1}" var="sr_no"/>
+                                </tr>
+                            </apex:repeat>
+                        </apex:repeat>
+                    </tbody>
+                    
+                </table>
+                
+                <!--</apex:pageBlockSection> -->
+            </apex:pageBlock>
+            
+            <div style="text-align:center ;">
+                <apex:commandbutton value="Go Back" action="{!cancel}"/>
+                <apex:commandButton value="Copy Item to Options" action="{!onLineItemDiscountUpdate}"/>
+                <apex:commandbutton value="Update Discount" action="{!UpdateDataOnDiscount}"/>
+            </div>
+        </apex:outputPanel>
+    </apex:form>
+    
+</apex:page>

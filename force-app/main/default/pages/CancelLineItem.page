@@ -1,0 +1,15 @@
+<apex:page standardController="Contract_Line_Item__c" extensions="CancelIneItemController" action="{!LineItemCancel}" lightningStylesheets="true" docType="html-5.0">
+    <!--<apex:message />-->
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageBlockSection columns="1">
+                <apex:outputpanel rendered="{!ShowpageBlockFlag}">
+                    <apex:pageMessages ></apex:pageMessages>
+                     <apex:outputText value="Enter Reason here : "/>
+                    <apex:input value="{!inputValue}" id="theTextInput" required="true"/>
+                    <apex:commandButton title="Submit" value="Submit" action="{!LineItemCancel}"  />
+                </apex:outputpanel>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

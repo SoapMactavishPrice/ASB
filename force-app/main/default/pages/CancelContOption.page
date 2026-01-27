@@ -1,0 +1,14 @@
+<apex:page standardController="Contract_Line_Option__c" extensions="CancelOptionController" action="{!CancelOption}" lightningStylesheets="true" docType="html-5.0">
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageBlockSection columns="1">
+                <apex:outputpanel rendered="{!ShowpageBlockFlag}">
+                    <apex:pageMessages ></apex:pageMessages>
+                    <apex:outputText value="Enter Reason here : "/>
+                    <apex:input value="{!inputValue}" id="theTextInput" required="true"/>
+                    <apex:commandButton title="Submit" value="Submit" action="{!CancelOption}"  />
+                </apex:outputpanel>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

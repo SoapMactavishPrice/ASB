@@ -1,0 +1,137 @@
+<apex:page standardController="Quote" extensions="QuoteLineOptionClass" standardStylesheets="true" lightningStylesheets="true" showHeader="false">
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <style>
+        * {
+        box-sizing: border-box;
+        }
+        
+        body {
+        font-family: Arial, Helvetica, sans-serif;
+        }
+        
+        /* Style the header */
+        header {
+        background-color: #666;
+        padding: 30px;
+        text-align: center;
+        font-size: 35px;
+        color: white;
+        }
+        
+        /* Container for flexboxes */
+        section {
+        display: -webkit-flex;
+        display: flex;
+        }
+        
+        /* Style the navigation menu */
+        nav {
+        -webkit-flex: 1;
+        -ms-flex: 1;
+        flex: 1;
+        background: #ccc;
+        padding: 20px;
+        }
+        
+        /* Style the list inside the menu */
+        nav ul {
+        list-style-type: none;
+        padding: 0;
+        }
+        table tr td, table tr th{padding: 8px; box-sizing: border-box;}
+        table tr th{font-weight: bold !important; color: #000000 !important;}
+        /* Style the content */
+        article {
+        -webkit-flex: 3;
+        -ms-flex: 3;
+        flex: 3;
+        background-color: #f1f1f1;
+        padding: 10px;
+        }
+        
+        /* Style the footer */
+        footer {
+        background-color: #777;
+        padding: 10px;
+        text-align: center;
+        color: white;
+        }
+        
+        /* Responsive layout - makes the menu and the content (inside the section) sit on top of each other instead of next to each other */
+        @media (max-width: 600px) {
+        section {
+        -webkit-flex-direction: column;
+        flex-direction: column;
+        }
+        }
+        body {
+        margin: 0;
+        }
+        
+        /* Style the header */
+        .header {
+        background-color: #f1f1f1;
+        padding: 20px;
+        text-align: center;
+        }
+    </style>
+    <div style="width: 100%; max-width: 600px; margin: auto;">
+        <apex:pageBlock >
+            <apex:pageBlockSection title="Quote Line Options">
+                 <table style="border-collapse: collapse;">
+                            <tr>
+                                <th align="center" style="text-align: centre; border-bottom: 1px solid black;">Item</th>
+                                <th align="center" style="text-align: centre; border-bottom: 1px solid black;">Product Name</th>
+                                <th align="right" style="text-align: right; border-bottom: 1px solid black;">Qty</th>
+                                <th align="right" style="text-align: right; border-bottom: 1px solid black;">Base price</th>
+                                <th align="right" style="text-align: right; border-bottom: 1px solid black;">List price</th>
+                                 <th align="right" style="text-align: right; border-bottom: 1px solid black;">Discount</th>
+                                <!-- <th align="right" style="text-align: right; border-bottom: 1px solid black;">Total Price</th> -->
+                            </tr>
+                            <apex:repeat value="{!QlineItm}" var="qLine">
+                                <tr>
+                                    <td>{!qLine.Name}</td>
+                                    <td  colspan="1" align="right" style="border: 1px solid #000; border-left: 0; border-right: 0;">
+                                        {!qLine.Product__r.Name}<br/>
+                                        <!--{!qLine.Description}<br/>
+                                        Include Option*-->
+                                    </td>
+                                    <td colspan="1" align="right" style="border: 1px solid #000; border-left: 0; border-right: 0;">{!qLine.Quantity__c }</td>
+                                    <td colspan="1" align="right" style="border: 1px solid #000; border-left: 0; border-right: 0;">{!qLine.Total_Sales_Price__c}</td>
+                                    <td colspan="1" align="right" style="border: 1px solid #000; border-left: 0; border-right: 0;">{!qLine.Total_List_Price__c}</td>
+                                    <td colspan="1" align="right" style="border: 1px solid #000; border-left: 0; border-right: 0;">{!qLine.Discount__c}</td>
+                                    <!--<td colspan="1" align="right" style="border: 1px solid #000; border-left: 0; border-right: 0;">{!qLine.After_Discount_Value__c}</td>-->
+
+                                </tr>
+                                
+                             <!--   <tr>
+                                    <th style="padding-left: 100px;padding-top: 10px;">Name</th>
+                                    <th align="center" style="padding-left:50px;padding-top: 10px;text-align: center;">Option Price</th>
+                                    <th align="center" style="padding-left: 50px;padding-top: 10px;text-align: center;">Discount</th>
+                                    <th align="center" style="padding-left: 50px;padding-top: 10px;text-align: center;">Sub Total</th>
+                                </tr>  -->
+                                
+                                <apex:repeat value="{!qLine.Quote_Line_Options__r}" var="QLOpt">
+                                    <tr>
+                                    <td colspan="1" align="right" style="border: 1px solid #000; border-left: 0; border-right: 0;">-{!QLOpt.Option_Number__c}</td>
+                                        <td colspan="1" align="right" style="border: 1px solid #000; border-left: 0; border-right: 0;">-{!QLOpt.Product_Name__c}</td>
+                                        <td colspan="1" align="right" style="border: 1px solid #000; border-left: 0; border-right: 0;">-{!QLOpt.quantity__c }</td>
+                                        <td colspan="1" align="right" style="border: 1px solid #000; border-left: 0; border-right: 0;">{!QLOpt.Final_Price__c }</td>
+                                        <td colspan="1" align="right" style="border: 1px solid #000; border-left: 0; border-right: 0;">{!QLOpt.Manula_Option_List_Price__c}</td>
+                                        <td colspan="1" align="right" style="border: 1px solid #000; border-left: 0; border-right: 0;">{!QLOpt.Discount__c }</td>  
+                                    </tr>
+                                </apex:repeat>
+                                <!-- /table -->
+                               <!-- <tr>
+                                    <td colspan="4" align="right" style="border: 1px solid #000; border-left: 0; border-right: 0;">Total Price = {!qLine.TotalPrice}</td>
+                                </tr> -->
+                                
+                            </apex:repeat>
+                              <td colspan="5" align="right" style="border: 1px solid #000; border-left: 0; border-right: 0;">Total Price : {!ObjQuote.Quote_Total_Summary_of_Sales_Price__c}</td>
+                        </table>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </div>
+    
+</apex:page>

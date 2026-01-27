@@ -1,0 +1,11 @@
+<template>
+    <lightning-card title="Sync Address with Quotes">
+        <div class="slds-p-around_medium">
+            <!-- Input field to enter the new address -->
+            <lightning-input label="New Address Line 1" value={addressLine1}
+                onchange={handleAddressChange}></lightning-input>
+            <lightning-button variant="brand" label="Sync Address on Quotes"
+                onclick={handleUpdateAddress}></lightning-button>
+        </div>
+    </lightning-card>
+</template>

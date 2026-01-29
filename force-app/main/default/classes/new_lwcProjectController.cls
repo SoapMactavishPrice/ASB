@@ -77,7 +77,7 @@ public with sharing class new_lwcProjectController {
                     system.debug('inside 1st-->'+key);
                     for(ProjectManageMent__c  pmo: exiProjectMap.get(key)){
                         wrapper wrp = new wrapper();
-                        wrp.isSelect = false;
+                        wrp.isSelect = true;
                         wrp.p_currency = obj.CurrencyIsoCode;
                         wrp.isDisabled = true;
                         wrp.key = key;
@@ -101,7 +101,7 @@ public with sharing class new_lwcProjectController {
                     for(Integer i = 0 ; i < qty ; i++){
                         system.debug('inside 1st-- index>'+i);
                         wrapper wrp1 = new wrapper();
-                        wrp1.isSelect = false;
+                        wrp1.isSelect = true;
                         wrp1.isDisabled = false;
                         wrp1.key = key;
                         if(string.isBlank(obj.Product_Name_2__c)){
@@ -128,7 +128,7 @@ public with sharing class new_lwcProjectController {
                     for(Integer i = 0 ; i < obj.Quantity__c ; i++){
                         system.debug('key 2 -->'+key);
                         wrapper wrp = new wrapper();
-                        wrp.isSelect = false;
+                        wrp.isSelect = true;
                         wrp.key = key;
                         wrp.isDisabled = false;
                         if(string.isBlank(obj.Product_Name_2__c)){

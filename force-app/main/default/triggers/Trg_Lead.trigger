@@ -12,7 +12,7 @@ trigger Trg_Lead on Lead (before insert,after insert,after update,before update 
         if(Trigger.isbefore)
         {
             
-            Fiscal_Year_Master__c f=[select id,name from Fiscal_Year_Master__c where Active__c=true limit 1];
+            Fiscal_Year_Master__c f=[select id,name from Fiscal_Year_Master__c where Active__c=true AND Fiscal_Year_Start_Date__c <= TODAY AND Fiscal_Year_End_Date__c >= TODAY limit 1];
             List<id>ids =new list<id>();
             List<String> cCode=new List<String>();
             map<String,id> cSub=new map<String,id>();

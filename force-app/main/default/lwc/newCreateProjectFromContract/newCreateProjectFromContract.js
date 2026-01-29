@@ -188,6 +188,7 @@ export default class NewCreateProjectFromContract extends NavigationMixin(Lightn
         let index = this.showTableProjects.map(a => a.LineNumberIdClone).indexOf(event.target.dataset.id);
 
         if (label === "ExpectedSalesMonth" || label === "YourPOIssueDate") {
+
             // const enteredDate = new Date(value);
             // const today = new Date();
             // today.setHours(0, 0, 0, 0); // Ignore time
@@ -198,12 +199,17 @@ export default class NewCreateProjectFromContract extends NavigationMixin(Lightn
             //     this.saveDisabled = true;
             // }
 
+            // input.setCustomValidity(errorMessage);
+            // input.reportValidity();
+
+            // Allow all dates (no validation)
             input.setCustomValidity("");
             input.reportValidity();
 
             // Optionally update the value in caseFields
-            //           const index = parseInt(input.dataset.index, 10);
-            //                        const caseIndex = this.caseFields.findIndex(addr => addr.index === index);
+            // const index = parseInt(input.dataset.index, 10);
+            // const caseIndex = this.caseFields.findIndex(addr => addr.index === index);
+
             if (this.showTableProjects && this.showTableProjects[index]) {
                 this.showTableProjects[index][label] = value;
             }

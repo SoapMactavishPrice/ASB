@@ -11,3 +11,43 @@
             border: 1px solid black;
             background:#0070D2;
         }
+/* Custom styling for the reopen confirmation modal using lightning-quick-action-panel */
+
+.reopen-modal-body {
+    text-align: center;
+    padding: 1.5rem 1rem !important;
+}
+
+.reopen-modal-body p {
+    font-size: 1rem;
+    color: #080707;
+    margin: 0;
+}
+
+.reopen-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.reopen-yes-btn {
+    background-color: #16837d !important;
+    border-color: #16837d !important;
+    color: white !important;
+}
+
+.reopen-yes-btn:hover {
+    background-color: #0d5753 !important;
+    border-color: #0d5753 !important;
+}
+
+.reopen-no-btn {
+    background-color: white !important;
+    border: 1px solid #c9c7c5 !important;
+    color: #080707 !important;
+}
+
+.reopen-no-btn:hover {
+    background-color: #f3f2f2 !important;
+}

@@ -10,8 +10,9 @@ import LightningAlert from 'lightning/alert';
 import saveCanceledProject from '@salesforce/apex/ReOpenQuoteFromContract.saveCanceledProject';
 
 export default class LwcReOpenQuote extends NavigationMixin(LightningElement) {
-    @track isOpen = true;
+    @track isOpen = false;
     @track isConfirm = true;
+    @track showReopenConfirm = false;
 
     recordId;
     @track isCancel = false;
@@ -69,17 +70,32 @@ export default class LwcReOpenQuote extends NavigationMixin(LightningElement) {
                 this.wrapList.push(element);
             });
 
-            // Check if all items have isShowCancel = false
             const allCancelHidden = this.wrapList.every(item => item.isShowCancel === false);
             
             if (allCancelHidden) {
-                // Don't show the modal, directly proceed to save
+                // Show confirmation modal instead of directly proceeding
                 this.isOpen = false;
-                this.saveProjects();
+                this.showReopenConfirm = true;
+            } else {
+                this.isOpen = true;
+                this.showReopenConfirm = false;
             }
 
         })
     }
+
+    // Handle Reopen Confirmation - Yes button
+    handleReopenYes() {
+        this.showReopenConfirm = false;
+        this.saveProjects();
+    }
+
+    // Handle Reopen Confirmation - No button
+    handleReopenNo() {
+        this.showReopenConfirm = false;
+        this.closeAction();
+    }
+
     @track OpenPopUp = false;
     @track projectNumber = '';
     @track indexToBeCancel;

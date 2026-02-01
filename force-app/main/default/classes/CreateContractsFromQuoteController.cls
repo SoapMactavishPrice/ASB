@@ -809,6 +809,9 @@ ContLO.Description__c = pro2.Description__c;
             RecursiveTriggerHandler2.isFirstTimeOnOpp=false; 
             oppStatus.stagename = 'Converted';
             update oppStatus;
+
+            CloneQuoteCurrencyController.cancelRelatedOpportunities(ObjQuote.OpportunityId);
+            
             
             CheckConformation=false;
             PageReference myVFPage = new PageReference('/'+ContractId);

@@ -199,13 +199,6 @@ trigger TrgQuote on Quote (After insert , After Update,Before Update )
                             }
                             for(Quote_Line_Options__c qli:thisQuote.Quote_Line_Options__r){ 
                                 
-                                /* when 'L1'{
-if (qli.Discount__c != NULL && qli.Discount__c > qli.Discount_Allowed_New__c && qli.Discount__c>qli.Approved_Discount__c) {
-qt.Quote_Locked_for_Approval__c = true;
-system.debug('---exceeded---');
-break;
-}
-}*/
                                 switch on qt.Owner_Level__c {
                                     when 'L1'{
                                         if (qli.Discount_Type__c == 'Percent' && qli.Discount__c != NULL && qli.Discount__c > qli.Discount_Allowed_New__c && qli.Discount__c !=qli.Approved_Discount__c && !(qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D2__c)) {
@@ -395,12 +388,6 @@ break;
                 
                 for(Quote qsub:trigger.new){
                     if(qsub.Subsidiary__c!=null){
-                        /*if(!idlistCurrencyMap.get(qsub.Subsidiary__c).contains(qsub.CurrencyIsoCode)){
-qsub.addError('Your Quote Currency must be the same as your Subsidiary Currency.');
-}*/
-                       /* if(!idlistLanguageMap.get(qsub.Subsidiary__c).contains(qsub.Language__c)){
-                            qsub.addError('Your Quote Language must be the same as your Subsidiary Language.');
-                        }  */
                     }
                 }
             }
@@ -598,64 +585,6 @@ qsub.addError('Your Quote Currency must be the same as your Subsidiary Currency.
                             }
                         }
                     }
-                    
-                    /*else if(qt.Subsidiary__r.Quote_Approval__c == 'Line Item level' && subWithQuoMap.containskey(qt.Subsidiary__c) && qt.Quote_Locked_for_Approval__c){
-
-set<Id> managerId = new set<Id>();
-for(Quote_Line_Item_Custom__c qtc : qt.Quote_Line_Items__r){
-totalLineItem = qt.Quote_Line_Items__r.size();
-switch on qtc.Quote__r.Owner_Level__c {
-when 'L1'{
-system.debug('else inside switch'+qt.Owner_Level__c);
-
-if(qtc.Discount__c > qt.Subsidiary__r.Discount_Level_1__c  && 
-qt.Discount__c <= qt.Subsidiary__r.Discount_Level_2__c
-&& string.isNOTBlank(ApproverMap.get(qt.OwnerId).ManagerId)){
-//qt.Approver_User__c = (Id)ApproverMap.get(qt.OwnerId).ManagerId;
-counterLevel1 ++;
-//UpdateQuoteRecords.add(qt);
-}else 
-
-if(qt.Discount__c > qt.Subsidiary__r.Discount_Level_2__c 
-&& qt.Discount__c <= qt.Subsidiary__r.Discount_Level_3__c
-&& string.isNOTBlank(ApproverMap.get(qt.OwnerId).Manager.ManagerId)){
-qt.Approver_User__c = (Id)ApproverMap.get(qt.OwnerId).Manager.ManagerId;
-//UpdateQuoteRecords.add(qt);
-counterLevel1++;
-} else if(qt.Discount__c < qt.Subsidiary__r.Discount_Level_1__c ){
-qt.Approver_User__c = null;
-//UpdateQuoteRecords.add(qt);
-counterLevel1 -- ;
-}
-
-}
-when 'L2'{
-system.debug('inside switch'+qt.Owner_Level__c);
-if(qt.Discount__c > qt.Subsidiary__r.Discount_Level_2__c 
-&& qt.Discount__c <= qt.Subsidiary__r.Discount_Level_3__c
-&& string.isNOTBlank(ApproverMap.get(qt.OwnerId).ManagerId)){
-qt.Approver_User__c = (Id)ApproverMap.get(qt.OwnerId).ManagerId;
-//UpdateQuoteRecords.add(qt);
-counterLevel1++;
-} else if(qt.Discount__c < qt.Subsidiary__r.Discount_Level_2__c ){
-qt.Approver_User__c = null;
-//UpdateQuoteRecords.add(qt);
-counterLevel1 --;
-}
-
-}
-When 'L3'{
-
-}
-}
-
-}
-system.debug('counterLevel'+counterLevel1+'  totalLineItem '+totalLineItem);
-if(counterLevel1 == totalLineItem){
-UpdateQuoteRecords.add(qt);
-}
-}
-*/
                 }
                 
             }
@@ -699,54 +628,6 @@ UpdateQuoteRecords.add(qt);
                         oIdmap.put(con.OpportunityId,con);
                     }
                 }
-            }
-            
-            List<Contract> qlist = new List<Contract>();
-            if(qIdmap.size() > 0){
-                List<Contract> conList = [select Id ,Quote__c,Expiration_Date__c from Contract where Quote__c IN : qIdmap.keyset() FOR UPDATE];
-                if(conList.size() > 0){
-                for(Contract q : conList){
-                    if(qIdmap.containskey(q.Quote__c)){
-                        if( q.Expiration_Date__c != qIdmap.get(q.Quote__c).ExpirationDate){
-                            q.Expiration_Date__c = qIdmap.get(q.Quote__c).ExpirationDate;
-                            q.Expiration_Date_Change_Reason__c = qIdmap.get(q.Quote__c).Expiration_Date_Change_Reason__c;
-                            qlist.add(q);
-                        }
-                    }
-                }
-                }
-            }
-            
-            
-            List<Opportunity> opplist = new List<Opportunity>();
-            
-            system.debug('inside size check'+oIdmap.size());
-            if(oIdmap.size() > 0){
-                system.debug('inside size');
-               List<Opportunity> opList =  [select Id ,CloseDate from Opportunity where Id IN : oIdmap.keyset() FOR UPDATE];
-                if(opList.size() > 0){
-                for(Opportunity q : opList){
-                    if(oIdmap.containskey(q.Id)){
-                        system.debug('inside containse');
-                        if( q.CloseDate != oIdmap.get(q.Id).ExpirationDate){
-                            system.debug('inside if');
-                            q.CloseDate = oIdmap.get(q.Id).ExpirationDate;
-                            q.Expiration_Date_Change_Reason__c = oIdmap.get(q.Id).Expiration_Date_Change_Reason__c;
-                            opplist.add(q);
-                        }
-                    }
-                }
-                }
-            }
-            
-            if(qlist.size() > 0){
-                if (Schema.sObjectType.Contract.isUpdateable()) {
-                   update qlist;
-                }
-            }
-            
-            if(opplist.size() > 0){
-                update opplist;
             }
         }
     }
@@ -813,18 +694,11 @@ UpdateQuoteRecords.add(qt);
                     q.addError('You cannot set the status to '+ q.Status+' by manually.');
                 }
         }
-    }     
-     // ===================
-    
-    /*/ ==========Shubham Kadu=========
-    
-   if (Trigger.isBefore && Trigger.isInsert) {
-        QuoteSoldToShipToUpdate.handleInsert(Trigger.new);
     }
-    if (Trigger.isBefore && Trigger.isUpdate) {
-        QuoteSoldToShipToUpdate.handleUpdate(Trigger.oldMap, Trigger.new);
+
+    if (Trigger.isAfter && Trigger.isUpdate) {
+        QuoteTriggerHandler.updateListPriceAndBasePriceUsingAdjustExchangeRate(Trigger.new, Trigger.oldMap);
     }
-    // ===================  */
     
     
     

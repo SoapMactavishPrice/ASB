@@ -56,6 +56,7 @@
                 var result = response.getReturnValue();
 
                 for (var i = 0; i < result.length;) {
+                    console.log('PBE Data ==>', result[i])
                     result[i].index = i;
                     i++;
                 }
@@ -149,6 +150,7 @@
                     PaginationLst.push(dt[i]);
                 }
             }
+            console.log('PaginationList data ==>', JSON.parse(JSON.stringify(PaginationLst)) );
             console.log('PaginationLst', PaginationLst.length);
             component.set('v.PaginationList', PaginationLst);
             component.set("v.selectedCount", 0);

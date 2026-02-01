@@ -168,6 +168,32 @@
         <div class="slds-backdrop slds-backdrop_open"></div>
     </template>
 
+    <!-- New Reopen Confirmation Modal -->
+    <lightning-quick-action-panel header='Re-open Quote' if:true={showReopenConfirm}>
+        
+        <!-- Modal Body -->
+        <div class="slds-p-around_medium reopen-modal-body">
+            <p>Are you sure you want to Re-open Quote?</p>
+        </div>
+
+        <!-- Modal Footer -->
+        <div slot='footer' class="reopen-modal-footer">
+            <lightning-button 
+                variant="brand" 
+                label="Yes" 
+                onclick={handleReopenYes}
+                class="reopen-yes-btn">
+            </lightning-button>
+            <lightning-button 
+                variant="neutral" 
+                label="No" 
+                onclick={handleReopenNo}
+                class="reopen-no-btn">
+            </lightning-button>
+        </div>
+
+    </lightning-quick-action-panel>
+
 
 
 

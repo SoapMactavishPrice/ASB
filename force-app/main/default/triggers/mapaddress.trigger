@@ -79,15 +79,15 @@ trigger mapaddress on Quote (before insert, before update,after update,after ins
             for(Quote q : trigger.new){
                 if(ShipTo.containsKey(q.SHIP_TO__c)){
                     Account acc = ShipTo.get(q.SHIP_TO__c);
-                    q.SHIP_TO_ADDRESS_LINE_1__c = acc.Shipping_Address_Line_1__c;
-                    q.SHIP_TO_ADDRESS_LINE_2__c = acc.Shipping_Address_Line_2__c;
-                    q.SHIP_TO_ADDRESS_LINE_3__c = acc.Shipping_Address_Line_3__c;
-                    q.Ship_To_City__c = acc.Shipping_City__r.Name;
-                    q.SHIP_TO_POSTAL_CODE__c = acc.Shipping_Postal_ZIP_Code__r.Name;
-                    q.Ship_To_State__c = acc.Shipping_State__r.Name;
-                    q.Ship_To_Country__c = acc.Shipping_Country__r.Name;
-                    q.Ship_To_Global_Region__c = acc.Shipping_Region_Master__c;
-                    q.Ship_To_Global_SubRegion__c = acc.Shipping_Sub_Region__c;
+                    q.SHIP_TO_ADDRESS_LINE_1__c = acc.ADDRESS_LINE_1__c;
+                    q.SHIP_TO_ADDRESS_LINE_2__c = acc.ADDRESS_LINE_2__c;
+                    q.SHIP_TO_ADDRESS_LINE_3__c = acc.ADDRESS_LINE_3__c;
+                    q.Ship_To_City__c = acc.Billing_City__r.Name;
+                    q.SHIP_TO_POSTAL_CODE__c = acc.Billing_Postal_ZIP_Code__r.Name;
+                    q.Ship_To_State__c = acc.Billing_State__r.Name;
+                    q.Ship_To_Country__c = acc.Billing_Country__r.Name;
+                    q.Ship_To_Global_Region__c = acc.Global_Region__c;
+                    q.Ship_To_Global_SubRegion__c = acc.Global_SubRegion__c;
                 }
                 
                 /*if(conToMap.containsKey(q.SHIP_TO__c)){
@@ -153,15 +153,15 @@ trigger mapaddress on Quote (before insert, before update,after update,after ins
             for(Quote q : trigger.new){
                 if(ShipTo.containsKey(q.SHIP_TO__c)){
                     Account acc = ShipTo.get(q.SHIP_TO__c);
-                    q.SHIP_TO_ADDRESS_LINE_1__c = acc.Shipping_Address_Line_1__c;
-                    q.SHIP_TO_ADDRESS_LINE_2__c = acc.Shipping_Address_Line_2__c;
-                    q.SHIP_TO_ADDRESS_LINE_3__c = acc.Shipping_Address_Line_3__c;
-                    q.Ship_To_City__c = acc.Shipping_City__r.Name;
-                    q.SHIP_TO_POSTAL_CODE__c = acc.Shipping_Postal_ZIP_Code__r.Name;
-                    q.Ship_To_State__c = acc.Shipping_State__r.Name;
-                    q.Ship_To_Country__c = acc.Shipping_Country__r.Name;
-                    q.Ship_To_Global_Region__c = acc.Shipping_Region_Master__c;
-                    q.Ship_To_Global_SubRegion__c = acc.Shipping_Sub_Region__c;
+                    q.SHIP_TO_ADDRESS_LINE_1__c = acc.ADDRESS_LINE_1__c;
+                    q.SHIP_TO_ADDRESS_LINE_2__c = acc.ADDRESS_LINE_2__c;
+                    q.SHIP_TO_ADDRESS_LINE_3__c = acc.ADDRESS_LINE_3__c;
+                    q.Ship_To_City__c = acc.Billing_City__r.Name;
+                    q.SHIP_TO_POSTAL_CODE__c = acc.Billing_Postal_ZIP_Code__r.Name;
+                    q.Ship_To_State__c = acc.Billing_State__r.Name;
+                    q.Ship_To_Country__c = acc.Billing_Country__r.Name;
+                    q.Ship_To_Global_Region__c = acc.Global_Region__c;
+                    q.Ship_To_Global_SubRegion__c = acc.Global_SubRegion__c;
                 }
                 
                 /*if(conToMap.containsKey(q.SHIP_TO__c)){

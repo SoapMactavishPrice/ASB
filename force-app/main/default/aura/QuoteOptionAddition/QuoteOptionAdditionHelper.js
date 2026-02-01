@@ -20,7 +20,6 @@
                     component.set('v.listOfAllAccounts', oRes);
                     
                     component.set('v.lstLeadWrapperForFilter', oRes);
-                    console.log('oRes  '+JSON.stringify(oRes));
                     var pageSize = component.get("v.pageSize");
                     var totalRecordsList = oRes;
                     var totalLength = totalRecordsList.length ;

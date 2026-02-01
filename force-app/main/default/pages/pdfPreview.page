@@ -1,5 +1,7 @@
-<apex:page standardController="Quote" extensions="SaveQuoteAsPdf" renderAs="pdf" showHeader="false" standardStylesheets="false" >
-    <head>
+<apex:page standardController="Quote" extensions="SaveQuoteAsPdf" renderAs="pdf" showHeader="false" action="{!CreateQuote}" standardStylesheets="false" >
+
+
+<head>
         <title>{!ObjAccount.name} R{!ObjQuote.QU_REVISION_NUMBER__c}</title>
         <style type="text/css">
             td > span > p {
@@ -7,6 +9,7 @@
             }
         </style>
     </head>
+    
     <apex:form >   
         <apex:stylesheet value="{!$Resource.CustomCSS}"/>
         
@@ -327,120 +330,113 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <!-- Main Product Line Items (Non-Tax) -->
                                         <apex:repeat value="{!prodLineList}" var="qLine">
-                                            <tr style="display:{!IF(!qLine.Is_Tax, 'false','none')};margin: 0 !important; padding-left: 13px;" class="qlineitem">
-                                                <td style="vertical-align:top;">{!qLine.Line_Item_Id}</td>
-                                                <td style="text-align: centre; color: #000 !important;" class="section-4">
-                                                    <apex:outputPanel rendered="{!if(qLine.Product_Description == '' , true ,false)}"> 
+                                            <tr style="display:{!IF(qLine.Is_Tax, 'none','table-row')}; margin: 0 !important;" class="qlineitem">
+                                                <td style="vertical-align:top; padding-left: 13px;">
+                                                    {!qLine.Line_Item_Id}
+                                                </td>
+                                                <td style="text-align: left; color: #000 !important; vertical-align:top;" class="section-4">
+                                                    <apex:outputPanel rendered="{!IF(qLine.Product_Description == '', true, false)}"> 
                                                         {!qLine.Product_Name}<br/>
                                                     </apex:outputPanel>
-                                                    
-                                                    <apex:outputtext rendered="{!if(qLine.Product_Description != '' , true ,false)}"
-                                                                             escape="false" value="{!qLine.Product_Description}">
-                                                            </apex:outputtext>
-                                                    
-                                                   <!-- <apex:outputPanel rendered="{!if(qLine.Product_Description != '' , true ,false)}" escape="false"> 
-                                                        {!qLine.Product_Description}<br/>
-                                                    </apex:outputPanel>-->
-                                                    
-                                                    <!--<apex:outputPanel rendered="{!if(QLOpt.Description == '' &&  !QLOpt.isstartWith_a, true ,false)}"> -->
-                                                    <!--<apex:outputPanel rendered="{!if(qLine.Product_Description != '' , true ,false)}"
-                                                                     value="{!qLine.Product_Description}" escape="false"/>-->
+                                                    <apex:outputText rendered="{!IF(qLine.Product_Description != '', true, false)}"
+                                                                    value="{!qLine.Product_Description}" escape="false"/>
                                                 </td>
-                                                <td align="left" style="text-align: left; color: #000 !important;vertical-align:top;"><p style="margin: 0 !important; padding-left: 13px;"> 
-                                                    <span style="display:{!IF(qLine.isstartWith_Hash, 'none','block')};"> {!qLine.Quantity}&nbsp;{!qLine.UOM}</span>
-                                                    <span style="display:{!IF(qLine.isstartWith_Hash, 'block', 'none')};">{!qLine.UOM}</span></p>
+                                                <td style="text-align: left; color: #000 !important; vertical-align:top;">
+                                                    <span style="display:{!IF(qLine.isstartWith_Hash, 'none','inline')};">
+                                                        {!qLine.Quantity}&nbsp;{!qLine.UOM}
+                                                    </span>
+                                                    <span style="display:{!IF(qLine.isstartWith_Hash, 'inline', 'none')};">
+                                                        {!qLine.UOM}
+                                                    </span>
                                                 </td>
-                                                <td align="right" style="text-align: right; color: #000 !important;vertical-align:top;">
-                                                    {!(qLine.totalValueString)}
+                                                <td style="text-align: right; color: #000 !important; vertical-align:top;">
+                                                    {!qLine.totalValueString}
                                                 </td>
-                                                <td align="left" style="text-align: right; color: #000 !important;vertical-align:top;"> 
-                                                    {!(qLine.Ceiling_Total_Sales_Pricestring)}
-                                                </td>		
+                                                <td style="text-align: right; color: #000 !important; vertical-align:top;"> 
+                                                    {!qLine.Ceiling_Total_Sales_Pricestring}
+                                                </td>	
                                             </tr>
+                                            
+                                            <!-- Child Products/Options -->
                                             <apex:repeat value="{!qLine.childProd}" var="QLOpt">
-                                                <tr rendered="{!!QLOpt.isstartWith_a}">
+                                                <tr style="display:{!IF(QLOpt.isstartWith_a, 'none','table-row')}; {!IF(QLOpt.Name_Hide, 'display:none;', '')}">
                                                     <td></td>
-                                                    <td align="left" class="qlineitemOptions" style="font-size: 12px;">
-                                                        
-                                                        <apex:outputPanel rendered="{!if(QLOpt.Description == '' &&  !QLOpt.isstartWith_a, true ,false)}"> 
-                                                            <li style="list-style-type: square;  margin-bottom: 4px; padding: 0 !important; margin: 0 !important;">{!QLOpt.Manual_Product_Name}</li>
+                                                    <td style="font-size: 12px; vertical-align:top;">
+                                                        <apex:outputPanel rendered="{!IF(QLOpt.Description == '' && !QLOpt.isstartWith_a, true, false)}"> 
+                                                            <li style="list-style-type: square; margin-bottom: 4px; padding: 0 !important; margin: 0 !important;">
+                                                                {!QLOpt.Manual_Product_Name}
+                                                            </li>
                                                         </apex:outputPanel>
                                                         
-                                                       <li style="list-style-type: square;  margin-bottom: 4px; padding: 0 !important; margin: 0 !important;">
-                                                            <apex:outputtext rendered="{!if(QLOpt.Description != ''  &&  !QLOpt.isstartWith_a, true ,false)}"
-                                                                             escape="false" value="{!QLOpt.Description}">
-                                                            </apex:outputtext>
-                                                        </li>
-                                                        
-                                                        <!--<apex:outputtext rendered="{!if(QLOpt.Description != ''  &&  !QLOpt.isstartWith_a, true ,false)}"
-                                                                             escape="false" value="{!QLOpt.Description}" style="margin: 0;padding: 0; ">
-                                                            </apex:outputtext>-->
-                                                        
-                                                        <!--<li style="list-style-type: square;  margin-bottom: 4px; padding: 0 !important; margin: 0 !important;">
-                                                            <apex:outputtext rendered="{!if(QLOpt.Description != ''  &&  !QLOpt.isstartWith_a, true ,false)}"
-escape="false" value="{!QLOpt.Description}">
-</apex:outputtext>
-                                                        </li>-->
-                                                        
-                                                        
-                                                        <!--  <apex:outputPanel rendered="{!if(QLOpt.Description != ''  &&  !QLOpt.isstartWith_a, true ,false)}"> 
-{!QLOpt.Description}</li>
-</apex:outputPanel>-->
+                                                        <apex:outputPanel rendered="{!IF(QLOpt.Description != '' && !QLOpt.isstartWith_a, true, false)}">
+                                                            <li style="list-style-type: square; margin-bottom: 0px; padding: 0 !important; margin: 0 !important;">
+                                                                <apex:outputText value="{!QLOpt.Description}" escape="false"/>
+                                                            </li>
+                                                        </apex:outputPanel>
+                                                    </td>
+                                                    
+                                                    <td style="text-align: left; vertical-align:top;">
+                                                        <apex:outputPanel rendered="{!QLOpt.Pdf_Checked}">
+                                                            <span>{!IF(QLOpt.Quantity != null, QLOpt.Quantity, '')}</span>
+                                                        </apex:outputPanel>
+                                                    </td>
+                                                    <td style="text-align: right; vertical-align:top;">
+                                                        <apex:outputPanel rendered="{!QLOpt.Pdf_Checked}">
+                                                            {!IF(QLOpt.Manual_Option_List_Price != null, QLOpt.Manual_Option_List_Price, '')}
+                                                        </apex:outputPanel>
+                                                    </td>
+                                                    <td style="text-align: right; vertical-align:top;">
+                                                        <apex:outputPanel rendered="{!QLOpt.Pdf_Checked}">
+                                                            {!IF(QLOpt.Sales_Price != null, QLOpt.Sales_Price, '')}
+                                                        </apex:outputPanel>
                                                     </td>
                                                 </tr>
                                             </apex:repeat>
                                         </apex:repeat>
+                                        
+                                        <!-- Subtotal Row -->
                                         <tr>
-                                            <td colspan="3" align="left" style="border: 1px solid #A9A9A9; border-left: 0; border-right: 0;">
-                                                <label style="display:{!IF(quoteTemplate.Manufacture_Place__c=='', 'none', 'block')};">{!quoteTemplate.Manufacture_Place__c}</label>
+                                            <td colspan="3" style="border-top: 1px solid #A9A9A9; border-bottom: 1px solid #A9A9A9; padding: 8px; text-align: left;">
+                                                <apex:outputPanel rendered="{!quoteTemplate.Manufacture_Place__c != ''}">
+                                                    {!quoteTemplate.Manufacture_Place__c}
+                                                </apex:outputPanel>
                                             </td>
-                                            <td colspan="2" align="right" style="border: 1px solid #A9A9A9; border-left: 0; border-right: 0;">
-                                                {!quoteTemplate.Label_For_Colum_5__c}&nbsp;({!ObjQuote.CurrencyIsoCode}) :
+                                            <td colspan="2" style="border-top: 1px solid #A9A9A9; border-bottom: 1px solid #A9A9A9; padding: 8px; text-align: right;">
+                                                {!quoteTemplate.Label_For_Colum_5__c}&nbsp;({!ObjQuote.CurrencyIsoCode}):
                                                 {!getWithoutTaxGrandValueString}
                                             </td>
                                         </tr>
+                                        
+                                        <!-- Tax Line Items -->
                                         <apex:repeat value="{!prodLineList}" var="qLine">
-                                <tr style="display:{!IF(qLine.Is_Tax, 'true','none')}">
-                                    <td ></td>
-                                    <td style="text-align: right; color: #000 !important;">
-                                        <apex:outputPanel rendered="{!if(qLine.Product_Description == '' , true ,false)}"> 
-                                            {!qLine.Product_Name}<br/>
-                                        </apex:outputPanel>
-                                        
-                                        <apex:outputtext rendered="{!if(qLine.Product_Description != '' , true ,false)}"
-                                                         value="{!qLine.Product_Description}" escape="false"/> 
-                                        
-                                        <!--<apex:outputPanel rendered="{!if(qLine.Product_Description != '' , true ,false)}"> 
-{!qLine.Product_Description}<br/>
-</apex:outputPanel>-->
-                                    </td>
-                                    <td align="left" style="text-align: left; color: #000 !important;">
-                                        
-                                    </td>
-                                    
-                                    <td align="right" style="text-align: right; color: #000 !important;"></td>
-                                    
-                                    <td align="left" style="text-align: right; color: #000 !important;vertical-align:top;"> 
-                                        <div style="display:{!if(qLine.totalValue != 0,'true','none')}">
-                                            {!qLine.totalValueString}
-                                        </div>
-                                        <div style="display:{!if(qLine.totalValue = 0,'true','none')}">
-                                            <apex:outputPanel rendered="{!if(qLine.Product_Description == '' , true ,false)}"> 
-                                                {!qLine.Product_Name}<br/>
-                                            </apex:outputPanel>
-                                            <li style="list-style-type: square;  margin-bottom: 4px; padding: 0 !important; margin: 0 !important;">
-                                                <apex:outputtext rendered="{!if(qLine.Product_Description != '', true ,false)}"
-                                                                 escape="false" value="{!qLine.Product_Description}">
-                                                </apex:outputtext></li>
-                                            
-                                            <!--<apex:outputPanel rendered="{!if(qLine.Product_Description != '' , true ,false)}"> 
-{!qLine.Product_Description}<br/>
-</apex:outputPanel>-->
-                                        </div>
-                                    </td>
-                                </tr>
-                            </apex:repeat>
+                                            <tr style="display:{!IF(qLine.Is_Tax, 'table-row','none')};">
+                                                <td></td>
+                                                <td colspan="3" style="text-align: right; color: #000 !important; vertical-align:top;">
+                                                    <apex:outputPanel rendered="{!IF(qLine.Product_Description == '', true, false)}"> 
+                                                        {!qLine.Product_Name}
+                                                    </apex:outputPanel>
+                                                    <apex:outputText rendered="{!IF(qLine.Product_Description != '', true, false)}"
+                                                                    value="{!qLine.Product_Description}" escape="false"/> 
+                                                </td>
+                                                <td style="text-align: right; color: #000 !important; vertical-align:top;"> 
+                                                    <apex:outputPanel rendered="{!qLine.totalValue != 0}">
+                                                        {!qLine.totalValueString}
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!qLine.totalValue == 0}">
+                                                        <apex:outputPanel rendered="{!IF(qLine.Product_Description == '', true, false)}"> 
+                                                            {!qLine.Product_Name}
+                                                        </apex:outputPanel>
+                                                        <apex:outputPanel rendered="{!IF(qLine.Product_Description != '', true, false)}">
+                                                            <li style="list-style-type: square; margin-bottom: 4px; padding: 0 !important; margin: 0 !important;">
+                                                                <apex:outputText value="{!qLine.Product_Description}" escape="false"/>
+                                                            </li>
+                                                        </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                </td>
+                                            </tr>
+                                        </apex:repeat>
                                     </tbody>
                                 </table>
                             

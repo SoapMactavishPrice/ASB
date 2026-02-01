@@ -10,8 +10,9 @@ import LightningAlert from 'lightning/alert';
 import saveCanceledProject from '@salesforce/apex/ReOpenQuoteFromContract.saveCanceledProject';
 
 export default class LwcReOpenQuote extends NavigationMixin(LightningElement) {
-    @track isOpen = true;
+    @track isOpen = false;
     @track isConfirm = true;
+    @track showReopenConfirm = false;
 
     recordId;
     @track isCancel = false;
@@ -56,6 +57,7 @@ export default class LwcReOpenQuote extends NavigationMixin(LightningElement) {
     @track wrapList = [];
     getDetail() {
         getProjectDetail({ CurrentId: this.recordId }).then(result => {
+            console.log('Result from getProjectDetail:', result);
             let data = JSON.parse(result);
             let i = 0;
             data.forEach(element => {
@@ -68,8 +70,32 @@ export default class LwcReOpenQuote extends NavigationMixin(LightningElement) {
                 this.wrapList.push(element);
             });
 
+            const allCancelHidden = this.wrapList.every(item => item.isShowCancel === false);
+            
+            if (allCancelHidden) {
+                // Show confirmation modal instead of directly proceeding
+                this.isOpen = false;
+                this.showReopenConfirm = true;
+            } else {
+                this.isOpen = true;
+                this.showReopenConfirm = false;
+            }
+
         })
     }
+
+    // Handle Reopen Confirmation - Yes button
+    handleReopenYes() {
+        this.showReopenConfirm = false;
+        this.saveProjects();
+    }
+
+    // Handle Reopen Confirmation - No button
+    handleReopenNo() {
+        this.showReopenConfirm = false;
+        this.closeAction();
+    }
+
     @track OpenPopUp = false;
     @track projectNumber = '';
     @track indexToBeCancel;
@@ -235,7 +261,7 @@ checkAllAreAcanclled(){
             this.showSpinner = false;
             for (let key in result) {
                 if (key == 'Id') {
-                    this.ShowToastMessage('Success', 'Quote Reopen Successfully !');
+                    this.ShowToastMessage('Success', 'Quote Reopened Successfully !');
                     this[NavigationMixin.Navigate]({
                         type: 'standard__recordPage',
                         attributes: {

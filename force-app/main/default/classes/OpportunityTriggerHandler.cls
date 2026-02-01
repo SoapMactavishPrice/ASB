@@ -9,10 +9,12 @@ public class OpportunityTriggerHandler {
             if(opp.Is_DTA_Opportunity__c){
                 opp.RecordTypeId = recMap.get('New Opportunity (DTA)');
                 System.debug('RecordTypeMap: Id ' + recMap.get('New Opportunity (DTA)'));
-            }else{
+            } else if (opp.Is_GMBH_Opportunity__c) {
+                opp.RecordTypeId = recMap.get('New Opportunity (GMBH)');
+                System.debug('RecordTypeMap: Id GMBH' + recMap.get('New Opportunity (GMBH)'));
+            } else{
                 opp.RecordTypeId = recMap.get('New Opportunity');
-                System.debug('RecordTypeMap: Isd ' + recMap.get('New Opportunity (DTA)'));
-                 
+                System.debug('RecordTypeMap: Isd ' + recMap.get('New Opportunity'));
             }
            
              System.debug('Opportunity Id: ' + opp.Id + ', RecordTypeId: ' + opp.RecordTypeId);
@@ -24,7 +26,9 @@ public class OpportunityTriggerHandler {
         for(Opportunity opp :  newRecordList){
             if(opp.Is_DTA_Opportunity__c &&  opp.StageName !=oldMap.get(opp.Id).StageName && opp.StageName =='Under Quotation'){
                 opp.RecordTypeId = recMap.get('After stage Under Quotation (DTA)');
-            }else if(!opp.Is_DTA_Opportunity__c &&  opp.StageName !=oldMap.get(opp.Id).StageName && opp.StageName =='Under Quotation'){
+            }else if(opp.Is_GMBH_Opportunity__c &&  opp.StageName !=oldMap.get(opp.Id).StageName && opp.StageName =='Under Quotation'){
+                opp.RecordTypeId = recMap.get('After stage Under Quotation(GMBH)');
+            }else if(opp.StageName !=oldMap.get(opp.Id).StageName && opp.StageName =='Under Quotation'){
                 opp.RecordTypeId = recMap.get('After stage Under Quotation');
             }
             

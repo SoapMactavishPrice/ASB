@@ -20,6 +20,7 @@ public class SaveQuoteAsPdf {
     public Account ObjAccount{get;set;}
     public List<Quote_Line_Item_Custom__c> QlineItm {get;set;}
     public List<parentProductWrapper> prodLineList {get;set;}
+    public Boolean showOptionsModal {get; set;} // to render options selection modal
     public User ObjUser{get;set;}
     public  List<Attachment> allAttachmentParentContains{ get; set; }
     public boolean displayPopup {get;set;}
@@ -48,6 +49,8 @@ public class SaveQuoteAsPdf {
     public Boolean isModalOpen {get; set;}
     public List<AdditionalDocWrapper> addDocs {get; set;}
     public User_Setup__c ObjUserSetup{get;set;}
+
+    
     
     public SaveQuoteAsPdf(ApexPages.StandardController standardPageController) {
         showSaveQuote= false;
@@ -62,12 +65,16 @@ public class SaveQuoteAsPdf {
         if(recordID==null){
             recordId='0Q0H1000000BaspKAC';
         }
+
+        System.debug('RecordId'+RecordId);
+
+        // this.updateQuoteOptions();
         
         address = '';
         allAttachmentParentContains=[select id,Name,Body,BodyLength,parentId,contentType
                                      from attachment where parentId=:recordID order by CreatedDate DESC limit 1];       
         system.debug('My Fetched Attachment'+allAttachmentParentContains);
-        qobj = [Select Id, Status,Is_DTA_Quote__c, Contact_Email__c, Freight__c,Advance_Percentage__c,Quote_No__c,Insurance__c, OwnerId from quote where id =: recordID ];
+        qobj = [SELECT Id, Status,Is_DTA_Quote__c, Contact_Email__c, Freight__c,Advance_Percentage__c,Quote_No__c,Insurance__c, OwnerId, Subsidiary__r.Name FROM quote WHERE id =: recordID ];
         QuoteNumber = qobj.Quote_No__c.substringAfter('>');
         QuoteNumber = QuoteNumber.substringBefore('<');
         emailId = qobj.Contact_Email__c;
@@ -88,7 +95,13 @@ public class SaveQuoteAsPdf {
         // Quote objQuote = (Quote)stdController.getRecord();
         //    RecordId = objQuote.Id;
         //    QlineItm = new List<QuoteLineItem>();
-        CreateQuote();   
+        // CreateQuote2();
+        if (qobj.Subsidiary__r.Name == 'ASI') {
+            showOptionsModal = true;
+        } else {
+            showOptionsModal = true;
+        }
+    // show options modal on page load if there are options available
     }
     
     public void add(){
@@ -316,14 +329,14 @@ public class SaveQuoteAsPdf {
                       from Account where id = : AccountId];
         System.debug('ObjAccount : : '+ ObjAccount);
         QlineItm = new List<Quote_Line_Item_Custom__c>(); 
-        QlineItm = [select Product__c, Product__r.Name,List_Price__c,Is_Tax__c,Name,Quantity__c,Division__c,Is_Manual__c,Total_List_Price__c,Total_Sales_Price__c,UOM__c,Ceiling_Total_Sales_Price__c,Product_Name__c,Line_Item_Id__c,Product_Code__c,Manual_Product_Code__c,Overall_Discount__c,Product_Description__c,
-                    (select Name,Product_Name__c,Manual_Product_Name__c,Discount__c,Final_Price__c,Manual_Option_Base_Price__c,Description__c, Select_Option__c, Product__r.Name from Quote_Line_Options__r ORDER BY Serial_Number__c) 
-                    from Quote_Line_Item_Custom__c where Quote__c = :RecordId and Quantity__c >:0  Order BY Sr_No__c];  
+    QlineItm = [select Product__c, Product__r.Name,List_Price__c,Is_Tax__c,Name,Quantity__c,Division__c,Is_Manual__c,Total_List_Price__c,Total_Sales_Price__c,UOM__c,Ceiling_Total_Sales_Price__c,Product_Name__c,Line_Item_Id__c,Product_Code__c,Manual_Product_Code__c,Overall_Discount__c,Product_Description__c,
+            (select Id, Name,Product_Name__c,Manual_Product_Name__c,Discount__c,Final_Price__c,Manula_Option_List_Price__c,Description__c, Select_Option__c, Quantity__c, Final_Sales_Price__c, Pdf_Checked__c, Product__r.Name, Average_Sales_Price__c, Name_Hide__c, Quantity_Item_Quantity__c from Quote_Line_Options__r ORDER BY Serial_Number__c) 
+            from Quote_Line_Item_Custom__c where Quote__c = :RecordId and Quantity__c >:0  Order BY Sr_No__c];  
         System.debug('QlineItm'+QlineItm);
         
-        List<Quote_Line_Item_Custom__c> QlineItm1 = [select Product__c,Is_Tax__c, Product__r.Name,List_Price__c,Name,Quantity__c,Is_Manual__c,Division__c,Total_List_Price__c,Total_Sales_Price__c,UOM__c,Ceiling_Total_Sales_Price__c,Product_Name__c,Line_Item_Id__c,Product_Code__c,Manual_Product_Code__c,Overall_Discount__c,Product_Description__c,
-                                                     (select Name,Product_Name__c,Manual_Product_Name__c,Discount__c,Final_Price__c,Manual_Option_Base_Price__c,Description__c, Select_Option__c, Product__r.Name from Quote_Line_Options__r ORDER BY Serial_Number__c) 
-                                                     from Quote_Line_Item_Custom__c  where Quote__c = :RecordId and  Quantity__c >:0 Order BY Sr_No__c]; 
+    List<Quote_Line_Item_Custom__c> QlineItm1 = [select Product__c,Is_Tax__c, Product__r.Name,List_Price__c,Name,Quantity__c,Is_Manual__c,Division__c,Total_List_Price__c,Total_Sales_Price__c,UOM__c,Ceiling_Total_Sales_Price__c,Product_Name__c,Line_Item_Id__c,Product_Code__c,Manual_Product_Code__c,Overall_Discount__c,Product_Description__c,
+                             (select Id, Name,Product_Name__c,Manual_Product_Name__c,Discount__c,Final_Price__c,Manula_Option_List_Price__c,Description__c, Select_Option__c, Quantity__c, Final_Sales_Price__c, Pdf_Checked__c, Product__r.Name, Average_Sales_Price__c, Name_Hide__c, Quantity_Item_Quantity__c from Quote_Line_Options__r ORDER BY Serial_Number__c) 
+                             from Quote_Line_Item_Custom__c  where Quote__c = :RecordId and  Quantity__c >:0 Order BY Sr_No__c]; 
         
         prodLineList = new List<parentProductWrapper>();
         getWithoutTaxGrandValue = 0;
@@ -391,51 +404,47 @@ public class SaveQuoteAsPdf {
             pli.UOM =  ql.UOM__c;
             
             pli.childProd = new List<childProductWrapper>();
+            // keep the source Quote Line Item Id for reference
+            pli.QuoteLineId = ql.Id;
             for(Quote_Line_Options__c qpl : ql.Quote_Line_Options__r){
-                
-                if(qpl.Manual_Product_Name__c !=null){
-                if(!qpl.Manual_Product_Name__c.startsWith('.')){
-                childProductWrapper chl = new childProductWrapper();
-                chl.Manual_Product_Name = qpl.Manual_Product_Name__c;
-                chl.isstartWith_a = false;
-                chl.isstartWith_Hash = false;
-                    
-               if(string.isNotBlank(qpl.Description__c)){
-                   if(qpl.Description__c.contains('<p>') || qpl.Description__c.contains('</p>')){
-                      qpl.Description__c=   qpl.Description__c.replace('<p>','<span>');
-                      qpl.Description__c=  qpl.Description__c.replace('</p>','</span>');
-                    }
-                    if(qpl.Description__c.contains('>@') || qpl.Description__c.startsWith('@')){
-                        chl.isstartWith_a = true;
-                        chl.isstartWith_Hash = false;
-                        chl.Description = qpl.Description__c;
-                        pli.isstartWith_a = true;
-                    } else if(string.isNotBlank(qpl.Description__c) && (qpl.Description__c.contains('>#') || qpl.Description__c.startsWith('#'))){
-                        chl.isstartWith_Hash = true;
+                if (qpl.Pdf_Checked__c) {
+                    getWithoutTaxGrandValue += qpl.Final_Sales_Price__c;
+                } 
+                if(qpl.Manual_Product_Name__c != null){
+                    if(!qpl.Manual_Product_Name__c.startsWith('.')){
+                        childProductWrapper chl = new childProductWrapper();
+                        chl.Manual_Product_Name = qpl.Manual_Product_Name__c;
                         chl.isstartWith_a = false;
-                        chl.Description = qpl.Description__c;
-                    } else{
-                        chl.Description = qpl.Description__c;
+                        chl.isstartWith_Hash = false;
+                        chl.Name_Hide = qpl.Name_Hide__c; // Added Name_Hide__c field
+                        // option metadata
+                        chl.OptionId = qpl.Id;
+                        chl.Pdf_Checked = (qpl.Pdf_Checked__c == true);
+                        chl.Quantity = (qpl.Quantity_Item_Quantity__c == null) ? null : Integer.valueOf(qpl.Quantity_Item_Quantity__c);
+                        chl.Sales_Price = CurrencyFormatter.formatDouble(qpl.Final_Sales_Price__c, ObjQuote.CurrencyIsoCode);
+                        // map manual/base price if present
+                        chl.Manual_Option_List_Price = CurrencyFormatter.formatDouble(qpl.Average_Sales_Price__c, ObjQuote.CurrencyIsoCode);
+
+                        if(string.isNotBlank(qpl.Description__c)){
+                            if(qpl.Description__c.contains('<p>') || qpl.Description__c.contains('</p>')){
+                                qpl.Description__c = qpl.Description__c.replace('<p>','<span>');
+                                qpl.Description__c = qpl.Description__c.replace('</p>','</span>');
+                            }
+                            if(qpl.Description__c.contains('>@') || qpl.Description__c.startsWith('@')){
+                                chl.isstartWith_a = true;
+                                chl.isstartWith_Hash = false;
+                                chl.Description = qpl.Description__c;
+                                pli.isstartWith_a = true;
+                            } else if(string.isNotBlank(qpl.Description__c) && (qpl.Description__c.contains('>#') || qpl.Description__c.startsWith('#'))){
+                                chl.isstartWith_Hash = true;
+                                chl.isstartWith_a = false;
+                                chl.Description = qpl.Description__c;
+                            } else{
+                                chl.Description = qpl.Description__c;
+                            }
+                        }
+                        pli.childProd.add(chl);
                     }
-               }
-                    pli.childProd.add(chl);
-                    
-                /*if(string.isNotBlank(qpl.Description__c) && qpl.Description__c.startsWith('@')){
-                    chl.isstartWith_a = true;
-                    chl.isstartWith_Hash = false;
-                    chl.Description = qpl.Description__c;
-                    pli.isstartWith_a = true;
-                    
-                }
-                else if(string.isNotBlank(qpl.Description__c) && qpl.Description__c.startsWith('#')){
-                    chl.isstartWith_Hash = true;
-                    chl.isstartWith_a = false;
-                    chl.Description = qpl.Description__c;
-                } else{
-                    chl.Description = qpl.Description__c;
-                }
-                pli.childProd.add(chl);
-                */}
                 }
             }
             prodLineList.add(pli);
@@ -504,8 +513,9 @@ public class SaveQuoteAsPdf {
         
         gRemark=getDynamicValue(gRemark,amap);
         gProvision=getDynamicValue(gProvision,amap); 
-        
+        this.updateOptions();
     }
+
     
     public List<Quote_Template_Line__c> getDynamicValue(List<Quote_Template_Line__c> tList, map<String,Object> amap)
     {
@@ -653,6 +663,7 @@ public class SaveQuoteAsPdf {
         public Boolean isstartWith_a {get; set;}
         public string Name {get;set;}
         public string Line_Item_Id {get;set;}
+        public Id QuoteLineId {get; set;} // Id of the Quote Line Item
         public string UOM {get;set;}
         public string Product_Name {get;set;}
         public string Product_Description {get;set;}
@@ -670,7 +681,86 @@ public class SaveQuoteAsPdf {
         public Boolean isstartWith_Hash {get; set;}
         public Boolean isstartWith_a {get; set;}
         public string Manual_Product_Name {get;set;}
+        public Id OptionId {get; set;}
+        public Boolean Pdf_Checked {get; set;}
+        public Integer Quantity {get; set;}
+        public String Manual_Option_List_Price {get; set;}
+        public String Sales_Price {get; set;}
+        public Boolean Name_Hide {get; set;} // Added Name_Hide__c field
         
+    }
+
+    // open the options modal from SaveQuoteAsPdf page
+    public void openOptionsModal(){
+        showOptionsModal = true;
+    }
+
+    // Save selected options and set Pdf_Checked__c = true for selected options
+    public PageReference saveOptions(){
+        List<Quote_Line_Options__c> optsToUpdate = new List<Quote_Line_Options__c>();
+        for(parentProductWrapper p : prodLineList){
+            if(p.childProd != null){
+                for(childProductWrapper c : p.childProd){
+                    if(c.Pdf_Checked && c.OptionId != null){
+                        Quote_Line_Options__c qlo = new Quote_Line_Options__c(Id = c.OptionId);
+                        qlo.Pdf_Checked__c = true;
+                        optsToUpdate.add(qlo);
+                    } else if (c.Name_Hide && c.OptionId != null) {
+                        Quote_Line_Options__c qlo = new Quote_Line_Options__c(Id = c.OptionId);
+                        qlo.Name_Hide__c = true;
+                        optsToUpdate.add(qlo);
+                    }
+                }
+            }
+        }
+        if(!optsToUpdate.isEmpty()){
+            try{
+                update optsToUpdate;
+                // Datetime runTime = Datetime.now().addMinutes(1); // Schedule to run after 1 minute
+                // String jobName = 'UpdateQuoteOptionJob_' + recordId + '_' + System.currentTimeMillis();
+                
+                // System.schedule(jobName, getCronForTime(runTime), new UpdateQuoteOptionJob(recordId));
+                // System.debug('Scheduled UpdateQuoteOptionJob to run at: ' + runTime);
+            }catch(Exception e){
+                System.debug('Error updating Pdf_Checked__c on options: '+e.getMessage());
+            }
+        }
+        showOptionsModal = false;
+        return null;
+    }
+
+    private static String getCronForTime(Datetime dt) {
+        return String.format('{0} {1} {2} {3} {4} ? {5}',
+            new List<Object>{dt.second(), dt.minute(), dt.hour(), dt.day(), dt.month(), dt.year()});
+    }
+
+    public void closeOptions(){
+        showOptionsModal = false;
+    }
+
+    public void updateOptions() {
+        List<Quote_Line_Options__c> quoteLineOptions = [
+            SELECT Id, Pdf_Checked__c, Name_Hide__c
+            FROM Quote_Line_Options__c 
+            WHERE Quote__c = :this.recordID
+        ];
+        System.debug('Fetched Quote_Line_Options__c records: ' + quoteLineOptions);
+        System.debug('Total records fetched: ' + quoteLineOptions.size());
+
+        if (!quoteLineOptions.isEmpty()) {
+            System.debug('Records found. Updating Pdf_Checked__c to false...');
+            for (Quote_Line_Options__c qlo : quoteLineOptions) {
+                System.debug('Before update -> Id: ' + qlo.Id + ', Pdf_Checked__c: ' + qlo.Pdf_Checked__c);
+                qlo.Pdf_Checked__c = false;
+                qlo.Name_Hide__c = false;
+                System.debug('After update -> Id: ' + qlo.Id + ', Pdf_Checked__c: ' + qlo.Pdf_Checked__c);
+            }
+        } else {
+            System.debug('No Quote_Line_Options__c records found for Id: ' + recordID);
+        }
+
+        update quoteLineOptions;
+        System.debug('Update completed for records: ' + quoteLineOptions);
     }
     
     

@@ -29,7 +29,7 @@ public class AddProducts {
         User_Setup__c u=[Select id,name,Subsidiari__c,Subsidiari__r.Price_Book__c from User_Setup__c where user__c=:userinfo.getUserId() limit 1];
         System.debug('RecId=>'+RecId);
         System.debug('RecId=>'+u.Subsidiari__c);
-        Quote quote=[select id,name,Language__c, Exchange_Rate__c,Subsidiary__r.Additional_Margin__c,
+        Quote quote=[select id,name,Language__c, Exchange_Rate__c,Subsidiary__r.Additional_Margin__c, Pricebook2Id, CurrencyIsoCode,
                      Subsidiary__r.Rounding_Off_Digits__c,Subsidiary__r.Quantity_Restricted__c,Additinal_Margin__c, 
                      Subsidiary__r.M1__c,Subsidiary__r.D1__c,Subsidiary__r.D2__c,Subsidiary__r.D3__c from Quote where id=:RecId limit 1];
         
@@ -42,37 +42,34 @@ public class AddProducts {
             }
         }
         
-        String pb;
-        if(u.Subsidiari__r.Price_Book__c!=null)
-        {
-            pb=u.Subsidiari__r.Price_Book__c;
-        }
-        else{
-            pb=[select id,name from pricebook2 where name='Standard Price Book'].id; //,Description__c,Pricing_Type__c,Discount_Level_2__c,Discount_Level_3__c,List_Price_Level_2__c,List_Price_level_3__c,Product2.Scope_of_Mold__c,Product2.Option_Type__c,Product2.Number_Of_Cavity_Mould__c,Discount__c,Product2.UOM__c,Product2.Plant__c,Product2.Option_No__c,Product2.Family,
-        }
+        String pb=quote.Pricebook2Id;
             // 
         system.debug('pb'+pb);
         system.debug('size'+prodId.size()+'Id'+prodId);
         List<Pricebookentry> titleList3 = new List<Pricebookentry>([SELECT Product2.Id, Product2.Name,UnitPrice,Product2.Product_Number__c,
                                                                     Product2.Product_Type__c,Product2.ProductCode,
-                                                                    Base_Price__c,Quantity__c,Product2.Description
-                                                                    ,M1__c,M2__c,M3__c,D1__c,D2__c,D3__c,M4__c
-                                                                    ,Rounding_Off_Digits__c
+                                                                    Base_Price__c,Quantity__c,Product2.Description,
+                                                                    // ,M1__c,M2__c,M3__c,M4__c,
+                                                                    D1__c,D2__c,D3__c,
+                                                                    Rounding_Off_Digits__c, List_Price__c
                                                                    
                                                                     FROM PriceBookEntry Where 
                                                                     //Product2Id NOT IN :prodId AND
                                                                     Product2.IsActive = TRUE 
+                                                                    AND CurrencyIsoCode = :quote.CurrencyIsoCode
                                                                     //AND Id='01uBg0000009XXpIAM'
                                                                     AND Pricebook2.id =: pb 
                                                                     AND Product2.ProductCode != null 
                                                                     AND Product2.Family = 'Items' 
                                                                     AND Product2.Language__c=:quote.Language__c  
-                                                                    AND M1__c != null and M2__c != null and M3__c != null and M4__c != null
+                                                                    // AND M1__c != null and M2__c != null and M3__c != null and M4__c != null
                                                                     AND D1__c != null and D2__c != null and D3__c != null and Rounding_Off_Digits__c != null 
                                                                 
                                                                     and (Product2.Subsidiari__c=:null OR Product2.Subsidiari__c=:u.Subsidiari__c)
                                                                     and IsActive = True
                                                                     ORDER BY Product2.Product_Number__c ASC]);
+
+        System.debug('titleList3 ==>' + titleList3);
         
         User UsedDeatil = [select id,Name,Level__c 
                            from User 
@@ -82,10 +79,11 @@ public class AddProducts {
         //public Decimal getListPrice(double basePrice, double excRate, double D1, double D2, double D3, Integer roundOffDigits)
         for(PriceBookEntry lstpbe : titleList3){
             system.debug('Product2.Product_Type__c'+lstpbe.Product2.Product_Type__c);
-           if(lstpbe.M1__c != null && lstpbe.M2__c != null && lstpbe.M3__c != null && lstpbe.Rounding_Off_Digits__c != null && lstpbe.M4__c !=null && quote.Exchange_Rate__c !=null){
-                lstpbe.UnitPrice=getListPrice(lstpbe.Base_Price__c,quote.Exchange_Rate__c,lstpbe.M1__c,lstpbe.M2__c,lstpbe.M3__c,lstpbe.M4__c,quote.Additinal_Margin__c,
-                                              Integer.valueof(lstpbe.Rounding_Off_Digits__c));
-            }
+        //    if(lstpbe.M1__c != null && lstpbe.M2__c != null && lstpbe.M3__c != null && lstpbe.Rounding_Off_Digits__c != null && lstpbe.M4__c !=null && quote.Exchange_Rate__c !=null){
+        //         lstpbe.UnitPrice=getListPrice(lstpbe.Base_Price__c,quote.Exchange_Rate__c,lstpbe.M1__c,lstpbe.M2__c,lstpbe.M3__c,lstpbe.M4__c,quote.Additinal_Margin__c,
+        //                                       Integer.valueof(lstpbe.Rounding_Off_Digits__c));
+        //     }
+            lstpbe.UnitPrice = lstpbe.List_Price__c;
             lstProductListWrapper.add(new ProdListWrapper(false,0, lstpbe, 1));
         }
         system.debug('lstProductListWrapper'+lstProductListWrapper.size());
@@ -180,10 +178,10 @@ public class AddProducts {
            objQLI.P_D1__c = pbe.d1__c;
            objQLI.P_D2__c = pbe.d2__c;
            objQLI.P_D3__c = pbe.d3__c;
-           objQLI.P_M1__c = pbe.M1__c;
-           objQLI.P_M2__c = pbe.M2__c;
-           objQLI.P_M3__c = pbe.M3__c;
-           objQLI.P_M4__c = pbe.M4__c;
+        //    objQLI.P_M1__c = pbe.M1__c;
+        //    objQLI.P_M2__c = pbe.M2__c;
+        //    objQLI.P_M3__c = pbe.M3__c;
+        //    objQLI.P_M4__c = pbe.M4__c;
       
            
                 //objQLI.Level_Of_Ceiling__c=lstQuote[0].Subsidiary__r.Rounding_Off_Digits__c;
@@ -201,21 +199,23 @@ public class AddProducts {
                 }
            
            if(pbe.Base_Price__c != null){
-               objQLI.Base_Price__c = (pbe.Base_Price__c*lstQuote[0].Exchange_Rate__c); //*(quantityList[i]
+               objQLI.Base_Price__c = pbe.Base_Price__c;
                system.debug('Exchange_Rate__c ='+ lstQuote[0].Exchange_Rate__c);
                system.debug('Base Price is ='+ objQLI.Base_Price__c);
                system.debug('Base Price is After calculation ='+ pbe.Base_Price__c*lstQuote[0].Exchange_Rate__c);
                
-               system.debug('go for list price m1  ='+pbe.M1__c);
-               system.debug('go for list price m2 ='+pbe.M2__c);
-               system.debug('go for list price m3 ='+pbe.M3__c);
-               system.debug('go for list price m4 ='+pbe.M4__c);
+            //    system.debug('go for list price m1  ='+pbe.M1__c);
+            //    system.debug('go for list price m2 ='+pbe.M2__c);
+            //    system.debug('go for list price m3 ='+pbe.M3__c);
+            //    system.debug('go for list price m4 ='+pbe.M4__c);
                system.debug('go for list price Additional Margin ='+lstQuote[0].Additinal_Margin__c);
                system.debug('go for list price round of  =' + pbe.Rounding_Off_Digits__c);
                
                system.debug('go for list price');
-               objQLI.List_Price__c = getListPrice(pbe.Base_Price__c,lstQuote[0].Exchange_Rate__c,pbe.M1__c,pbe.M2__c,pbe.M3__c,pbe.M4__c,lstQuote[0].Additinal_Margin__c,
-                                              Integer.valueof(pbe.Rounding_Off_Digits__c));
+            //    objQLI.List_Price__c = getListPrice(pbe.Base_Price__c,lstQuote[0].Exchange_Rate__c,pbe.M1__c,pbe.M2__c,pbe.M3__c,pbe.M4__c,lstQuote[0].Additinal_Margin__c,
+            //                                   Integer.valueof(pbe.Rounding_Off_Digits__c));
+
+            objQLI.List_Price__c = pbe.List_Price__c;
                
                system.debug('go for list price'+objQLI.List_Price__c);
            }

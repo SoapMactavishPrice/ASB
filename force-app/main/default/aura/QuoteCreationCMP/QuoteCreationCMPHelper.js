@@ -12,12 +12,6 @@
             var Wrapdata = response.getReturnValue();
             console.log('response : : ' + response.getReturnValue());
             console.log('KB : : ' + JSON.stringify(Wrapdata));
-            //console.log('get Data' + Wrapperdata.cRate);
-            //console.log('Conversion Error Is ' + Wrapperdata.Error);
-            //console.log('Conversion Data Is ' + Wrapperdata.data);
-            //console.log('checkPermission ', Wrapdata.data.checkPermission);
-            
-            //component.set("v.AllowQuoteToCreate", Wrapperdata.data.checkPermission);
             
             if(Wrapdata.Error !=null){
                 $A.get("e.force:closeQuickAction").fire();
@@ -48,7 +42,6 @@
 
             if (state === "SUCCESS" && temp.checkPermission == true) {
                 
-                // $A.get("e.force:lightningQuickAction").fire();
                 if (temp != null && temp != undefined) {
                     console.log('Wrapperdata == = = = ' + temp);
                     component.set("v.QuoteConversionRate", temp.cRate);
@@ -57,7 +50,7 @@
                     console.log('opportunity name  == = = = ' , JSON.stringify(temp.objopty));
                     component.set("v.OpptyCurrencyCode", temp.objopty.CurrencyIsoCode);
                     console.log('v.OpptyCurrencyCode'+temp.objopty.CurrencyIsoCode);
-                    // console.log('Wrapperdata.objopty.Name ==>' + Wrapperdata.objopty.Name);
+                    component.set("v.currentProdType", temp.objopty.CurrencyIsoCode);
                     component.set("v.AccountName", temp.objopty.Account.Name);
                     console.log('Wrapperdata ==>' + temp.objopty.Subsidiary__r.Allow_Exchange_Rate_Modification__c);
                     component.set("v.AllowExchangeRate", temp.objopty.Subsidiary__r.Allow_Exchange_Rate_Modification__c);
@@ -69,19 +62,16 @@
                     
                     component.set("v.soldTo", temp.objopty.AccountId);
                     component.set("v.shipTo", temp.objopty.AccountId);
-                    //console.log('Wrapperdata.objopty.Account.Name ===>' + Wrapperdata.objopty.Account.Name);
-                    //console.log('Size of wrapper ===> ' + Wrapperdata.lstQt.length);
-                    /*for(var i = 0; i < Wrapperdata.lstQt.length; i++){
-                        console.log('Account Name ===> ' + Wrapperdata.lstQt[i].Account.Name);
-                    }*/
 
                     
                     var cloneQuoteOptions = [];
                     for (var i = 0; i < temp.lstQt.length; i++) {
+                        var pricebookName = temp.lstQt[i].Pricebook2 && temp.lstQt[i].Pricebook2.Name ? temp.lstQt[i].Pricebook2.Name : '';
+                        
                         console.log(i+'  --i -->'+temp.lstQt[i].Id+'-' + temp.lstQt[i].Quote_Number__c  + '-' + temp.lstQt[i].QU_REVISION_NUMBER__c+ '-' + temp.lstQt[i].Account.Name);
                         cloneQuoteOptions.push({
                             label: temp.lstQt[i].Quote_Number__c  + '-' + temp.lstQt[i].QU_REVISION_NUMBER__c+ '-' + temp.lstQt[i].Account.Name,
-                            value: temp.lstQt[i].Id + '-' + temp.lstQt[i].Name+'-'+temp.lstQt[i].Quote_Number__c+ '-' +temp.lstQt[i].QU_REVISION_NUMBER__c
+                            value: temp.lstQt[i].Id + '-' + temp.lstQt[i].Name+'-'+temp.lstQt[i].Quote_Number__c+ '-' +temp.lstQt[i].QU_REVISION_NUMBER__c + '-' + pricebookName
                         })
                     }
 
@@ -168,30 +158,40 @@
     // helper for creating a blank quote
     blankQuote: function (component) {
         component.set('v.showSpinner', true);
-        var recordId = component.get("v.recordId"); //Oppty Id
-        var cRate = component.get("v.QuoteConversionRate");
+        var recordId = component.get("v.recordId");
         var cRate = component.get("v.QuoteConversionRate");
         var qtNameToCheck = component.find("qtName").get("v.value");
         var navService = component.find("navService");
         var addionalMargin = component.get("v.AddionalMargin");
         var currentProdType2 = component.get("v.currentProdType");
+        if(!currentProdType2 || currentProdType2 === '') {
+            currentProdType2 = component.get("v.OpptyCurrencyCode");
+            console.log('Using opportunity currency as fallback:', currentProdType2);
+        }
+        var selectedPricebook = component.find("blankPricebook").get("v.value");
         
-        
+        if(!selectedPricebook || selectedPricebook === '') {
+            component.set('v.showSpinner', false);
+            component.find('notifLib').showToast({
+                "variant": "error",
+                "title": "Please select a Pricebook!",
+            });
+            return;
+        }
+
         console.log('addionalMargin --->', addionalMargin);
         if (qtNameToCheck != null && qtNameToCheck != undefined && qtNameToCheck != '') {
             var action = component.get('c.createBlankQuoteController');
             action.setParams({
                 "QuoteName": qtNameToCheck,
                 "recordId": recordId,
-                "currencyName":currentProdType2,
+                "currencyName": currentProdType2,
                 "cRate": cRate,
-                "QuoteAdditionalMargin": addionalMargin
+                "QuoteAdditionalMargin": addionalMargin,
+                "pricebookId": selectedPricebook
             });
             action.setCallback(this, function (response) {
                 var err = response.getError();
-                //console.log('err[0].message '+response.getError()+'-->'+err[0].message );
-                //console.log('response.getState()'+response.getState());
-                //console.log('error message is'+JSON.Serailize(response.getError()));
                 if (response.getState() == 'SUCCESS') {
                     var quoteCreatedId = response.getReturnValue();
                     component.set('v.showSpinner', false);
@@ -216,12 +216,12 @@
                         'mode': 'dismissible',
                     })
                     toastevent.fire();
-                    // component.set("v.SaveHit",true);
                 } else {
+                    console.log('err', JSON.parse(JSON.stringify(err)));
                     component.set('v.showSpinner', false);
                     component.find('notifLib').showToast({
                         "variant": "error",
-                        "title": "Something went wrong!",
+                        "title": err[0].message.startsWith("The Opportunity Currency is already") ? "❌Currency Mismatch Error" : "Something went wrong!",
                         "message": err[0].message,
                     });
                 }
@@ -238,26 +238,31 @@
 
     // helper for cloning quotes
     cloneQuotes: function (component) {
-        //alert('true');
         component.set('v.showSpinner', true);
         var selectedQuoteToClone = component.get('v.selectedCloneQuote').split('-')[0];
-        //alert('selectedQuoteToClone = ='+selectedQuoteToClone);
         var qtNameToCheck = component.find('cloneQtName').get('v.value');
         var soldTo = component.get('v.soldTo');
         var shipTo = component.get('v.shipTo');
-        
-        console.log('soldTo--->',soldTo +' shipTo '+shipTo );
-        //alert('qtNameToCheck = ='+qtNameToCheck);
         var navService = component.find("navService");
-        //alert('navService = ='+navService);
         var recordId = component.get("v.recordId");
-        //alert('recId = ='+recId);
         var currentProdType1 = component.get("v.currentProdType");
+        if(!currentProdType1 || currentProdType1 === '') {
+            currentProdType1 = component.get("v.OpptyCurrencyCode");
+            console.log('Using opportunity currency as fallback:', currentProdType1);
+        }
         var lstQuotes = component.get("v.LstExistingQuotes");
         var cRate = component.get("v.QuoteConversionRate");
         var addionalMargin = component.get("v.AddionalMargin");
-        console.log('addionalMargin ===>', addionalMargin);
-        //alert('lstQuotes = ='+lstQuotes);
+        var selectedPricebook = component.find("clonePricebook").get("v.value");
+
+        if(!selectedPricebook || selectedPricebook === '') {
+            component.set('v.showSpinner', false);
+            component.find('notifLib').showToast({
+                "variant": "error",
+                "title": "Please select a Pricebook!",
+            });
+            return;
+        }
 
         
         if ((soldTo == '' || soldTo == null)) {
@@ -281,15 +286,12 @@
         
         }else 
         if (qtNameToCheck != null && qtNameToCheck != undefined && qtNameToCheck != '') {
-            //alert('1');
             var lstMatchingQuotes = lstQuotes.filter(function (eachQuote) {
-                //alert('2');
                 return eachQuote.Name == qtNameToCheck
             });
 
             console.log(lstMatchingQuotes.length);
             if (lstMatchingQuotes.length > 0) {
-                //alert('reaching');
                 component.set('v.isQuoteVerified', false);
                 component.set('v.showSpinner', false);
                 component.find('notifLib').showToast({
@@ -299,24 +301,25 @@
                 });
             } 
             else {
-                //alert('sjdfvbfzdivhbsfv hb');
                 console.log('cloningQuote--!');
                 var action = component.get('c.cloneExistingQuote');
                 console.log('settingCloned--!');
                 action.setParams({
                     "quoteToClone": selectedQuoteToClone,
                     "clonedQuoteName": qtNameToCheck,
-                    "currencyName":currentProdType1,
+                    "currencyName": currentProdType1,
                     "recordId": recordId,
                     "cRate": cRate,
                     "QuoteAdditionalMargin": addionalMargin,
-                    "soldTo":soldTo,
-                     "shipTo":shipTo,
+                    "soldTo": soldTo,
+                    "shipTo": shipTo,
+                    "pricebookId": selectedPricebook
                 });
                 console.log('callingCloned--!');
                 action.setCallback(this, function (response) {
                     
                     var quoteCreatedId = response.getReturnValue();
+                    var err = response.getError();
                     
                     console.log('calledCloned--!',quoteCreatedId,response.getState());
                     if (response.getState() == 'SUCCESS') {
@@ -361,13 +364,13 @@
                     }
                         
                     } 
-                    else {
-                        console.log('inside else',quoteCreatedId.error);
+                     else {
+                        console.log('err', JSON.parse(JSON.stringify(err)));
                         component.set('v.showSpinner', false);
                         component.find('notifLib').showToast({
                             "variant": "error",
-                            "title": "Something went wrong!",
-                            "message": quoteCreatedId.error, 
+                            "title": err[0].message.startsWith("The Opportunity Currency is already") ? "❌Currency Mismatch Error" : "Something went wrong!",
+                            "message": err[0].message,
                         });
                     }
                 });
@@ -395,8 +398,6 @@
             theme: 'info',
             label: 'Please Confirm',
         }).then(function(result) {
-            // result is true if clicked "OK"
-            // result is false if clicked "Cancel"
             console.log('confirm result is', result);
         });
     },
@@ -458,40 +459,5 @@
         }
 
     },
-    
-   /*fetchSoldAndShipTo : function(component,param,quoteId) {
-    console.log('quoteId -->', component.get("v.soldTo");
-       
-       component.set("v.soldTo", result['Sold_To__c']);
-   },*/
-       //component.set("v.shipTo", result['Sold_To__c']);
-
-    /*setTimeout(function() {
-    console.log("Calling Apex now...");
-
-    var action = component.get("c.getSoldAndShipTo1");
-    action.setParams({
-        quoteId: quoteId
-    });
-
-    action.setCallback(this, function(response) {
-        var state = response.getState();
-        console.log("Apex call state:", state);
-
-        if (state === "SUCCESS") {
-            var result = response.getReturnValue();
-            console.log('Apex result:', JSON.stringify(result));
-
-            component.set("v.soldTo", result['Sold_To__c']);
-            component.set("v.shipTo", result['Ship_To__c']);
-        } else {
-            console.error("Error fetching SoldTo/ShipTo:", response.getError());
-        }
-    });
-
-    $A.enqueueAction(action);
-}, 200);
-},*/
-
 
 })

@@ -6,6 +6,7 @@
         var QtyRestricted = '';
         component.set('v.tempSerialNumber',0);
         component.set('v.StatictempSerialNumber',0);
+        component.set('v.basePriceLabel', 'Base Price');
         //component.set("v.isManual",false);
         //component.set("v.isProduct__c",false);
         
@@ -179,9 +180,11 @@
                helper.HandlerOnChangeHelper(component,event,helper);
                component.set("v.isManual",true);
                 component.set("v.isProduct__c",true);
+                component.set("v.basePriceLabel", 'Base Price');
             }else if(tempChk[i].Id == checkCmp && tempChk[i].Is_Manual__c == true){
               component.set("v.isManual",true);
               component.set("v.isProduct__c",false);
+              component.set("v.basePriceLabel", 'Base Price, Transfer Price');
             }
         }
         

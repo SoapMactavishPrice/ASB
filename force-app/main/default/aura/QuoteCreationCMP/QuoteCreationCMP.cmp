@@ -23,8 +23,10 @@
     <aura:attribute name="AllowAdditionalMargin" type="boolean" default="false" />
     <aura:attribute name="displayExchangeRate" type="boolean" default="false" />
     <aura:attribute name="displayAdditionalMargin" type="boolean" default="false" />
-    
     <aura:attribute name="AllowQuoteToCreate" type="Boolean" default="false"/>
+    <aura:attribute name="pricebookOptions" type="List" />
+    <aura:attribute name="selectedPricebook" type="String" />
+    <aura:attribute name="sourceQuotePricebookName" type="String" default="" description="Pricebook name of selected source quote" />
 
     <!--Aura Libraries/Components-->
     <lightning:notificationsLibrary aura:id="notifLib"/>
@@ -124,7 +126,7 @@
 
                             <lightning:recordEditForm  objectApiName="Opportunity">
                                 <label>Currency</label>
-                                            <lightning:inputField fieldName="CurrencyIsoCode" disabled="true" onchange ="{!c.OnCurrencySelect}" 
+                                            <lightning:inputField fieldName="CurrencyIsoCode" onchange ="{!c.OnCurrencySelect}" 
                                                                   value="{!v.OpptyCurrencyCode}" variant="label-hidden" />
                             </lightning:recordEditForm>
 
@@ -149,6 +151,14 @@
                             </aura:set>
                         </aura:if>
                         </aura:if>
+                        <div class="slds-col slds-size_1-of-2 slds-m-top_small">
+                            <lightning:select aura:id="blankPricebook" value="{!v.selectedPricebook}" label="Pricebook" required="true">
+                                <option value="">Choose one...</option>
+                                <aura:iteration items="{!v.pricebookOptions}" var="pb">
+                                    <option value="{!pb.value}" text="{!pb.label}"/>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
                     	                        
                     </div>
                     <div class="slds-m-around_medium slds-grid slds-grid_align-center">
@@ -188,10 +198,13 @@
                             <c:MultiselectCombobox searchOnVal="true" options="{!v.cloneQuoteOptions}" value="{!v.selectedCloneQuote}" label="Clone From" cloneQuoteEvent="{!c.handleSelectedCloneQuote}"/>
                         </div>
                         <lightning:input aura:id="cloneQtName" class="slds-col slds-size_1-of-2" type="text" name="Quote Name" label="Quote Name" />
+                        
+                        <lightning:input disabled='true' aura:id="sourceQuotePricebook" class="slds-col slds-size_1-of-2" type="text" name="Source Quote Pricebook" label="Source Quote Pricebook" value="{!v.sourceQuotePricebookName}" style="padding-top: 7px;" />
+                        
 						<div class="slds-col slds-size_1-of-2 slds-m-top_small">
                         		<lightning:recordEditForm  objectApiName="Opportunity">
                                      <label>Currency</label>
-                                     <lightning:inputField fieldName="CurrencyIsoCode" value="{!v.OpptyCurrencyCode}" disabled="true" onchange ="{!c.OnCurrencySelect}" variant="label-hidden" />
+                                     <lightning:inputField fieldName="CurrencyIsoCode" value="{!v.OpptyCurrencyCode}" onchange ="{!c.OnCurrencySelect}" variant="label-hidden" />
                             </lightning:recordEditForm>
                         </div>
                         <aura:if isTrue="{!v.AllowExchangeRate}">
@@ -203,18 +216,38 @@
                         </aura:if>  
                         </aura:if>
                         
-                        <div class="slds-col slds-size_1-of-2"> 
-                        <lightning:recordEditForm 
-                                                  objectApiName="Quote" 
-                                                  recordId="{!v.selectedCloneQuote}" 
-                                                  onsuccess="{!c.handleSuccess}">
-                            <div style="display:flex">
-                            <lightning:inputField fieldName="SOLD_TO__c" value="{!v.soldTo}" class="slds-m-bottom_small"  onchange="{!c.handleSoldToChange}"/>
-                            
-                            <lightning:inputField fieldName="SHIP_TO__c" value="{!v.shipTo}" onchange="{!c.handleShipToChange}"/>
-                            </div>
-                            
-                        </lightning:recordEditForm>
+                    <div class="slds-col slds-size_1-of-2" style="padding-top: 7px;"> 
+                        <label class="slds-form-element__label">
+                            <abbr class="slds-required" title="required">*</abbr> SOLD TO
+                        </label>
+                            <lightning:recordEditForm 
+                                                    objectApiName="Quote" 
+                                                    recordId="{!v.selectedCloneQuote}" 
+                                                    onsuccess="{!c.handleSuccess}">
+                                <lightning:inputField fieldName="SOLD_TO__c" value="{!v.soldTo}" class="slds-m-bottom_small"  onchange="{!c.handleSoldToChange}" variant="label-hidden"/>
+                                
+                            </lightning:recordEditForm>
+                        
+                    </div>
+                        <div class="slds-col slds-size_1-of-2 slds-m-top_small">
+                            <lightning:select aura:id="clonePricebook" value="{!v.selectedPricebook}" label="Pricebook" required="true">
+                                <option value="">Choose one...</option>
+                                <aura:iteration items="{!v.pricebookOptions}" var="pb">
+                                    <option value="{!pb.value}" text="{!pb.label}"/>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2" style="padding-top: 11px;">
+                            <label class="slds-form-element__label">
+                                <abbr class="slds-required" title="required">*</abbr> SHIP TO
+                            </label>
+                                <lightning:recordEditForm 
+                                                        objectApiName="Quote" 
+                                                        recordId="{!v.selectedCloneQuote}" 
+                                                        onsuccess="{!c.handleSuccess}">
+                                    <lightning:inputField fieldName="SHIP_TO__c" value="{!v.shipTo}" onchange="{!c.handleShipToChange}" variant="label-hidden"/>
+                                    
+                                </lightning:recordEditForm>
                         </div>
 							
                         <aura:if isTrue="{!v.AllowAdditionalMargin}">

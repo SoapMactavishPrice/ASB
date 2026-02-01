@@ -14,11 +14,12 @@ public with sharing class CancelApprovalRequest {
     public PageReference cancelreq() {
         contract.Status = 'Created';
         map<string,string> recMap = assignRecordTypecls.getRecordTypeList('Contract');
-        if(!contract.Is_DTA_Contract__c){
-            
-            contract.RecordTypeId = recMap.get('Blank Contract');
-        }else if(contract.Is_DTA_Contract__c){
+        if(contract.Is_DTA_Contract__c){
             contract.RecordTypeId = recMap.get('Blank Contract(DTA)') ;
+        } else if (contract.Is_GMBH_Contract__c) {
+            contract.RecordTypeId = recMap.get('Blank Contract(GMBH)');
+        } else {
+            contract.RecordTypeId = recMap.get('Blank Contract');
         }
         contract.Approval_Status__c = 'Cancelled';
 

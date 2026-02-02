@@ -266,7 +266,7 @@ public class CreateQuotetriggerHandler {
         }
         
         //Date dToday = system.today();
-        ObjQuote.ExpirationDate = System.today() + 45;
+        ObjQuote.ExpirationDate = null;   // Changes From 45 days to 30 By Shubham Kadu (27th Jan 2026)
         system.debug('ObjQuote'+ObjQuote.POSTAL_CODE__c);
         update ObjQuote;
         

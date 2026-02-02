@@ -88,8 +88,9 @@ trigger TrgOppotunity on Opportunity (After Update,Before Insert,After insert,Be
                     upsert sMap.values();
                     
                 } 
-            }
-            
+            }     
+            /*      Commented By Shubham Kadu (27th Jan 2026)
+       
             if(trigger.IsUpdate && trigger.IsBefore)
             {
                 List<id> obj=new List<id>();          
@@ -117,7 +118,8 @@ trigger TrgOppotunity on Opportunity (After Update,Before Insert,After insert,Be
                     
                 }
                 
-            }
+            } 
+      */
             
             
             if(trigger.isAfter && trigger.isInsert){

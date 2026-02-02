@@ -599,13 +599,15 @@ trigger TrgQuote on Quote (After insert , After Update,Before Update )
         
     }
     
+    /*      Comment By Shubham Kadu (27th Jan 2026)
     if(Trigger.isBefore && Trigger.isUpdate){
         for(Quote con : Trigger.new){
             if((con.ExpirationDate < system.today() || con.ExpirationDate ==null) && con.ExpirationDate != Trigger.oldMap.get(con.Id).ExpirationDate ){
                 con.addError('You Cannot make Quote whose date is expired or null');
             }
         }
-    }
+    }*/
+    
     if(Trigger.isAfter && Trigger.isUpdate){
         //if (CheckRecursive.isExecuting) return;
         system.debug('inside after update'+CheckRecursive.isExecutingQuote);

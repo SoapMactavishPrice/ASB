@@ -36,7 +36,7 @@ trigger Trg_ContractNew on Contract (before insert,before Update, after insert, 
     if(Trigger.isBefore && Trigger.isUpdate){
         for(Contract con : Trigger.new){
             if((con.Expiration_Date__c < system.today() || con.Expiration_Date__c ==null) && con.Expiration_Date__c != Trigger.oldMap.get(con.Id).Expiration_Date__c ){
-                con.addError('You Cannot make Quote whose date is expired or null');
+                con.addError('You Cannot make Contract whose date is expired or null');
             }
         }
     }
@@ -164,7 +164,9 @@ trigger Trg_ContractNew on Contract (before insert,before Update, after insert, 
               ){
                   if(con.Is_DTA_Contract__c){
                       con.RecordTypeId = recMap.get('After Released Locked(DTA)') ;     
-                  }else if(!con.Is_DTA_Contract__c	){
+                  } else if (con.Is_GMBH_Contract__c) {
+                    con.RecordTypeId = recMap.get('After Released Locked(GMBH)') ;
+                  } else {
                       con.RecordTypeId = recMap.get('After Released Locked');     
                   }
               }
@@ -192,10 +194,11 @@ trigger Trg_ContractNew on Contract (before insert,before Update, after insert, 
         for(Contract con : Trigger.new){
             if(con.Is_DTA_Contract__c){
                 con.RecordTypeId = recMap.get('Blank Contract(DTA)') ;     
-            }else if(!con.Is_DTA_Contract__c	){
+            } else if (con.Is_GMBH_Contract__c) {
+                con.RecordTypeId = recMap.get('Blank Contract(GMBH)') ;
+            } else {
                 con.RecordTypeId = recMap.get('Blank Contract');     
             }
-            
         }
         
     }

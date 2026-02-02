@@ -15,8 +15,9 @@ public class QuoteTriggerHandler {
         for(Quote qt :  newRecordList){
             if(qt.Is_DTA_Quote__c){
                 qt.RecordTypeId = recMap.get('Blank Quote(DTA)');
-                //qt.status='Draft';
-            }else{
+            } else if (qt.Is_GMBH_Quote__c) {
+                qt.RecordTypeId = recMap.get('Blank Quote(GMBH)');
+            } else{
                 qt.RecordTypeId = recMap.get('Blank Quote');
                 //qt.status='Created';
             }
@@ -46,7 +47,9 @@ public class QuoteTriggerHandler {
         for(Quote qt :  newRecordList){
             if(qt.Is_DTA_Quote__c &&  qt.Status !=oldMap.get(qt.Id).status && qt.Status =='RELEASED'){
                 qt.RecordTypeId = recMap.get('After Released Locked(DTA)');
-            }else if(!qt.Is_DTA_Quote__c &&  qt.Status !=oldMap.get(qt.Id).status && qt.Status =='RELEASED'){
+            } else if (qt.Is_GMBH_Quote__c &&  qt.Status !=oldMap.get(qt.Id).status && qt.Status =='RELEASED'){
+                qt.RecordTypeId = recMap.get('After Released Locked(GMBH)');
+            } else if( qt.Status !=oldMap.get(qt.Id).status && qt.Status =='RELEASED'){
                 qt.RecordTypeId = recMap.get('After Released Locked');
             }
         }

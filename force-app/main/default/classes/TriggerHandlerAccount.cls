@@ -35,6 +35,8 @@ public class TriggerHandlerAccount {
             String subName = subMap.get(acc.Subsidiary__c).Name;
             if (subName == 'ASI') {
                 acc.RecordTypeId = recMap.get('DTA'); // DTA Record Type
+            } else if (subName == 'EUR'){
+                acc.RecordTypeId = recMap.get('GMBH'); // GMBH Record Type
             } else {
                 acc.RecordTypeId = recMap.get('USA'); // USA Record Type
             }

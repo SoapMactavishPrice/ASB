@@ -243,20 +243,20 @@ trigger TrgOppotunity on Opportunity (After Update,Before Insert,After insert,Be
         
          Map<Id,Contract> qlist = new  Map<Id,Contract>();
         
-        if(qIdmap.size() > 0){
-            List<Contract> conlist = [select Id ,Opportunity__c,Expiration_Date__c from Contract where Opportunity__c IN : qIdmap.keyset() FOR UPDATE];
-            if(conlist.size() > 0){
-            for(Contract q :  conlist){
-                if(qIdmap.containskey(q.Opportunity__c)){
-                     if( q.Expiration_Date__c != qIdmap.get(q.Opportunity__c).closeDate){
-                      q.Expiration_Date__c = qIdmap.get(q.Opportunity__c).closeDate;
-                      q.Expiration_Date_Change_Reason__c = qIdmap.get(q.Opportunity__c).Expiration_Date_Change_Reason__c;
-                      qlist.put(q.Id,q);
-                     }
-                }
-            }
-            }
-        }
+        // if(qIdmap.size() > 0){
+        //     List<Contract> conlist = [select Id ,Opportunity__c,Expiration_Date__c from Contract where Opportunity__c IN : qIdmap.keyset() FOR UPDATE];
+        //     if(conlist.size() > 0){
+        //     for(Contract q :  conlist){
+        //         if(qIdmap.containskey(q.Opportunity__c)){
+        //              if( q.Expiration_Date__c != qIdmap.get(q.Opportunity__c).closeDate){
+        //               q.Expiration_Date__c = qIdmap.get(q.Opportunity__c).closeDate;
+        //               q.Expiration_Date_Change_Reason__c = qIdmap.get(q.Opportunity__c).Expiration_Date_Change_Reason__c;
+        //               qlist.put(q.Id,q);
+        //              }
+        //         }
+        //     }
+        //     }
+        // }
         
         
         Map<Id,Quote> opplist = new Map<Id,Quote>();

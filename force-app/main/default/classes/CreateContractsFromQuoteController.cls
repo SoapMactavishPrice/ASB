@@ -186,7 +186,7 @@ public class CreateContractsFromQuoteController {
             
             //cont.Contract_Released_Date__c = ObjQuote.Quote_Release_Date__c;
             cont.Expected_Month_of_Consolidated_Order__c	 = ObjQuote.Expected_Month_of_Consolidated_Order__c;
-            cont.Expiration_Date__c = system.today().addDays(30) ;
+            cont.Expiration_Date__c = null;              //system.today().addDays(30) ; Set By Shubham Kadu (27th Jan 2026)
       
             
             cont.Machine_Mold__c	 = ObjQuote.Machine_Mold__c	;
@@ -829,7 +829,7 @@ ContLO.Description__c = pro2.Description__c;
         else if((ObjStatus == 'RELEASED' || ObjStatus == 'UNDER NEGOTIATION - COOL' || ObjStatus == 'UNDER NEGOTIATION - HOT' || 
                  ObjStatus == 'WAITING FOR SC/DRG APPROVAL/CLARIFICATION') && todaysDate > QuoteValidDate){
             system.debug('in it 2');
-            ApexPages.addmessage(new ApexPages.message(ApexPages.severity.WARNING,'The Expiration Date Has Already Passed Please Update The Expiration Date'));
+            ApexPages.addmessage(new ApexPages.message(ApexPages.severity.WARNING,'The Quote Expiration Date Has Already Passed Please Update The Expiration Date'));
             // PageReference myVFPage = new PageReference('/'+objQuote.id);
             // myVFPage.setRedirect(true);
             return null;

@@ -88,8 +88,9 @@ trigger TrgOppotunity on Opportunity (After Update,Before Insert,After insert,Be
                     upsert sMap.values();
                     
                 } 
-            }
-            
+            }     
+            /*      Commented By Shubham Kadu (27th Jan 2026)
+       
             if(trigger.IsUpdate && trigger.IsBefore)
             {
                 List<id> obj=new List<id>();          
@@ -117,7 +118,8 @@ trigger TrgOppotunity on Opportunity (After Update,Before Insert,After insert,Be
                     
                 }
                 
-            }
+            } 
+      */
             
             
             if(trigger.isAfter && trigger.isInsert){
@@ -241,7 +243,7 @@ trigger TrgOppotunity on Opportunity (After Update,Before Insert,After insert,Be
         
          Map<Id,Contract> qlist = new  Map<Id,Contract>();
         
-        if(qIdmap.size() > 0){
+    /*    if(qIdmap.size() > 0){
             List<Contract> conlist = [select Id ,Opportunity__c,Expiration_Date__c from Contract where Opportunity__c IN : qIdmap.keyset() FOR UPDATE];
             if(conlist.size() > 0){
             for(Contract q :  conlist){
@@ -254,7 +256,7 @@ trigger TrgOppotunity on Opportunity (After Update,Before Insert,After insert,Be
                 }
             }
             }
-        }
+        } */
         
         
         Map<Id,Quote> opplist = new Map<Id,Quote>();

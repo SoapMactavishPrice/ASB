@@ -8,7 +8,7 @@ public with sharing class CancelApprovalRequest {
         showPopup = true; 
         String currentId = ApexPages.currentPage().getParameters().get('id');
         system.debug('currentId'+currentId);
-        contract = [SELECT Id, ContractNumber,Is_DTA_Contract__c,RecordTypeId, Status, Approver_User__c FROM Contract WHERE Id = :currentId]; 
+        contract = [SELECT Id, ContractNumber,Is_DTA_Contract__c,RecordTypeId, Status,Is_GMBH_Contract__c, Approver_User__c FROM Contract WHERE Id = :currentId]; 
         contractNumber = contract.ContractNumber;
     }
     public PageReference cancelreq() {

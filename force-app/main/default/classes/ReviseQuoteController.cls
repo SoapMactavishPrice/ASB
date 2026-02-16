@@ -47,14 +47,15 @@ public class ReviseQuoteController {
                     Text_After_Total__c,Q_PrintShipping__c,Q_PrintConclusion__c,SHIP_To_Contact_Name__c,Contract_Quote_Id__c,
                     FUNCTION__c,INCO_TERMS__c,MFG_AT__c,POSTAL_CODE__c,PREPARED_BY__c,PROBABILITY__c,QUOTATION_ADDRESSED_TO__c,QUOTATION_CREATE__c,QU_REVISION_NUMBER__c,
                     /*REGION__c,*/SHIP_TO__c,SOLD_TO__c,STATE__c,SUBSIDARY__c,TYPE__c,VALIDITY__c,VALITY_DATE__c,Quote_Number__c,Pricebook2Id,Use_Current_Price__c,
-                    Account.Global_Region__c,Account.Global_SubRegion__c,Price_in_Word_Required__c,Expected_Month_of_Consolidated_Order__c,Project_Management_Quote_Id__c
+                    Account.Global_Region__c,Account.Global_SubRegion__c,Price_in_Word_Required__c,Expected_Month_of_Consolidated_Order__c,Project_Management_Quote_Id__c, Payment_Terms__c
                     FROM Quote WHERE id =:CurrentId limit 1]; //V1.1
         
         String QuoteStatus = objQuote.Status;
         Date QuoteValidDate = objQuote.VALITY_DATE__c;
         Date todaysDate = system.today();
         //Id stQuote = Schema.SObjectType.quote.getRecordTypeInfosByName().get('Blank Quote').getRecordTypeId();
-        Fiscal_Year_Master__c f=[select id,name,Active__c from Fiscal_Year_Master__c where Active__c=true limit 1]; //V1.1
+       // Fiscal_Year_Master__c f=[select id,name,Active__c from Fiscal_Year_Master__c where Active__c=true limit 1]; //V1.1
+        Fiscal_Year_Master__c f=[select id,name from Fiscal_Year_Master__c where Active__c=true  AND Fiscal_Year_Start_Date__c <= TODAY AND Fiscal_Year_End_Date__c >= TODAY limit 1];
         
         decimal exeRate = CommonData.getExchangeRate(objQuote.Opportunity.CurrencyISOCode);
         Quote QuoteClone  = objQuote.clone(false, false, false, false);
@@ -98,7 +99,7 @@ public class ReviseQuoteController {
                 QuoteClone.Ship_To_Global_Region__c = objQuote.Account.Global_Region__c;
                 QuoteClone.Ship_To_Global_SubRegion__c = objQuote.Account.Global_SubRegion__c;
                 QuoteClone.Price_in_Word_Required__c = objQuote.Price_in_Word_Required__c;
-                
+                QuoteClone.Payment_Terms__c = objQuote.Payment_Terms__c;
                 
                 
                 

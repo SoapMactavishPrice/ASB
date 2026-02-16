@@ -43,7 +43,8 @@ public class CreateQuotetriggerHandler {
                     ADDRESS_LINE_1__c, ADDRESS_LINE_2__c, ADDRESS_LINE_3__c, QU_REVISION_NUMBER__c, ExpirationDate, Application__c, Zero_Cooling__c,
                     ADVANCE_PAYMENT__c, CITY__c, CLOSE_LOST_REASON__c, COUNTRY__c, COUNTRY_CODE__c, DATE__c, END_CUSTOMER_NAME__c, FUNCTION__c, INCO_TERMS__c,
                     MFG_AT__c, POSTAL_CODE__c, PREPARED_BY__c, PROBABILITY__c, QUOTATION_ADDRESSED_TO__c, QUOTATION_CREATE__c, Class__c,
-                    /*REGION__c,*/ SHIP_TO__c, SOLD_TO__c, STATE__c, SUBSIDARY__c, TYPE__c, VALIDITY__c, VALITY_DATE__c,SHIP_To_Contact_Name__c from Quote where id =: QuoteId limit 1
+                    /*REGION__c,*/ SHIP_TO__c, SOLD_TO__c, STATE__c, SUBSIDARY__c, TYPE__c, VALIDITY__c, VALITY_DATE__c,SHIP_To_Contact_Name__c
+                    from Quote where id =: QuoteId limit 1
                    ];
         
         System.debug('ObjQuote :: Kb' + ObjQuote.QU_REVISION_NUMBER__c);
@@ -261,12 +262,13 @@ public class CreateQuotetriggerHandler {
         //System.debug('ObjQuote.QU_REVISION_NUMBER__c'+ObjQuote.QU_REVISION_NUMBER__c);
         ObjQuote.DATE__c = date.today();
         ObjQuote.ADVANCE_PAYMENT__c = 'YES';
-        if(string.isBlank(ObjQuote.INCO_TERMS__c)){
+       /* if(string.isBlank(ObjQuote.INCO_TERMS__c)){
             ObjQuote.INCO_TERMS__c = 'EXW';
-        }
+        } */
+        
         
         //Date dToday = system.today();
-        ObjQuote.ExpirationDate = System.today() + 45;
+        ObjQuote.ExpirationDate = null;   // Changes From 45 days to 30 By Shubham Kadu (27th Jan 2026)
         system.debug('ObjQuote'+ObjQuote.POSTAL_CODE__c);
         update ObjQuote;
         

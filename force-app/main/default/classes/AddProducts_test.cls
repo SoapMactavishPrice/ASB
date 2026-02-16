@@ -101,7 +101,7 @@ Pricebook2  priObject = new Pricebook2(Name = 'Pri1' );
         insert customPB;
         
         QuoteRecursionCheck.isfirsttime=false;
-        Quote qObject = new Quote(Name = 'Q1', Exchange_Rate__c = 1, OpportunityId = oppObject.Id,Language__c='EN',Subsidiary__c=s.Id );
+        Quote qObject = new Quote(Name = 'Q1', Exchange_Rate__c = 1, OpportunityId = oppObject.Id,Language__c='EN'/*,Subsidiary__c=s.Id */ );
         insert qObject;
         
         Quote_Line_Item_Custom__c qli = new Quote_Line_Item_Custom__c();

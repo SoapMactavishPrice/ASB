@@ -10,6 +10,7 @@ import getExistingProjectDetails from '@salesforce/apex/new_lwcProjectController
 
 import SaveProjectDeatils from '@salesforce/apex/new_lwcProjectController.SaveProjectDeatils';
 import createUniqueNo from '@salesforce/apex/new_lwcProjectController.createUniqueNo';
+import isUserAuthorized from '@salesforce/apex/new_lwcProjectController.isUserAuthorized';
 
 export default class NewCreateProjectFromContract extends NavigationMixin(LightningElement) {
 
@@ -22,6 +23,21 @@ export default class NewCreateProjectFromContract extends NavigationMixin(Lightn
     @track isOpen = false;
     @track WaringMessage = '';
     @track isOpenTable = false;
+    @track isUserAuthorized = false;
+    @track contractSubsidiary = '';
+
+    @wire(isUserAuthorized, { contractId: '$recordId' })
+    wiredAuthorization({ error, data }) {
+        if (data) {
+            console.log('User Authorization Data:', data);
+            this.isUserAuthorized = data.isAuthorized;
+            this.saveDisabled = !data.isAuthorized;
+            this.contractSubsidiary = data.contractSubsidiary;
+        } else if (error) {
+            console.error('Error checking user authorization:', error);
+            this.isUserAuthorized = false; // Default to not authorized on error
+        }
+    }
 
     @wire(CurrentPageReference)
     getStateParameters(currentPageReference) {
@@ -36,6 +52,7 @@ export default class NewCreateProjectFromContract extends NavigationMixin(Lightn
     connectedCallback() {
         loadStyle(this, modal);
         this.getExistingProject();
+        
     }
 
     getExistingProject() {
@@ -169,6 +186,8 @@ export default class NewCreateProjectFromContract extends NavigationMixin(Lightn
         } else {
             this.saveDisabled = true;
         }
+
+        this.saveDisabled = this.saveDisabled || !this.isUserAuthorized;
     }
 
     onDataChange(event) {

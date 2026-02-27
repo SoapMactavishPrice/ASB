@@ -84,10 +84,14 @@
 
             <div style="width:98%;" class="slds-m-top_small">
                 <div style="display:flex; width:97%">
+                    <p>
+                        <template if:false={isUserAuthorized}>
+                            <span class="slds-text-color_error"><b>You are not authorized to work in this Subsidiary: {contractSubsidiary}.</b></span>
+                        </template>
+                    </p>
                     <div class="slds-align_absolute-center">
                         <lightning-button onclick={closeAction} label="Cancel"></lightning-button>
-                        <lightning-button class="slds-m-left_small" variant="brand" onclick={saveProjects}
-                            label="Save"></lightning-button>
+                        <lightning-button class="slds-m-left_small" variant="brand" onclick={saveProjects} label="Save" disabled={isSaveDisabled}></lightning-button>
 
                             
                     </div>
@@ -173,15 +177,20 @@
         
         <!-- Modal Body -->
         <div class="slds-p-around_medium reopen-modal-body">
-            <p>Are you sure you want to Re-open Quote?</p>
+            <p>Are you sure you want to Re-open Quote?<br/>
+                <template if:false={isUserAuthorized}>
+                    <span class="slds-text-color_error"><b>You are not authorized to work in this Subsidiary: {contractSubsidiary}.</b></span>
+                </template>
+            </p>
         </div>
 
         <!-- Modal Footer -->
         <div slot='footer' class="reopen-modal-footer">
-            <lightning-button 
+            <lightning-button
                 variant="brand" 
                 label="Yes" 
                 onclick={handleReopenYes}
+                disabled={isSaveDisabled}
                 class="reopen-yes-btn">
             </lightning-button>
             <lightning-button 

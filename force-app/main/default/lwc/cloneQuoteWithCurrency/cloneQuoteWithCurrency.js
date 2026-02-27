@@ -4,6 +4,7 @@ import { NavigationMixin } from 'lightning/navigation';
 import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import getAvailableCurrencies from '@salesforce/apex/CloneQuoteCurrencyController.getAvailableCurrencies';
 import cloneQuoteWithNewCurrency from '@salesforce/apex/CloneQuoteCurrencyController.cloneQuoteWithNewCurrency';
+import isUserAuthorized from '@salesforce/apex/CloneQuoteCurrencyController.isUserAuthorized';
 
 import QUOTE_CURRENCY_FIELD from '@salesforce/schema/Quote.CurrencyIsoCode';
 import QUOTE_NAME_FIELD from '@salesforce/schema/Quote.Name';
@@ -22,6 +23,8 @@ export default class CloneQuoteWithCurrency extends NavigationMixin(LightningEle
     @track isExchangeRateDisabled = true;
     currentQuoteCurrency = '';
     currentOpportunityId = '';
+    @track isUserAuthorized = true;
+    @track quoteSubsidiaryName = '';
 
     @wire(getRecord, { 
         recordId: '$recordId', 
@@ -32,15 +35,24 @@ export default class CloneQuoteWithCurrency extends NavigationMixin(LightningEle
             this.currentQuoteCurrency = getFieldValue(data, QUOTE_CURRENCY_FIELD);
             this.quoteName = getFieldValue(data, QUOTE_NAME_FIELD);
             this.currentOpportunityId = getFieldValue(data, QUOTE_OPPORTUNITY_ID);
-            
-            // Check if exchange rate should be enabled
             const hasManualItemOrOption = getFieldValue(data, QUOTE_HAS_MANUAL_FIELD);
             this.isExchangeRateDisabled = !hasManualItemOrOption;
-            
             this.loadCurrencies();
+            this.checkIfUserAuthorized();
         } else if (error) {
             this.showToast('Error', 'Failed to load Quote details', 'error');
         }
+    }
+
+    checkIfUserAuthorized() {
+        isUserAuthorized({ quoteId: this.recordId }).then((result) => {
+            this.isUserAuthorized = result.isAuthorized;
+            this.quoteSubsidiaryName = result.quoteSubsidiaryName;
+        }).catch((error) => {
+            this.showToast('Error', 'Failed to check user authorization: ' + this.getErrorMessage(error), 'error');
+            console.error('Error checking user authorization', error);
+            this.isUserAuthorized = false;
+        });
     }
 
     @wire(getRecord, {
@@ -88,7 +100,7 @@ export default class CloneQuoteWithCurrency extends NavigationMixin(LightningEle
     }
 
     get isSaveDisabled() {
-        return !this.selectedCurrency || !this.opportunityName || !this.quoteName || !this.exchangeRate || this.isLoading;
+        return !this.selectedCurrency || !this.opportunityName || !this.quoteName || !this.exchangeRate || this.isLoading || !this.isUserAuthorized;
     }
 
     get calculatedResult() {

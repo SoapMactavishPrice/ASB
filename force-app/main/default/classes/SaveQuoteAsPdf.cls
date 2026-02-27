@@ -404,12 +404,15 @@ public class SaveQuoteAsPdf {
             pli.UOM =  ql.UOM__c;
             
             pli.childProd = new List<childProductWrapper>();
-            // keep the source Quote Line Item Id for reference
+            
             pli.QuoteLineId = ql.Id;
+            Decimal checkedOptTotalPrice = 0;
+            Decimal checkedOptUnitPrice  = 0;
             for(Quote_Line_Options__c qpl : ql.Quote_Line_Options__r){
-                if (qpl.Pdf_Checked__c) {
-                    getWithoutTaxGrandValue += qpl.Final_Sales_Price__c;
-                } 
+                if(qpl.Pdf_Checked__c){
+                    checkedOptTotalPrice += (qpl.Final_Sales_Price__c   != null ? qpl.Final_Sales_Price__c   : 0);
+                    checkedOptUnitPrice  += (qpl.Average_Sales_Price__c != null ? qpl.Average_Sales_Price__c : 0);
+                }
                 if(qpl.Manual_Product_Name__c != null){
                     if(!qpl.Manual_Product_Name__c.startsWith('.')){
                         childProductWrapper chl = new childProductWrapper();
@@ -447,6 +450,17 @@ public class SaveQuoteAsPdf {
                     }
                 }
             }
+
+            if(!pli.isstartWith_a && !pli.isstartWith_Hash 
+            && checkedOptTotalPrice > 0 
+            && ql.Ceiling_Total_Sales_Price__c != null 
+            && ql.Quantity__c != null){
+                Decimal adjustedTotal = ql.Ceiling_Total_Sales_Price__c - checkedOptTotalPrice;
+                Decimal adjustedUnit  = (ql.Ceiling_Total_Sales_Price__c / ql.Quantity__c) - checkedOptUnitPrice;
+                pli.Ceiling_Total_Sales_Pricestring = CurrencyFormatter.formatDouble(adjustedTotal, ObjQuote.CurrencyIsoCode);
+                pli.totalValueString                = CurrencyFormatter.formatDouble(adjustedUnit,  ObjQuote.CurrencyIsoCode);
+            }
+
             prodLineList.add(pli);
             
         }

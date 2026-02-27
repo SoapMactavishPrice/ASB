@@ -16,13 +16,23 @@ Version  Date         Author             Remarks
      *********************************************/
 
 public class ReviseQuoteController {
-    Public Quote objQuote{get;set;}
+    public Quote objQuote{get;set;}
     public static boolean isbypassRule = false;
-    Public Boolean showPopup{get;set;}
+    public Boolean showPopup{get;set;}
+    public Boolean showWarning {get;set;}
+    public String subsidiary {get; set;}
     public List<Quote_Line_Item_Custom__c> ObjQuoteLineItem{get;set;}
     public ReviseQuoteController(ApexPages.StandardController controller){
         showPopup=true;
         isbypassRule = true;
+        this.showWarning = false;
+        String CurrentId = ApexPages.currentPage().getParameters().get('id');
+        Quote quote = [SELECT Id, Subsidiary__c, Subsidiary__r.Name FROM Quote WHERE id =:CurrentId limit 1];
+        User_Setup__c userSetup = [SELECT Id, Subsidiari__c FROM User_Setup__c WHERE User__c = :UserInfo.getUserId() LIMIT 1];
+        if (userSetup.Subsidiari__c != quote.Subsidiary__c) {
+            this.showWarning = true;
+        }
+        this.subsidiary = quote.Subsidiary__r.Name;
     }
     Public PageReference CloseModal(){
         showPopup=false;
@@ -516,14 +526,14 @@ public class ReviseQuoteController {
                         //ontLO.Manula_Option_List_Price__c=AddProducts.getListPrice(pmapqlio.get(qlio.Product__c).UnitPrice, qlio.Quote__r.Exchange_Rate__c, pmapqlio.get(qlio.Product__c).M1__c, pmapqlio.get(qlio.Product__c).M2__c, pmapqlio.get(qlio.Product__c).M3__c,pmapqlio.get(qlio.Product__c).M4__c,qlio.Quote__r.Additinal_Margin__c, Integer.valueof(pmapqlio.get(qlio.Product__c).Rounding_Off_Digits__c));
                         
                         // ContLO.Manula_Option_List_Price__c=AddProducts.getListPrice(up,objQuote.Exchange_Rate__c,pro2.Quote__r.Subsidiary__r.D1__c,pro2.Quote__r.Subsidiary__r.D2__c,pro2.Quote__r.Additinal_Margin__c,Integer.valueof(objQuote.Subsidiary__r.Rounding_Off_Digits__c));
+                        if(!test.isRunningTest()){
+                            ContLO.Manual_Option_Base_Price__c = mapProductWisePriceOptionEntry.get(pro2.Product__c).Base_Price__c;
+                        }else
+                        {
+                            ContLO.Manual_Option_Base_Price__c = 100;
+                        }
                     }
                     
-                    if(!test.isRunningTest()){
-                        ContLO.Manual_Option_Base_Price__c = mapProductWisePriceOptionEntry.get(pro2.Product__c).Base_Price__c;
-                    }else
-                    {
-                        ContLO.Manual_Option_Base_Price__c = 100;
-                    }
                     
                     /*if(mapProductWisePriceOptionEntry.containsKey(pro2.Product__c)){
                         ContLO.Manual_Option_Base_Price__c = (mapProductWisePriceOptionEntry.get(pro2.Product__c).UnitPrice*objQuote.Exchange_Rate__c); //*(quantityList[i]

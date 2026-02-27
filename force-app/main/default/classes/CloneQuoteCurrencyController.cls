@@ -72,7 +72,8 @@ public with sharing class CloneQuoteCurrencyController {
                 '1.00',
                 sourceQuote.SOLD_TO__c,
                 sourceQuote.SHIP_TO__c,
-                sourceQuote.Pricebook2Id
+                sourceQuote.Pricebook2Id,
+                true
             );
             
             if(cloneResult.containsKey('Id')) {
@@ -231,8 +232,29 @@ public with sharing class CloneQuoteCurrencyController {
             throw new AuraHandledException('Failed to cancel related opportunities: ' + e.getMessage());
         }
     }
+
+    /**
+     * Check if the user is authorized to clone the quote based on the subsidiary
+     */
+    @AuraEnabled
+    public static AuthModel isUserAuthorized(String quoteId) {
+        User_Setup__c userSetup = [SELECT Id, Subsidiari__c FROM User_Setup__c WHERE User__c = :UserInfo.getUserId() LIMIT 1];
+        Quote quote = [SELECT Id, Subsidiary__c, Subsidiary__r.Name FROM Quote WHERE Id = :quoteId LIMIT 1];
+        Boolean isAuthorized = userSetup != null && userSetup.Subsidiari__c == quote.Subsidiary__c;
+        return new AuthModel(isAuthorized, quote.Subsidiary__r.Name);
+    }
+
+    // Model Classes
+    public class AuthModel {
+        @AuraEnabled public Boolean isAuthorized;
+        @AuraEnabled public String quoteSubsidiaryName;
+        
+        public AuthModel(Boolean isAuthorized, String quoteSubsidiaryName) {
+            this.isAuthorized = isAuthorized;
+            this.quoteSubsidiaryName = quoteSubsidiaryName;
+        }
+    }
     
-    // Wrapper Classes
     public class CurrencyWrapper {
         @AuraEnabled public String isoCode;
         @AuraEnabled public Decimal conversionRate;

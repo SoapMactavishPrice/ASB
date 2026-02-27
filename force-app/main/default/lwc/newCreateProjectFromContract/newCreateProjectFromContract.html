@@ -78,6 +78,11 @@
 
             <div style="width:98%;" class="slds-m-top_small">
                 <div style="display:flex; width:97%">
+                    <p>
+                        <template if:false={isUserAuthorized}>
+                            <span class="slds-text-color_error"><b>You are not authorized to work in this Subsidiary: {contractSubsidiary}.</b></span>
+                        </template>
+                    </p>
                     <div class="slds-align_absolute-center">
                         <lightning-button onclick={closeAction} label="Cancel"></lightning-button>
                         <lightning-button class="slds-m-left_small" variant="brand" onclick={saveProjects}

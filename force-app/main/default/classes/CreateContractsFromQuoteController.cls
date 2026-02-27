@@ -16,12 +16,23 @@ public class CreateContractsFromQuoteController {
     Public List<Contract> objContract = new List<Contract>();
     public boolean CheckConformation {get;set;}
     public boolean clickOnce {get;set;}
+    public Boolean showWarning {get; set;}
+    public String subsidiaryName {get; set;}
     
     public CreateContractsFromQuoteController(ApexPages.StandardController controller){
         CheckConformation=true;
         isbypassRule = true;
         isbypassStatusRule = false;
         clickOnce = true;
+        
+        String quoteId = ApexPages.CurrentPage().getparameters().get('id');
+        User_Setup__c userSetup = [SELECT Id, Subsidiari__c FROM User_Setup__c WHERE User__c = :UserInfo.getUserId()];
+        Quote quote = [SELECT Id, Subsidiary__c, Subsidiary__r.Name FROM Quote WHERE Id = :quoteId];
+        if (userSetup.Subsidiari__c != quote.Subsidiary__c) {
+            this.showWarning = true;
+        }
+        this.subsidiaryName = quote.Subsidiary__r.Name;
+
     } 
     
     public PageReference Cancel(){

@@ -63,7 +63,10 @@
 
                 <template if:true={isExchangeRateDisabled}>
                     <p class="slds-text-color_weak slds-text-body_small slds-m-bottom_medium">
-                        Exchange rate is disabled (no manual items or options in this quote)
+                        Exchange rate is disabled (no manual items or options in this quote)<br/>
+                        <template if:false={isUserAuthorized}>
+                            <span class="slds-text-color_error"><b>You are not authorized to work in this Subsidiary: {quoteSubsidiaryName}.</b></span>
+                        </template>
                     </p>
                 </template>
 

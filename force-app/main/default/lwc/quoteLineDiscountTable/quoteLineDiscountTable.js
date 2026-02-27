@@ -44,6 +44,19 @@ function roundToTwoDecimals(value) {
     return rounded === 0 ? null : rounded.toFixed(2);
 }
 
+function roundToWholeNumber(value) {
+    if (value === null || value === undefined || value === '') {
+        return null;
+    }
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    if (isNaN(num)) {
+        return null;
+    }
+    // Return null if value is 0
+    const rounded = Math.ceil(num * 100) / 100;
+    return rounded === 0 ? null : rounded.toFixed(0);
+}
+
 function roundToTwoDecimalsAndFormatInteger(value) {
     if (value === null || value === undefined || value === '') {
         return null;
@@ -55,6 +68,18 @@ function roundToTwoDecimalsAndFormatInteger(value) {
     const rounded = Math.round(num * 100) / 100;
     // Return null if value is 0
     return rounded === 0 ? null : formatNumberWithCommas(rounded);
+}
+
+function roundToWholeNumberAndFormatInteger(value) {
+    if (value === null || value === undefined || value === '') {
+        return null;
+    }
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    if (isNaN(num)) {
+        return null;
+    }
+    const rounded = Math.ceil(num * 100) / 100;
+    return rounded === 0 ? null : formatNumberWithCommas(rounded.toFixed(0));
 }
 
 function calculatePercentage(percent, value) {
@@ -220,6 +245,7 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                 m1: roundToTwoDecimals(item.M1__c),
                 m2: roundToTwoDecimals(item.M2__c),
                 m3: roundToTwoDecimals(item.M3__c),
+                m4: roundToTwoDecimals(item.M4__c),
                 parentQuantity: 0,
                 isEditable: true,
                 isLineItem: true,
@@ -280,6 +306,7 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                         m1: roundToTwoDecimals(option.P_M1__c),
                         m2: roundToTwoDecimals(option.P_M2__c),
                         m3: roundToTwoDecimals(option.P_M3__c),
+                        m4: roundToTwoDecimals(option.P_M4__c),
                         parentQuantity: parentQuantity,
                         isEditable: true,
                         isLineItem: false,
@@ -344,12 +371,13 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                 totalDiscountInValueFormatted: roundToTwoDecimalsAndFormatInteger(subtotalDiscountInValue),
                 salesPrice: '',
                 salesPriceFormatted: '',
-                totalSalesPrice: roundToTwoDecimals(subtotalSalesPrice),
-                totalSalesPriceFormatted: roundToTwoDecimalsAndFormatInteger(subtotalSalesPrice),
+                totalSalesPrice: roundToWholeNumber(subtotalSalesPrice),
+                totalSalesPriceFormatted: roundToWholeNumberAndFormatInteger(subtotalSalesPrice),
                 salesMargin: subtotalSalesMargin,
                 m1: '',
                 m2: '',
                 m3: '',
+                m4: '',
                 isEditable: false,
                 isLineItem: false,
                 isOption: false,
@@ -422,6 +450,7 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             m1: '',
             m2: '',
             m3: '',
+            m4: '',
             isEditable: false,
             isLineItem: false,
             isOption: false,

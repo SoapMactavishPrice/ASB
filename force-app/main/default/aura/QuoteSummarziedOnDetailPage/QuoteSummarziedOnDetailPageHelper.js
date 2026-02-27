@@ -10,19 +10,15 @@
             var state = response.getState();
             var Wrapperdata = response.getReturnValue();
             console.log('Wrapperdata',Wrapperdata.Is_DTA_Quote__c);
-            let salesMargin = parseFloat(Wrapperdata.Sales_Margin__c).toFixed(2) || 0;
-            component.set("v.salesMargin",salesMargin);   
             if (Wrapperdata.Is_DTA_Quote__c){
-                component.set("v.isDTA",true);   
+                component.set("v.isDTA",true);
             }else{
-                component.set("v.isDTA",false);   
+                component.set("v.isDTA",false);
             }
-            
             
             if (Wrapperdata.Status =='CREATED'){
                 component.set("v.isSelectVisible",true);
                 component.set("v.colspan",3);
-                
             }else{
                 component.set("v.isSelectVisible",false);
                 component.set("v.colspan",2);
@@ -30,184 +26,196 @@
         });
         $A.enqueueAction(action);
     },
-    
-    
-   initMethod: function(component) {
-    var artId = component.get("v.recordId");
-    var action = component.get("c.FetchdataWrapper");
 
-    action.setParams({
-        'QuotationID': artId,
-        'orderby': 'asc'
-    });
 
-    action.setCallback(this, function(response) {
-        var state = response.getState();
+    initMethod: function(component) {
+        var artId = component.get("v.recordId");
+        var action = component.get("c.FetchdataWrapper");
 
-        if (state === "SUCCESS") {
-            var Wrapperdata = response.getReturnValue();
+        action.setParams({
+            'QuotationID': artId,
+            'orderby': 'asc'
+        });
 
-            if (Wrapperdata && Wrapperdata.length > 0) {
-                component.set("v.LineItemPresent", true);
-                component.set("v.LineItemNotPresent", false);
-                
-                let temp_CurrencyIsoCode = null;
+        action.setCallback(this, function(response) {
+            var state = response.getState();
 
-                    let  totalBasicPrice = 0;
-                    let  totalListPrice = 0;
-                    let totalQuantity = 0;
-                    let totalAvgDiscount = 0;
-                    let totalFinalSales = 0;
-                    let totalSalesPrice = 0;
-                    let discount_total = 0;
+            if (state === "SUCCESS") {
+                var Wrapperdata = response.getReturnValue();
 
-                Wrapperdata.forEach(item => {
-                    item.isSelected = false;
-                    temp_CurrencyIsoCode = item.CurrencyIsoCode;
-                    let sub_totalBasicPrice = 0;
-                     let sub_totalListPrice = 0;
-                    let sub_totalQuantity = 0;
-                    let sub_totalAvgDiscount = 0;
-                    let sub_totalFinalSales = 0;
-                    let sub_totalSalesPrice = 0;
-                    let discount_total = 0;
-                    let subMargin = 0;
+                if (Wrapperdata && Wrapperdata.length > 0) {
+                    component.set("v.LineItemPresent", true);
+                    component.set("v.LineItemNotPresent", false);
 
-                    // Parent level subtotal calculation
-                    //if (item.isDTA) {
-                        sub_totalBasicPrice += item.Base_Price__c || 0;
-                    //} else {
-                        sub_totalListPrice += item.List_Price__c || 0;
-                    //}
+                    let temp_CurrencyIsoCode = null;
 
-                    sub_totalQuantity += item.Quantity__c || 0;
-                    sub_totalAvgDiscount += item.Average_Discount_Value__c || 0;
-                    sub_totalFinalSales += item.Average_Sales_Price__c || 0;
-                    sub_totalSalesPrice += item.Sales_Price__c || 0;
-                    discount_total += item.Discount_in_Value_Percent__c || 0;
-                    subMargin = item.Sales_Margin_including_Options__c || 0;
+                    // ── Grand Total accumulators ──────────────────────────────────────────
+                    let totalQuantity        = 0;  // items only (options excluded per spec)
+                    let totalSalesPrice      = 0;  // item Sales_Price__c + option Total_Sales_Price__c
 
-                    // Add to grand total
-                                    
-                    // Child level subtotal calculation
-                    if (item.Quote_Line_Options__r && item.Quote_Line_Options__r.length > 0) {
-                        item.Quote_Line_Options__r.forEach(qlo => {
-                    qlo.isSelected = false;
-                    qlo.vCheckId = item.Id+'-'+qlo.Id;
-                            sub_totalBasicPrice +=  qlo.Manual_Option_Base_Price__c || 0;
-                            sub_totalListPrice += qlo.Manula_Option_List_Price__c || 0;// qlo.Manula_Option_List_Price__c || 0;
-                            //sub_totalQuantity += qlo.Quantity__c || 0;
-                            sub_totalAvgDiscount += qlo.Average_Discount_Value__c || 0;
-                            sub_totalFinalSales += qlo.Final_Sales_Price__c || 0;
-                            sub_totalSalesPrice += qlo.Final_Sales_Price__c || 0;
-                            discount_total += qlo.Discount_in_Value_Percent__c || 0;
-                        });
+                    // NEW grand total accumulators mapped from QuoteLineController
+                    let totalTP              = 0;  // item Total_Global_Price_Item__c + option Total_Transfer_Price__c
+                    let totalListPrice2      = 0;  // item Total_List_Price2__c + option Total_List_Price__c
+                    let totalDiscountValue   = 0;  // item Discount_Value__c + option Discount_Amount__c
+
+                    let totalUnitTP = 0;
+                    let totalUnitListPrice = 0;
+                    let totalUnitSalesPrice = 0;
+
+                    Wrapperdata.forEach(item => {
+                        item.isSelected = false;
+                        temp_CurrencyIsoCode = item.CurrencyIsoCode;
+
+                        // ── Sub-Total accumulators for this line item ─────────────────────
+                        let sub_TotalQuantity     = item.Quantity__c || 0; // item qty only
+                        let sub_totalSalesPrice   = item.Sales_Price__c || 0;
+
+                        // NEW sub-total fields
+                        let sub_totalTP           = item.Total_Global_Price_Item__c || 0;
+                        let sub_totalListPrice2   = item.Total_List_Price2__c || 0;
+                        let sub_totalDiscountValue = item.Discount_Value__c || 0;
+
+                        let sub_unitTP = item.Base_Price__c || 0;
+                        let sub_unitListPrice = item.List_Price__c || 0;
+                        let sub_unitSalesPrice = item.Average_Sales_Price__c || 0;
+
+
+                        // ── Add child (option) values to sub-totals ───────────────────────
+                        if (item.Quote_Line_Options__r && item.Quote_Line_Options__r.length > 0) {
+                            item.Quote_Line_Options__r.forEach(qlo => {
+                                qlo.isSelected = false;
+                                qlo.vCheckId = item.Id + '-' + qlo.Id;
+
+                                // NEW: option fields from QuoteLineController
+                                sub_totalTP           += qlo.Total_Transfer_Price__c  || 0;
+                                sub_totalListPrice2   += qlo.Total_List_Price__c       || 0; // option Total_List_Price__c
+                                sub_totalDiscountValue += qlo.Discount_Amount__c       || 0; // option Discount_Amount__c
+                                sub_totalSalesPrice   += qlo.Total_Sales_Price__c     || 0; // option Total_Sales_Price__c
+                                // NOTE: option Qty is NOT added to sub_TotalQuantity (items only per spec)
+
+                                sub_unitTP += qlo.Manual_Option_Base_Price__c || 0;
+                                sub_unitListPrice += qlo.Manula_Option_List_Price__c || 0;
+                                sub_unitSalesPrice += qlo.Unit_Sales_Price__c || 0;
+                            });
+                        }
+
+                        // ── Store sub-total properties on the item object ─────────────────
+                        item.sub_TotalQuantity__c      = parseFloat(sub_TotalQuantity);
+                        item.sub_totalTP__c            = parseFloat(sub_totalTP).toFixed(2);
+                        item.sub_totalListPrice2__c    = parseFloat(sub_totalListPrice2).toFixed(2);
+                        item.sub_totalDiscountValue__c = parseFloat(sub_totalDiscountValue).toFixed(2);
+                        item.sub_totalSalesPrice       = Math.ceil(parseFloat(sub_totalSalesPrice)).toFixed(0);
+                        let subMargin = 0;
+
+                        if (sub_totalSalesPrice !== 0) {
+
+                            subMargin =
+                                ((sub_totalSalesPrice - sub_totalTP)
+                                /
+                                sub_totalSalesPrice)
+                                * 100;
+
+                        }
+
+                        item.subMargin = subMargin.toFixed(2);
+                        item.isLineItem                = !!(item.Quote_Line_Options__r && item.Quote_Line_Options__r.length > 0);
+
+                        item.sub_unitTP = parseFloat(sub_unitTP).toFixed(2);
+                        item.sub_unitListPrice = parseFloat(sub_unitListPrice).toFixed(2);
+                        item.sub_unitSalesPrice = parseFloat(sub_unitSalesPrice).toFixed(2);
+
+                        // ── Accumulate into grand totals ──────────────────────────────────
+                        totalQuantity      += sub_TotalQuantity;
+                        totalTP            += sub_totalTP;
+                        totalListPrice2    += sub_totalListPrice2;
+                        totalDiscountValue += sub_totalDiscountValue;
+                        totalSalesPrice    += parseFloat(item.sub_totalSalesPrice);
+
+                        totalUnitTP += sub_unitTP;
+                        totalUnitListPrice += sub_unitListPrice;
+                        totalUnitSalesPrice += sub_unitSalesPrice;
+                    });
+
+                    // ── Set grand total component attributes ──────────────────────────────
+                    component.set("v.totalQuantity",      parseFloat(totalQuantity));
+                    component.set("v.totalTP",            parseFloat(totalTP).toFixed(2));
+                    component.set("v.totalListPrice2",    parseFloat(totalListPrice2).toFixed(2));
+                    component.set("v.totalDiscountValue", parseFloat(totalDiscountValue).toFixed(2));
+                    component.set("v.totalSalesPrice",    parseFloat(totalSalesPrice).toFixed(2));
+                    component.set("v.CurrencyIsoCode",    temp_CurrencyIsoCode);
+                    component.set("v.totalUnitTP", totalUnitTP.toFixed(2));
+                    component.set("v.totalUnitListPrice", totalUnitListPrice.toFixed(2));
+                    component.set("v.totalUnitSalesPrice", totalUnitSalesPrice.toFixed(2));
+                    let grandMargin = 0;
+
+                    if (totalSalesPrice !== 0) {
+
+                        grandMargin =
+                            ((totalSalesPrice - totalTP)
+                            /
+                            totalSalesPrice)
+                            * 100;
+
                     }
 
-                    // Store subtotals with fixed decimals
-                    item.sub_TotalBasicPrice__c = parseFloat(sub_totalBasicPrice).toFixed(2);
-                    item.sub_totalListPrice__c = parseFloat(sub_totalListPrice).toFixed(2);
-                    item.sub_TotalQuantity__c = parseFloat(sub_totalQuantity);
-                    item.sub_TotalAvgDiscount__c = parseFloat(sub_totalAvgDiscount).toFixed(2);
-                    item.sub_TotalFinalSales__c = parseFloat(sub_totalFinalSales).toFixed(2);
-                    item.sub_totalSalesPrice = parseFloat(sub_totalSalesPrice).toFixed(2);
-                    item.discount_total__c = parseFloat(discount_total).toFixed(2);
-                    item.isLineItem = !!(item.Quote_Line_Options__r && item.Quote_Line_Options__r.length > 0);
-                    item.subMargin = parseFloat(subMargin).toFixed(2);
-                    totalBasicPrice += sub_totalBasicPrice;
-                    totalListPrice += sub_totalListPrice;
-                    totalQuantity += sub_totalQuantity;
-                    totalAvgDiscount += sub_totalAvgDiscount;
-                    totalFinalSales += sub_totalFinalSales;
-                    totalSalesPrice += sub_totalSalesPrice;
-
-                });
-                    component.set("v.totalBasicPrice", parseFloat(totalBasicPrice).toFixed(2));
-                    component.set("v.totalListPrice", parseFloat(totalListPrice).toFixed(2));
-                    component.set("v.totalQuantity", parseFloat(totalQuantity));
-                    component.set("v.totalAvgDiscount", parseFloat(totalAvgDiscount).toFixed(2));
-                    component.set("v.totalFinalSales", parseFloat(totalFinalSales).toFixed(2));
-                    component.set("v.totalSalesPrice", parseFloat(totalSalesPrice).toFixed(2));
-                    component.set("v.CurrencyIsoCode", temp_CurrencyIsoCode);
-                    
+                    component.set("v.salesMargin", grandMargin.toFixed(2));
                     component.set("v.QliItems", Wrapperdata);
-                    console.log('All data-->',JSON.stringify(Wrapperdata));
-                this.sortData(component, 'Sr_No__c', 'asc');
+                    console.log('All data-->', JSON.stringify(Wrapperdata));
+                    this.sortData(component, 'Sr_No__c', 'asc');
 
+                } else {
+                    component.set("v.LineItemPresent", false);
+                    component.set("v.LineItemNotPresent", true);
+                }
             } else {
-                component.set("v.LineItemPresent", false);
-                component.set("v.LineItemNotPresent", true);
+                console.error('Error in FetchdataWrapper:', response.getError());
             }
-        } else {
-            console.error('Error in FetchdataWrapper:', response.getError());
-        }
-    });
+        });
 
-                    component.set("v.isDeleteVisible",false);   
-    $A.enqueueAction(action);
-}
-,
-    
+        component.set("v.isDeleteVisible", false);
+        $A.enqueueAction(action);
+    },
+
     exportCSVcaller: function(component){
         var artId = component.get("v.recordId");
-        var lineLIst = component.get("v.QliItems");
-        console.log('JOSN-->'+JSON.stringify(lineLIst));
         var action = component.get("c.exportCSV");
         action.setParams({
-            'qId':artId
+            'qId': artId
         });
+
         action.setCallback(this, function(response){
             var state = response.getState();
-        });
-        
-        action.setCallback(this, function(response){
-            var state = response.getState();
-            var err = response.getError();
-            //console.log('err==> ',err[0].message);
+            var err   = response.getError();
             console.log('state===>>>' + state);
-            if(state == 'SUCCESS')
-            {
+            if(state == 'SUCCESS'){
                 var toastevent = $A.get('e.force:showToast');
                 toastevent.setParams({
-                    'title' : 'Success',
-                    'type' : 'Success',
+                    'title'   : 'Success',
+                    'type'    : 'Success',
                     'message' : 'Export download successfully.',
-                    'mode' : 'dismissible'
-                })
+                    'mode'    : 'dismissible'
+                });
                 toastevent.fire();
                 $A.get('e.force:refreshView').fire();
                 console.log('List Sent Successfully');
             }
-            component.set("v.loader",false);
+            component.set("v.loader", false);
         });
         $A.enqueueAction(action);
-    }
-,
-    sortData: function (cmp, fieldName, sortDirection) {
-        var fname = fieldName;
-        var data = cmp.get("v.QliItems");
+    },
+
+    sortData: function(cmp, fieldName, sortDirection) {
+        var data    = cmp.get("v.QliItems");
         var reverse = sortDirection !== 'asc';
-        
         data.sort(this.sortBy(fieldName, reverse));
-        
         cmp.set("v.QliItems", data);
-        /*if(reverse){
-            component.set("v.up", false);
-            component.set("v.down", true);
-        }else if(!reverse){
-            component.set("v.up", true);
-            component.set("v.down", false);
-        }*/
-       //this.setPaginateData(cmp);
-   },
-       
-       sortBy: function (field, reverse) {
-           var key = function(x) {return x[field]};
-           console.log('reverse',reverse);
-           reverse = !reverse ? 1 : -1;
-           
-           return function (a, b) {
-               return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
-           }
-       },
+    },
+
+    sortBy: function(field, reverse) {
+        var key = function(x) { return x[field]; };
+        reverse = !reverse ? 1 : -1;
+        return function(a, b) {
+            return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
+        };
+    }
 })

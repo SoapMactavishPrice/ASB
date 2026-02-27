@@ -51,7 +51,11 @@
                         <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Create Contract</h2>
                     </header>
                     <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-                        <p>Do you want to create Contract?</p>
+                        <p>Do you want to create Contract?
+                            <apex:outputPanel rendered="{!showWarning}">
+                                <p style="color:red;"><b>You are not authorized to work in this Subsidiary:&nbsp;{!subsidiaryName}.</b></p>
+                            </apex:outputPanel>
+                        </p>
                     </div>
                     <footer class="slds-modal__footer slds-modal__footer_directional">
                         <apex:commandButton id="yesButton" 
@@ -59,6 +63,7 @@
                                             rendered="{!clickOnce}" 
                                             value="Yes"
                                             action="{!CreateContract}" 
+                                            disabled="{!showWarning}"
                                             onclick="showSpinner();"/>
                         <apex:commandButton id="noButton" 
                                             styleClass="slds-button slds-button_neutral" 

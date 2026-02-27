@@ -742,9 +742,27 @@ ContLO.Manual_Product_Code__c = pro2.Manual_Product_Code__c;
         return result;
         
     }
-    
-    
-    
+
+    /**
+     * Check if the user is authorized to clone the quote based on the subsidiary
+     */
+    @AuraEnabled
+    public static AuthModel isUserAuthorized(String contractId) {
+        User_Setup__c userSetup = [SELECT Id, Subsidiari__c FROM User_Setup__c WHERE User__c = :UserInfo.getUserId() LIMIT 1];
+        Contract contract = [SELECT Id, Subsidiary__c, Subsidiary__r.Name FROM Contract WHERE Id = :contractId LIMIT 1];
+        Boolean isAuthorized = userSetup != null && userSetup.Subsidiari__c == contract.Subsidiary__c;
+        return new AuthModel(isAuthorized, contract.Subsidiary__r.Name);
+    }
+
+    public class AuthModel {
+        @AuraEnabled public Boolean isAuthorized;
+        @AuraEnabled public String contractSubsidiary;
+        
+        public AuthModel(Boolean isAuthorized, String contractSubsidiary) {
+            this.isAuthorized = isAuthorized;
+            this.contractSubsidiary = contractSubsidiary;
+        }
+    }
     
     public static List<wrapProject> parse(string js){
         return ((List<wrapProject>)system.JSON.deserialize(js,List<wrapProject>.class));

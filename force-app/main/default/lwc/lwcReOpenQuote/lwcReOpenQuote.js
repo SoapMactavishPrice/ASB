@@ -8,6 +8,7 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getProjectDetail from '@salesforce/apex/ReOpenQuoteFromContract.getProjectDetail';
 import LightningAlert from 'lightning/alert';
 import saveCanceledProject from '@salesforce/apex/ReOpenQuoteFromContract.saveCanceledProject';
+import isUserAuthorized from '@salesforce/apex/ReOpenQuoteFromContract.isUserAuthorized';
 
 export default class LwcReOpenQuote extends NavigationMixin(LightningElement) {
     @track isOpen = false;
@@ -16,10 +17,8 @@ export default class LwcReOpenQuote extends NavigationMixin(LightningElement) {
 
     recordId;
     @track isCancel = false;
-
-
-
-
+    @track isUserAuthorized = false;
+    @track contractSubsidiary = '';
 
     get options() {
         return [
@@ -28,17 +27,29 @@ export default class LwcReOpenQuote extends NavigationMixin(LightningElement) {
         ];
     }
 
+    get isSaveDisabled() {
+        return !this.isUserAuthorized;
+    }
+
     @wire(CurrentPageReference)
     getStateParameters(currentPageReference) {
         if (currentPageReference) {
             this.recordId = currentPageReference.state.recordId;
         }
-        console.log(this.recordId + ' in 0000000');
+        isUserAuthorized({ contractId: this.recordId }).then(result => {
+            console.log('User Authorization Result:', result);
+            this.isUserAuthorized = result.isAuthorized;
+            this.contractSubsidiary = result.contractSubsidiary;
+        }).catch(error => {
+            console.error('Error checking user authorization', error);
+            this.isUserAuthorized = false; // Default to false if there's an error
+        });
     }
 
 
     @track showSpinner = false;
     connectedCallback() {
+
         loadStyle(this, modalWithReOpen)
             .then(() => {
                 console.log('Styles loaded successfully');

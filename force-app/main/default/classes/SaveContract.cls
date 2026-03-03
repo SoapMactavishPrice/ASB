@@ -13,6 +13,7 @@ public class SaveContract {
     public Account ObjAccount{get;set;}
     public List<Contract_Line_Item__c> QlineItm {get;set;}
     public List<parentProductWrapper> prodLineList {get;set;}
+    public Boolean showOptionsModal {get; set;}
     public User ObjUser{get;set;}
     public  List<Attachment> allAttachmentParentContains{ get; set; }
     public boolean displayPopup {get;set;}
@@ -41,6 +42,8 @@ public class SaveContract {
     public Boolean isModalOpen {get; set;}
     public List<AdditionalDocWrapper> addDocs {get; set;}
     public User_Setup__c ObjUserSetup{get;set;}
+
+    public Boolean isSystemAdmin {get; set;}
     
     
     public SaveContract(ApexPages.StandardController standardPageController) {
@@ -48,6 +51,7 @@ public class SaveContract {
         getWithoutTaxGrandValue = 0;
         isTaxCounter = 0;
         isModalOpen = false;
+        showOptionsModal = true;
         addDocs = new List<AdditionalDocWrapper>();
         prodLineList = new List<parentProductWrapper>();
         noteslist = new List<NotesAndAttcahmentDocWrapper>();
@@ -252,6 +256,13 @@ showSaveQuote=true;
         if(recordId==null){
             recordId='800H10000008TOtIAM';
         }
+
+        List<User> user = [SELECT Id FROM User WHERE Profile.Name = 'System Administrator' AND Id =: Userinfo.getUserId() LIMIT 1];
+        if (user.size() > 0) {
+            isSystemAdmin = true;
+        } else {
+            isSystemAdmin = false;
+        }
         
         System.debug('RecordId'+RecordId);
         Map<String, Schema.SObjectField> fieldMap = Contract.sObjectType.getDescribe().fields.getMap();
@@ -335,13 +346,13 @@ Freight_Pick__c,Freight_Amount__c,Insurance__c,Insurance_Amount__c, CreatedBy.Na
                       from Account where id = : AccountId];
         System.debug('ObjAccount : : '+ ObjAccount);
         QlineItm = new List<Contract_Line_Item__c>(); 
-        QlineItm = [select Product2Id__c, Product2Id__r.Name,List_Price__c,Is_Tax__c,Name,Quantity__c,Division__c,Total_List_Price__c,Product_Number__c,Total_Sales_Price__c,UOM__c,Ceiling_Total_Sales_Price__c,Product_Name__c,Overall_Discount__c,Product_Description__c,
-                    (select Name,Product_Name__c,Manual_Product_Name_c__c,Discount__c,Final_Price__c,Manual_Option_Number__c,Manual_Option_Base_Price__c,Description__c, Select_Option__c, Product__r.Name from Contract_Line_Option__r ORDER BY Serial_Number__c) 
+        QlineItm = [select Product2Id__c, Product2Id__r.Name,List_Price__c,Is_Tax__c,Name,Quantity__c,Division__c,Total_List_Price__c,Product_Number__c,Total_Sales_Price2__c,UOM__c,Ceiling_Total_Sales_Price__c,Product_Name__c,Overall_Discount__c,Product_Description__c,
+                    (select Id, Name,Product_Name__c,Manual_Product_Name_c__c,Discount__c,Final_Price__c,Manual_Option_Number__c,Manual_Option_Base_Price__c,Description__c, Select_Option__c, Product__r.Name, Name_Hide__c, Price_Visible__c, Quantity__c, Unit_Sales_Price__c, Total_Sales_Price__c from Contract_Line_Option__r ORDER BY Serial_Number__c) 
                     from Contract_Line_Item__c where ContractId__c = :RecordId Order BY Sr_No__c];  
         System.debug('QlineItm'+QlineItm.size());
         
-        List<Contract_Line_Item__c> QlineItm1 = [select Product2Id__c,Product_Name_2__c,Manual_Product_Number__c,Is_Manual__c,Product_Number__c,Is_Tax__c, Product2Id__r.Name,List_Price__c,Name,Quantity__c,Division__c,Total_List_Price__c,Total_Sales_Price__c,UOM__c,Ceiling_Total_Sales_Price__c,Product_Name__c,Overall_Discount__c,Product_Description__c,
-                                                 (select Name,Product_Name__c,Manual_Product_Name_c__c,Discount__c,Final_Price__c,Manual_Option_Base_Price__c,Description__c, Select_Option__c, Product__r.Name from Contract_Line_Option__r ORDER BY Serial_Number__c) 
+        List<Contract_Line_Item__c> QlineItm1 = [select Product2Id__c,Product_Name_2__c,Manual_Product_Number__c,Is_Manual__c,Product_Number__c,Is_Tax__c, Product2Id__r.Name,List_Price__c,Name,Quantity__c,Division__c,Total_List_Price__c,Total_Sales_Price2__c,UOM__c,Ceiling_Total_Sales_Price__c,Product_Name__c,Overall_Discount__c,Product_Description__c,
+                                                 (select Id, Name,Product_Name__c,Manual_Product_Name_c__c,Discount__c,Final_Price__c,Manual_Option_Base_Price__c,Description__c, Select_Option__c, Product__r.Name, Name_Hide__c, Price_Visible__c, Quantity__c, Unit_Sales_Price__c, Total_Sales_Price__c from Contract_Line_Option__r ORDER BY Serial_Number__c) 
                                                  from Contract_Line_Item__c where ContractId__c = :RecordId Order BY Sr_No__c]; 
         
         System.debug('QlineItm1'+QlineItm1.size());
@@ -361,8 +372,21 @@ Freight_Pick__c,Freight_Amount__c,Insurance__c,Insurance_Amount__c, CreatedBy.Na
             if(ql.Is_Tax__c){
                 isTaxCounter=isTaxCounter+1;
             }
+            Decimal allOptTotalPrice = 0;
+            Decimal allOptUnitPrice = 0;
+            for(Contract_Line_Option__c qplAll : ql.Contract_Line_Option__r){
+                allOptTotalPrice += (qplAll.Total_Sales_Price__c != null ? qplAll.Total_Sales_Price__c : 0);
+                allOptUnitPrice += (qplAll.Unit_Sales_Price__c != null ? qplAll.Unit_Sales_Price__c : 0);
+            }
+            Decimal baseItemTotal = (ql.Total_Sales_Price2__c != null ? ql.Total_Sales_Price2__c : 0);
+            Decimal baseItemUnit = 0;
+            if(ql.Quantity__c != null && ql.Quantity__c != 0){
+                baseItemUnit = baseItemTotal / ql.Quantity__c;
+            }
+            Decimal runtimeTotalSales = baseItemTotal + allOptTotalPrice;
+            Decimal runtimeUnitSales = baseItemUnit + allOptUnitPrice;
             if(!ql.Is_Tax__c){
-                getWithoutTaxGrandValue += ql.Ceiling_Total_Sales_Price__c;
+                getWithoutTaxGrandValue += runtimeTotalSales;
             }
             
               if(ql.Is_Manual__c){  
@@ -382,41 +406,48 @@ Freight_Pick__c,Freight_Amount__c,Insurance__c,Insurance_Amount__c, CreatedBy.Na
                 pli.isstartWith_a = true;
                 pli.isstartWith_Hash = false;
                 //pli.Product_Description = ql.Product_Description__c.replace('@','');
-                pli.totalValue = ql.Ceiling_Total_Sales_Price__c / ql.Quantity__c;
+                pli.totalValue = runtimeUnitSales;
             }
             else if(string.isNotBlank(ql.Product_Description__c) && (ql.Product_Description__c.contains('>#')  || ql.Product_Description__c.startsWith('#'))){
                 //else if(string.isNotBlank(ql.Product_Description__c) && ql.Product_Description__c.startsWith('#')){
                 pli.isstartWith_Hash = true;
                 pli.isstartWith_a = false;
                 pli.Product_Description = ql.Product_Description__c.replace('#','');
-                pli.totalValue = ql.Ceiling_Total_Sales_Price__c;
+                pli.totalValue = runtimeTotalSales;
                 
             } 
             else{
                 pli.Product_Description = ql.Product_Description__c;
-                pli.totalValue = ql.Ceiling_Total_Sales_Price__c / ql.Quantity__c  ;
+                pli.totalValue = runtimeUnitSales;
             }
              }
-            pli.Ceiling_Total_Sales_Price = ql.Ceiling_Total_Sales_Price__c;
-            //pli.Ceiling_Total_Sales_Price = ql.Ceiling_Total_Sales_Price__c;
-            system.debug('Ceiling_Total_Sales_Price__c'+ql.Ceiling_Total_Sales_Price__c);
-            if(ql.Ceiling_Total_Sales_Price__c != null){
-                pli.Ceiling_Total_Sales_Pricestring = CurrencyFormatter.formatDouble(ql.Ceiling_Total_Sales_Price__c ,ObjQuote.CurrencyIsoCode);
-                decimal  dob = ql.Ceiling_Total_Sales_Price__c / ql.Quantity__c;
-                 //system.debug('Ceiling_Total_Sales_Price__c'+String.format('{0, number, currency}', new Object[] { dob }));
-                pli.totalValueString = CurrencyFormatter.formatDouble(dob ,ObjQuote.CurrencyIsoCode);
-            }
+            pli.Ceiling_Total_Sales_Price = runtimeTotalSales;
+            system.debug('runtimeTotalSales '+runtimeTotalSales);
+            pli.Ceiling_Total_Sales_Pricestring = CurrencyFormatter.formatDouble(runtimeTotalSales ,ObjQuote.CurrencyIsoCode);
+            pli.totalValueString = CurrencyFormatter.formatDouble(runtimeUnitSales ,ObjQuote.CurrencyIsoCode);
             pli.Quantity = Integer.valueOf(ql.Quantity__c);
             pli.UOM =  ql.UOM__c;
             
             pli.childProd = new List<childProductWrapper>();
+            Decimal visibleOptTotalPrice = 0;
+            Decimal visibleOptUnitPrice = 0;
             for(Contract_Line_Option__c qpl : ql.Contract_Line_Option__r){
+                if(qpl.Price_Visible__c == true){
+                    visibleOptTotalPrice += (qpl.Total_Sales_Price__c != null ? qpl.Total_Sales_Price__c : 0);
+                    visibleOptUnitPrice  += (qpl.Unit_Sales_Price__c != null ? qpl.Unit_Sales_Price__c : 0);
+                }
                 if(qpl.Manual_Product_Name_c__c !=null){
                     if(!qpl.Manual_Product_Name_c__c.startsWith('.')){
                         childProductWrapper chl = new childProductWrapper();
+                        chl.OptionId = qpl.Id;
                         chl.Manual_Product_Name = qpl.Manual_Product_Name_c__c;
                         chl.isstartWith_a = false;
                         chl.isstartWith_Hash = false;
+                        chl.Name_Hide = qpl.Name_Hide__c;
+                        chl.Price_Visible = (qpl.Price_Visible__c == true);
+                        chl.Quantity = (qpl.Quantity__c == null) ? null : Integer.valueOf(qpl.Quantity__c);
+                        chl.Manual_Option_List_Price = CurrencyFormatter.formatDouble(qpl.Unit_Sales_Price__c, ObjQuote.CurrencyIsoCode);
+                        chl.Sales_Price = CurrencyFormatter.formatDouble(qpl.Total_Sales_Price__c, ObjQuote.CurrencyIsoCode);
                         
                         if(string.isNotBlank(qpl.Description__c)){
                             if(qpl.Description__c.contains('<p>') || qpl.Description__c.contains('</p>')){
@@ -443,6 +474,16 @@ Freight_Pick__c,Freight_Amount__c,Insurance__c,Insurance_Amount__c, CreatedBy.Na
                     
                     
                 }
+            }
+
+            if(!pli.isstartWith_a && !pli.isstartWith_Hash
+            && visibleOptTotalPrice > 0
+            && runtimeTotalSales != null
+            && runtimeUnitSales != null){
+                Decimal adjustedTotal = runtimeTotalSales - visibleOptTotalPrice;
+                Decimal adjustedUnit = runtimeUnitSales - visibleOptUnitPrice;
+                pli.Ceiling_Total_Sales_Pricestring = CurrencyFormatter.formatDouble(adjustedTotal, ObjQuote.CurrencyIsoCode);
+                pli.totalValueString = CurrencyFormatter.formatDouble(adjustedUnit, ObjQuote.CurrencyIsoCode);
             }
             
             prodLineList.add(pli);
@@ -598,6 +639,35 @@ Freight_Pick__c,Freight_Amount__c,Insurance__c,Insurance_Amount__c, CreatedBy.Na
         PageReference pf = new PageReference('/'+recordID);
         return pf;
     }
+
+    public void openOptionsModal(){
+        showOptionsModal = true;
+    }
+
+    public PageReference saveOptions(){
+        List<Contract_Line_Option__c> optsToUpdate = new List<Contract_Line_Option__c>();
+        for(parentProductWrapper p : prodLineList){
+            if(p.childProd != null){
+                for(childProductWrapper c : p.childProd){
+                    if(c.OptionId != null){
+                        Contract_Line_Option__c clo = new Contract_Line_Option__c(Id = c.OptionId);
+                        clo.Name_Hide__c = c.Name_Hide;
+                        clo.Price_Visible__c = c.Price_Visible;
+                        optsToUpdate.add(clo);
+                    }
+                }
+            }
+        }
+        if(!optsToUpdate.isEmpty()){
+            try{
+                update optsToUpdate;
+            }catch(Exception e){
+                System.debug('Error updating Contract_Line_Option__c flags: ' + e.getMessage());
+            }
+        }
+        showOptionsModal = false;
+        return null;
+    }
     
     public void showModal() {
         User_Setup__c u=[select id,name,Subsidiari__c, Signature_Image__c from User_Setup__c where User__c=:userinfo.getUserId() limit 1];
@@ -680,7 +750,12 @@ Freight_Pick__c,Freight_Amount__c,Insurance__c,Insurance_Amount__c, CreatedBy.Na
         public Boolean isstartWith_Hash {get; set;}
         public Boolean isstartWith_a {get; set;}
         public string Manual_Product_Name {get;set;}
-        
+        public Id OptionId {get; set;}
+        public Boolean Name_Hide {get; set;}
+        public Boolean Price_Visible {get; set;}
+        public Integer Quantity {get; set;}
+        public String Manual_Option_List_Price {get; set;}
+        public String Sales_Price {get; set;}
     }
     
     

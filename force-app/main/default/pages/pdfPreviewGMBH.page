@@ -1,0 +1,465 @@
+<apex:page showHeader="false" sidebar="false" renderAs="pdf" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" docType="xhtml-1.0">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+    <style type="text/css">
+            * {
+                margin: 0;
+                padding: 0;
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 8.5pt;
+                color: #1a1a1a;
+            }
+
+            @page {
+                size: A4;
+                margin-top: 130px;
+                margin-bottom: 90px;
+                margin-left: 40px;
+                margin-right: 40px;
+
+                @top-left {
+                    content: element(page-header);
+                }
+
+                @bottom-left {
+                    content: element(page-footer);
+                }
+            }
+
+            body {
+                margin-right: 0;
+                margin-left: 0;
+            }
+
+            /* HEADER */
+            #header {
+                position: running(page-header);
+            }
+
+            #header-inner {
+                width: 100%;
+                padding-bottom: 6px;
+                margin-bottom: 4px;
+            }
+            .header-banner {
+                width: 100%;
+                display: block;
+            }
+
+            .header-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .header-table td {
+                padding: 0;
+                vertical-align: top;
+            }
+            .header-left  { width: 55%; }
+            .header-right { width: 45%; text-align: right; }
+
+            .quotation-label {
+                font-size: 22pt;
+                font-weight: bold;
+                color: #1a3a6b;
+                line-height: 1;
+            }
+
+            .meta-table { border-collapse: collapse; margin-top: 5px; }
+            .meta-table td { padding: 1px 8px 1px 0; font-size: 8pt; vertical-align: top; }
+            .meta-label { color: #555555; }
+            .meta-value { font-weight: bold; }
+
+            .brand-name {
+                font-size: 13pt;
+                font-weight: bold;
+                color: #1a3a6b;
+            }
+            .brand-asb {
+                font-size: 26pt;
+                font-weight: bold;
+                color: #cc0000;
+                line-height: 1;
+            }
+
+            /* FOOTER */
+            #footer {
+                position: running(page-footer);
+                padding-top: 5px;
+            }
+            .footer-banner {
+                width: 100%;
+                height: 46px;
+                margin-bottom: 3px;
+            }
+
+            .footer-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .footer-table td { padding: 0; }
+            .footer-left  { width: 72%; vertical-align: top; }
+            .footer-right { width: 28%; text-align: right; vertical-align: bottom; }
+
+            .footer-company { font-size: 8pt; font-weight: bold; margin-bottom: 2px; }
+            .footer-info    { font-size: 7pt; color: #333333; line-height: 1.55; }
+            .footer-pagenum { font-size: 8pt; }
+
+            /* RECIPIENT */
+            .recipient-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 14px;
+            }
+            .recipient-table td { padding: 0; vertical-align: top; font-size: 8.5pt; line-height: 1.65; }
+            .recipient-left  { width: 55%; }
+            .recipient-right { width: 45%; }
+            .recipient-name  { font-weight: bold; }
+
+            /* ITEMS TABLE */
+            .items-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 8px;
+            }
+            .items-table th {
+                background-color: #2b5091;
+                color: #ffffff;
+                border: 1px solid #8899bb;
+                padding: 5px 7px;
+                font-size: 8pt;
+                text-align: left;
+                font-weight: bold;
+            }
+            .items-table th.r { text-align: right; }
+            .items-table th.c { text-align: center; }
+
+            .items-table td {
+                border: 1px solid #cccccc;
+                padding: 5px 7px;
+                vertical-align: top;
+                font-size: 8pt;
+            }
+            .items-table td.r { text-align: right; }
+            .items-table td.c { text-align: center; }
+
+            .section-hdr td {
+                background-color: #dde4f0;
+                font-weight: bold;
+                font-size: 8pt;
+                color: #1a3a6b;
+                border: 1px solid #aab4cc;
+                padding: 4px 7px;
+            }
+            .total-hdr td {
+                background-color: #f0f4fb;
+                font-weight: bold;
+                border-top: 2px solid #2b5091;
+                padding: 5px 7px;
+            }
+
+            .opt-head { font-weight: bold; margin-top: 6px; margin-bottom: 3px; font-size: 8pt; color: #1a3a6b; }
+            .opt-item { font-size: 7.8pt; line-height: 1.65; margin-left: 10px; }
+
+            /* Page break */
+            .pgbreak { page-break-before: always; }
+
+            /* CONDITIONS / PROVISIONS */
+            .section-heading {
+                font-size: 12pt;
+                font-weight: bold;
+                color: #1a3a6b;
+                border-bottom: 1.5px solid #1a3a6b;
+                padding-bottom: 4px;
+                margin-bottom: 12px;
+            }
+            .clause-title {
+                font-weight: bold;
+                font-size: 8.5pt;
+                margin-top: 10px;
+                margin-bottom: 3px;
+            }
+            .clause-body {
+                font-size: 8.2pt;
+                line-height: 1.55;
+                text-align: justify;
+                margin-bottom: 3px;
+            }
+            .bullet {
+                font-size: 8.2pt;
+                line-height: 1.5;
+                margin-left: 14px;
+                margin-bottom: 2px;
+            }
+            .preamble {
+                font-size: 8.2pt;
+                line-height: 1.55;
+                text-align: justify;
+                margin-bottom: 10px;
+            }
+            .sig-block {
+                margin-top: 32px;
+                font-size: 8.5pt;
+                line-height: 1.85;
+            }
+    </style>
+    </head>
+    <body>
+
+        <div id="header" style="width: 720px;">
+            <div id="header-inner">
+                <apex:image value="{!$Resource.GMBH_Quote_Header}" styleClass="header-banner"/>
+            </div>
+        </div>
+
+        <div id="footer">
+            <table class="footer-table">
+                <tr>
+                    <td class="footer-left">
+                        <div class="footer-company">Nissei ASB GmbH</div>
+                        <div class="footer-info">
+                            Wahlerstr. 8 &#160;|&#160; 40472 D&#252;sseldorf &#160;|&#160; Germany<br/>
+                            Gesch&#228;ftsf&#252;hrung: Karel Keersmaekers-Michiels &#160;|&#160; Kota Aoki &#160;|&#160; Eva Alzas Guillen<br/>
+                            Sitz der Gesellschaft: Amtsgericht D&#252;sseldorf HRB 22191<br/>
+                            St.-Nr.: 105/5832/0456 &#160;|&#160; VAT-No.: DE119353439 &#160;|&#160; Tel.: +49 (211) 941040 &#160;|&#160; www.nisseiasb.co.jp
+                        </div>
+                    </td>
+                    <td class="footer-right">
+                        <div class="footer-pagenum">
+                            Page <span class="pagenumber"></span> of <span class="pagecount"></span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- CONTENT -->
+
+        <!-- PAGE 1-2: LINE ITEMS -->
+        <table class="recipient-table">
+            <tr>
+                <td class="recipient-left">
+                    <div>3 Le Bas de la Ruelle aux Chats ZI de Gron</div>
+                    <div class="recipient-name">FRAPAK France</div>
+                    <div>France</div>
+                    <div>89100 Gron</div>
+                </td>
+                <td class="recipient-right"></td>
+            </tr>
+        </table>
+
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th style="width:5%;">Pos.</th>
+                    <th style="width:54%;">Description</th>
+                    <th class="c" style="width:10%;">Quantity</th>
+                    <th class="r" style="width:16%;">Unit Price JPY</th>
+                    <th class="r" style="width:15%;">Total JPY</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="section-hdr">
+                    <td colspan="5">Machine</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>
+                        <strong>ASB-70DPH V4 1-step injection stretch blow-molding machine CE Servo</strong>
+                        <div class="opt-head">Machine Option</div>
+                        <div class="opt-item">Zero Cooling (incl. Inj. Core Air Eject Circuit)</div>
+                        <div class="opt-item">Blow Air Circuit (B)</div>
+                        <div class="opt-item">Hydraulic Oil Level Alarm</div>
+                        <div class="opt-item">Hydraulic. Oil Temp. Regulating Valve</div>
+                        <div class="opt-item">Blow Mold Locking Device</div>
+                        <div class="opt-item">Machine Leveling Pads</div>
+                        <div class="opt-item">Design For Gate Cut Device (Circuit Only)</div>
+                        <div class="opt-item">Design For Bottle Takeout Device BTS with Universal Safety Doors &amp; Chutes</div>
+                        <div class="opt-item">Valve Gate H.R. Circuit</div>
+                        <div class="opt-item">Blow Air Circulation Circuit 6 Cav.</div>
+                        <div class="opt-item">Manual Language French</div>
+                        <div class="opt-item">External Molding Conditions Memory (USB)</div>
+                        <div class="opt-item">High Pressure Regulator For Blow Air (external)</div>
+                        <div class="opt-item">Injection Mold Clamping Force Increase 70t --&gt; 80t</div>
+                        <div class="opt-item">Bottom Mold Clamping Force Increase 4t --&gt; 8t</div>
+                        <div class="opt-item">Blow Mold Clamping Force Increase 24t --&gt; 30t</div>
+                        <div class="opt-item">Blow Mold Conditioning Provision (blade hoses, fittings)</div>
+                        <div class="opt-item">Auto Lubrication Food Grade Grease</div>
+                        <div class="opt-item">Standard Spare Parts</div>
+                        <div class="opt-item">Tool Box</div>
+                        <div class="opt-item">Quick Mold Change</div>
+                        <div class="opt-item">Charge Pump Pressure Setting Limit to 17.5MPa</div>
+                    </td>
+                    <td class="c">1</td>
+                    <td class="r">44,200,000.00</td>
+                    <td class="r">44,200,000.00</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Vision1 Controller for Machine Pos. 1</td>
+                    <td class="c">1</td>
+                    <td class="r">1,900,000.00</td>
+                    <td class="r">1,900,000.00</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>BASCO-Mixing Screw 64 mm for Pos. 1</td>
+                    <td class="c">1</td>
+                    <td class="r">1,300,000.00</td>
+                    <td class="r">1,300,000.00</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Blow Air Recovery to machine operation air</td>
+                    <td class="c">1</td>
+                    <td class="r">2,600,000.00</td>
+                    <td class="r">2,600,000.00</td>
+                </tr>
+                <tr class="section-hdr">
+                    <td colspan="5">Auxiliaries</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Bottle Takeout Device BTS-70DP pot type with conveyor</td>
+                    <td class="c">1</td>
+                    <td class="r">2,900,000.00</td>
+                    <td class="r">2,900,000.00</td>
+                </tr>
+                <tr class="section-hdr">
+                    <td colspan="5">Services</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>One ASB technician for 5 working days including travelling time.</td>
+                    <td class="c">1</td>
+                    <td class="r">900,000.00</td>
+                    <td class="r">900,000.00</td>
+                </tr>
+                <tr class="total-hdr">
+                    <td colspan="4" class="r">Total FOB India &amp; Japan (JPY) :</td>
+                    <td class="r">53,800,000.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+
+        <!-- PAGE 3-4: GENERAL CONDITIONS -->
+        <div class="pgbreak">
+            <div class="section-heading">GENERAL CONDITIONS</div>
+
+            <div class="clause-title">1. Place of delivery</div>
+            <div class="clause-body">All equipment will be delivered FOB Mumbai, India or FOB Japan, Yokohama (Pos. 5)</div>
+
+            <div class="clause-title">2. Time of delivery</div>
+            <div class="clause-body">Machine: appx. 3 - 4 months ex-factory from receipt of order and down payment</div>
+            <div class="clause-body">Take-Out: Appx. 4,5 months until ready for ex-factory ASB Japan</div>
+
+            <div class="clause-title">3. Terms of payment</div>
+            <div class="clause-body">The contracted goods shall be paid following the below terms of payment</div>
+            <div class="bullet">&#183;&#160; 30% down payment on order by bank transfer</div>
+            <div class="bullet">&#183;&#160; 60% second payment before ex-factory shipment by bank transfer.</div>
+            <div class="bullet">&#183;&#160; 10% balance payment at commissioning but no later than 60 days from shipping date.</div>
+            <div class="clause-body" style="margin-top:4px;">Seller&#8217;s bank account: DEUTSCHE BANK AG DUESSELDORF, IBAN: DE 74 3007 0010 0310 4999 00, BIC: DEUTDEDD, ACCOUNT NO: 310 4999</div>
+
+            <div class="clause-title">4. Technical specifications</div>
+            <div class="clause-body">The contracted goods shall be made as per the attached Seller&#8217;s standard specifications (subject to change for improvement) and painted with the Seller&#8217;s standard colour. The mold shall be made in accordance with the Seller&#8217;s standard specifications to produce bottles specified in the approved drawing and specifications.</div>
+            <div class="clause-body">The quoted prices and time of delivery shall be subject to review in the following cases:</div>
+            <div class="bullet">&#183;&#160; Machine and auxiliary equipment: the incorporation of special specifications has become necessary to meet local regulations and/or to operate the mold to produce special bottles.</div>
+            <div class="bullet">&#183;&#160; Mold: Special design/specifications including patterns, art letters, logo, characters and mark becomes necessary to the bottle after this quotation was issued.</div>
+
+            <div class="clause-title">5. Inspection prior to ex-factory</div>
+            <div class="clause-body">The Seller will conduct the inspection of the contracted goods in the Seller&#8217;s factory in accordance with the Seller&#8217;s standard practice. This inspection shall be final, however if requested by the Buyer, the Seller is ready to accept an internationally accepted third party inspection such as SGS at the Buyer&#8217;s cost. The Seller will make the contracted goods ready for ex-factory shipment only after successfully finishing the inspection. Molds will be made ready for ex-factory shipment after the confirmation and approval that the sample bottles are produced in accordance with the agreed product drawing and specifications.</div>
+
+            <div class="clause-title">6. Training at the Seller&#8217;s factory</div>
+            <div class="clause-body">The Seller shall provide training of maximum two of the Buyer&#8217;s technicians for a period of 5 working days at the Seller&#8217;s facilities. The training shall be organized in accordance with the Seller&#8217;s standard practice and training program. The Seller shall provide the following free of charge: Local transportation, Hotel, Meals in the facility, Visa invitation for the period of the training.</div>
+
+            <div class="clause-title">7. Sample bottles</div>
+            <div class="clause-body">If the Buyer will give the approval of the contracted goods based on the approval of the sample bottles, the Buyer shall inform the Seller in advance how many sample bottles are required for approval purpose.</div>
+            <div class="clause-body">If more than 200 pcs &lt; 3L bottles, 50 pcs &gt;3L &lt;10L bottles or 20 pcs &gt; 10L bottles are required this is subject to up charge and the freight will be on collect basis.</div>
+
+            <div class="clause-title">8. Startup Service</div>
+            <div class="clause-body">The Seller will provide start up service under supervisory capacity and training of the Buyer&#8217;s technical staff. The start-up and training will be conducted in accordance with the Seller&#8217;s standard practice. The Buyer will cover all cost including travelling cost, hotel expenses and meals. The engineer will be dispatched upon confirmation of all electric, air and water connections having been completed by the Buyer. The Buyer shall request the dispatch of the engineer minimum 1 week in advance of the projected time for start-up.</div>
+
+            <div class="clause-title">9. Installation</div>
+            <div class="clause-body">The Seller&#8217;s scope of work does not include wiring, piping and consumables required to install/operate the equipment at the Buyer&#8217;s factory. This work shall be carried out by the Buyer at responsibility and cost.</div>
+            <div class="clause-body">Should it be required, the Seller can provide supervision of the installation of the contracted goods at a fee of 4.500 EUR excluding travel and hotel expenses for a maximum period of 5 days including traveling.</div>
+
+            <div class="clause-title">10. Auxiliary equipment</div>
+            <div class="clause-body">This quotation does not include the dryer, chiller, dehumidifier, mold temperature controllers, compressor for operation and blowing air and the cooling tower for hydraulic oil cooling. The selection of auxiliary equipment to be used with the machines and molds is to be based on the understanding that the contracted goods shall be operated in factory operating conditions of 10-40C temperature, less than 70% humidity in accordance with operation manual with the power source of 380V 3 phases 50 cycles, with a maximum 10% voltage fluctuation. The Buyer will prepare auxiliary equipment including compressors and a cooling tower at its own cost and responsibility. The Seller shall submit the utility list for the Buyer&#8217;s reference only.</div>
+
+            <div class="clause-title">11. Cancellation Charges</div>
+            <div class="clause-body">The following charges will be applied in case of cancellation.</div>
+            <div class="bullet">&#183;&#160; Mold: Cancellation within 30 days of the order and finalization of specifications: 50%. Cancellation after more than 30 days after the order and finalization of specifications: 100%</div>
+            <div class="bullet">&#183;&#160; Machine: Cancellation within 30 days of the order and finalization of specifications: 5%. Cancellation after more than 30 days after the order and finalization of specifications: 30%</div>
+            <div class="bullet">&#183;&#160; Auxiliaries: Cancellation within 30 days of the order and finalization of specifications: 5%. Cancellation after more than 30 days after the order and finalization of specifications: 100%</div>
+
+            <div class="clause-title">12. Warranty</div>
+            <div class="clause-body">The warranty period shall be in accordance with the warranty policy in the attachment.</div>
+
+            <div class="clause-title">13. Validity</div>
+            <div class="clause-body">The prices and conditions of this quotation are valid for a period of 30 days to be counted from the date of the quotation.</div>
+
+            <div class="sig-block">
+                <div>Nissei ASB GmbH</div>
+                <div>Gregor Tag</div>
+                <div>Area Sales Manager</div>
+            </div>
+        </div>
+
+
+        <!-- PAGE 5-6: GENERAL PROVISIONS -->
+        <div class="pgbreak">
+            <div class="section-heading">GENERAL PROVISIONS</div>
+
+            <div class="preamble">The following terms and conditions shall apply to terms and conditions of the Quotation and the Sales Contract unless otherwise specified on the face of this Sales Contract and/or agreed in writing executed by duly authorized representative of Seller. If Buyer uses its own purchase form, it is understood that such form is subject to and deemed to include the terms and conditions hereof.</div>
+
+            <div class="clause-title">1. Acceptance of Orders:</div>
+            <div class="clause-body">Orders based on such Quotation/Sales Contract are subject to Seller&#8217;s written acceptance and no contract shall be deemed to have been created until such acceptance has been delivered to Buyer by Seller. Buyer shall make an advance payment as provided on the face of the Sales Contract. Buyer shall also provide Seller with the specifications of the product which Buyer intends to make using the machine (the &#8220;Machine&#8221;) and/or the mold (the &#8220;Mold&#8221;) manufactured by Seller. If the specifications are going to be revised, the delivery schedule and sales amount specified on the face of the Sales Contract shall be re-quoted or revised. Buyer may terminate the Sales Contract only before Seller begins designing and/or manufacturing the Machine or the Mold, provided that, even in such case, advance payment shall not be refunded to Buyer.</div>
+
+            <div class="clause-title">2. Delayed Payment:</div>
+            <div class="clause-body">In case Buyer delays in paying any amount under the Sales Contract by any cause or reason whatsoever, Buyer shall be liable to pay to Seller an overdue interest of 6 months LIBOR plus 4% p.a. over the period of such delay. In case the L/C should get dishonoured, Buyer shall be liable to pay to Seller an overdue interest of 6 months LIBOR plus 4% p.a. over the period from the L/C due date until the sum is paid by Buyer to Seller.</div>
+
+            <div class="clause-title">3. Termination:</div>
+            <div class="clause-body">Seller may terminate the Sales Contract forthwith by giving a written notice, if Buyer fails to open an L/C required under the Sales Contract within the period reasonably specified by Seller or sixty (60) days before the expected shipment date, whichever is earlier, or if Buyer violates any provisions of the Sales Contract. In such case, Seller may claim compensation for all damages to Seller in respect of the Sales Contract and the amount of advance payment paid to Seller by Buyer shall be considered as the minimum amount of compensation to Seller.</div>
+
+            <div class="clause-title">4. Delivery:</div>
+            <div class="clause-body">The date of the Bill of Lading shall be accepted as the date of shipment. Seller can appoint any steamship company, carrier or vessel for shipment. Neither Seller nor its suppliers shall be responsible or liable for failure in performing the obligation for shipment and any other obligations under the Sales Contract if such failure is caused by Force Majeure, including but not limited to strikes, labour disputes, floods, civil commotion, war, riot, act of god, rules, laws, orders, restrictions, embargoes, quotas or actions of any government, foreign or domestic, or any agency or subdivision thereof, casualties, fires, accidents, shortage of transportation facilities, detention of goods by customs authorities; loss of goods in public or private warehouses, or other casualty or contingency beyond Seller&#8217;s reasonable control or the control of Seller&#8217;s supplier or otherwise unavoidable. In any such event Seller shall have the right, at its sole and absolute discretion and option and without any liability to Buyer, to (a) cancel all or any portion of the Sales Contract or (b) perform the Sales Contract as so restricted or modified to the extent determined by Seller and Buyer in mutual consent or (c) perform the Sales Contract within a reasonable time after the causes for the nonperformance or delay have ceased. The delivery date or the quotation is only an estimate based on present scheduling requirements and requires the Seller only to use its best efforts to meet such date.</div>
+
+            <div class="clause-title">5. Retention of Title:</div>
+            <div class="clause-body">The title to all goods delivered remains with Seller until Buyer has paid all and any claims arising from the business relationship with Seller, in the case of bills of exchange or cheques until due collection of the cash equivalent. Buyer holds the retained property in custody for Seller free of charge and undertakes to insure it against the normal risks, such as fire, water, theft, etc. All claims covered by the insurance are herewith assigned to Seller in advance. In case the goods with retained title are seized or otherwise claimed by third parties, Buyer shall notify Seller immediately. All intervention costs shall be borne by Buyer. Buyer grants Seller an irrevocable licence to enter at any time any vehicles or premises owned or occupied by Buyer or in its possession for the purpose of repossessing and removing any such goods with retained title. In the event of the resale to third parties, Buyer assigns to Seller herewith in advance all claims arising from the resale to third parties. Upon request of Seller, Buyer shall furnish Seller with the names and addresses of those respective customers.</div>
+
+            <div class="clause-title">6. Inspection:</div>
+            <div class="clause-body">Inspection by Seller shall be considered final, unless otherwise agreed in writing between Seller and Buyer, by duly authorized representatives of the parties.</div>
+
+            <div class="clause-title">7. Claim:</div>
+            <div class="clause-body">Any claim by Buyer must be made in writing with photograph within twenty-one (21) days after receipt of such products supplied by Seller or within twenty-one (21) days after invisible defect is found.</div>
+
+            <div class="clause-title">8. Installation:</div>
+            <div class="clause-body">Seller shall provide, upon Buyer&#8217;s request, recommendable installation specifications and, where possible, a functional check of the machine after it has been properly installed by Buyer and prior to its being placed in service.</div>
+
+            <div class="clause-title">9. INDEMNIFICATION AND DAMAGES:</div>
+            <div class="clause-body">Buyer shall use and shall require his employees to use all the safety devices, guards, and proper safe operating procedures as set forth in the machine&#8217;s manual and specification sheet. Buyer shall not remove or modify any such devices or guards or warning signs. Buyer shall not perform any changes and modifications to the machine(s), mold(s), and ancillary equipment supplied by Seller without Seller&#8217;s written recommendations or requests. Buyer shall not permit any person other than qualified operating personnel to remain within arm&#8217;s length of any machine or ancillary equipment manufactured or supplied by Seller during operation thereof. If Buyer fails to strictly observe each and every one of the obligations set forth in this paragraph with regard to any products manufactured or supplied by Seller, Buyer agrees to indemnify and save Seller harmless from any liabilities and obligations incurred by Seller to persons injured directly or indirectly in connection with the operation of such products.</div>
+
+            <div class="clause-title">10. Warranty:</div>
+            <div class="clause-body">The warranty period shall be one year after the date of starting up of the machine or 14 months after the date of the bill of lading whichever comes first. Provided that the electric devices, hydraulic and pneumatic devices, sealing material and bearing, and their parts shall be guaranteed for a period of six months from the date of start-up of the machine or eight months from the date of the bill of lading, whichever comes earlier. The warranty only extends to those parts of the Machine originally engineered or manufactured by Seller. With the exception of normal routine maintenance service and repair parts and expendable items, Seller shall repair or replace, at its option, those original parts which are found and acknowledged by Seller to be defective in manufacture or workmanship. This warranty is in lieu of all other warranties, both express and implied, including WARRANTIES OF FITNESS FOR A PARTICULAR PURPOSE or WARRANTIES OF MERCHANTIBILITY. Neither Seller&#8217;s agent nor Seller shall be responsible for special or consequential damages.</div>
+
+            <div class="clause-title">11. Specifications:</div>
+            <div class="clause-body">All working drawings or other materials provided by Seller are for informational purpose only. Seller shall only be responsible for the specifications contained therein. Seller reserves the right to make, at any time, such changes in detail of design or construction as shall, in Seller&#8217;s sole judgment, constitute an improvement over former designs. Any proposals, prints, brochures, drawings or other information furnished to Buyer by Seller are intended for confidential use by Buyer; shall remain the property of Seller; and shall not be used to the detriment of Seller&#8217;s competitive position.</div>
+
+            <div class="clause-title">12. Infringement:</div>
+            <div class="clause-body">Buyer shall indemnify Seller for and hold Seller harmless from any liability or alleged liability for infringement of rights of third parties as a result of the use of any patent, trademark, design and/or copyright originating from or chosen by Buyer on products produced on the Machine. Buyer will also defend Seller in any such action at Buyer&#8217;s sole expense. This provision only applies to the products produced on the Machine and in no way relieves Seller from full and sole responsibility for patents, trademarks, designs or copyrights relating to the Machine and manufacturing process.</div>
+
+            <div class="clause-title">13. Arbitration:</div>
+            <div class="clause-body">Any dispute arising out of or relating to this Contract, its interpretation or breach, shall be settled in D&#252;sseldorf, Germany under the Rules of Conciliation and Arbitration of the International Chamber of Commerce by one or more arbitrators appointed in accordance with the said Rules. The award shall be final and binding upon both parties.</div>
+
+            <div class="clause-title">14.</div>
+            <div class="clause-body">The Sales Contract shall constitute the entire agreement between the parties. No statement subsequent to the acceptance of the Sales Contract purporting to modify the said terms and conditions shall be binding upon the parties unless otherwise consented to in writing by duly authorized representative of Seller.</div>
+
+            <div class="clause-title">15. Governing Laws:</div>
+            <div class="clause-body">The Sales Contract shall be governed in all respects by the Laws of Germany with the exception of the UN convention on international contracts of sale of goods.</div>
+
+            <div class="clause-title">16. Validity:</div>
+            <div class="clause-body">Should any provision of these General Provisions be invalid, this shall not affect the validity of the remaining provisions.</div>
+        </div>
+    </body>
+    </html>
+</apex:page>

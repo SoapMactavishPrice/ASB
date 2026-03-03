@@ -45,6 +45,31 @@
             font-size: 14px;
             padding: 5px;
             }
+            .optionsTable{
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 13px;
+                color: #111;
+            }
+            .optionsTable thead th{
+                text-align: left;
+                padding: 10px 8px;
+                border-bottom: 1px solid #e6e6e6;
+                background: #f7f7f7;
+                font-weight: 600;
+            }
+            .optionsTable thead {
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+            }
+            .optionsTable tbody td{
+                padding: 8px;
+                border-bottom: 1px solid #f0f0f0;
+                vertical-align: middle;
+            }
+            .optionsTable td.align-right, .optionsTable th.align-right { text-align: right; }
+            .optionsTable td.center { text-align: center; }
         </style>
          <script type="text/javascript">
         var $j = jQuery.noConflict();
@@ -54,6 +79,26 @@
         window.close();
         console.log('clicked');
     
+    }
+
+    function handlePriceVisible(priceVisibleCheckbox) {
+        if (priceVisibleCheckbox.checked) {
+            var row = priceVisibleCheckbox.closest('tr');
+            var nameHideCheckbox = row.querySelector('input[type="checkbox"]:not([onclick*="handlePriceVisible"])');
+            if (nameHideCheckbox) {
+                nameHideCheckbox.checked = false;
+            }
+        }
+    }
+
+    function handleNameHide(nameHideCheckbox) {
+        if (nameHideCheckbox.checked) {
+            var row = nameHideCheckbox.closest('tr');
+            var priceVisibleCheckbox = row.querySelector('input[type="checkbox"]:not([onclick*="handleNameHide"])');
+            if (priceVisibleCheckbox) {
+                priceVisibleCheckbox.checked = false;
+            }
+        }
     }
 </script>
         <apex:outputPanel id="popup">
@@ -94,7 +139,63 @@
                 </div>
             </apex:outputPanel>
         </apex:outputPanel>
-        <apex:outputPanel >
+        <apex:outputPanel layout="block" id="optionsPanel">
+            <apex:outputPanel styleClass="popupBackground" layout="block" id="optionsModal" rendered="{!showOptionsModal}">
+                <div style="background-color: white;position: relative; width: 60%; margin: auto; min-height: 150px; margin-top: 5%">
+                    <apex:commandButton action="{!Cancel}" value="X" title="Close" styleClass="slds-button" style="position: absolute; top: 5px; right: 10px; background: none; border: none; font-size: 20px; color: #666; cursor: pointer; padding: 0; width: auto; height: auto;"/>
+                    <h3 style="padding:10px; margin:0; text-align:center;">Selected option prices are visible on the PDF</h3>
+                    <div style="padding-right: 10px; padding-left: 10px; max-height:400px; overflow:auto;">
+                        <table class="optionsTable" style="width:100%;">
+                            <thead>
+                                <tr>
+                                    <th style="width:24%; text-align:left;">Items</th>
+                                    <th style="width:8%; text-align:center;">Name<br/>Hide</th>
+                                    <th style="width:32%; text-align:left;">Options</th>
+                                    <th style="width:8%; text-align:right;">Qty</th>
+                                    <th style="width:13%; text-align:right;">Unit Sales Price</th>
+                                    <th style="width:13%; text-align:right;">Total Sales Price</th>
+                                    <th style="width:2%;"></th>
+                                    <th style="width:8%; text-align:center;">Price<br/>Visible</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <apex:repeat value="{!prodLineList}" var="pl">
+                                    <tr style="background:#f3f3f3">
+                                        <td><strong>{!pl.Product_Name} ({!pl.Line_Item_Id})</strong></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="align-right">{!IF(pl.Quantity != null, pl.Quantity, '')}</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <apex:repeat value="{!pl.childProd}" var="opt">
+                                        <tr>
+                                            <td></td>
+                                            <td class="center">
+                                                <apex:inputCheckbox value="{!opt.Name_Hide}" style="text-align: center;" onclick="handleNameHide(this)"/>
+                                            </td>
+                                            <td>{!opt.Manual_Product_Name}</td>
+                                            <td class="align-right">{!IF(opt.Quantity != null, opt.Quantity, '')}</td>
+                                            <td class="align-right">{!IF(opt.Manual_Option_List_Price != null, opt.Manual_Option_List_Price, '')}</td>
+                                            <td class="align-right">{!IF(opt.Sales_Price != null, opt.Sales_Price, '')}</td>
+                                            <td></td>
+                                            <td class="center"><apex:inputCheckbox value="{!opt.Price_Visible}" onclick="handlePriceVisible(this)" disabled="{!ObjQuote.Is_DTA_Contract__c && !isSystemAdmin}"/></td>
+                                        </tr>
+                                    </apex:repeat>
+                                </apex:repeat>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="text-align:right; padding:10px;">
+                        <apex:commandButton action="{!Cancel}" value="Cancel" styleClass="slds-button" style="margin-left: 5px; margin-bottom: 3px;"/>
+                        <apex:commandButton action="{!saveOptions}" value="Show Pdf" styleClass="slds-button"/>
+                    </div>
+                </div>
+            </apex:outputPanel>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!NOT(showOptionsModal)}">
             <div style="font-size:20px;background-color:#A9A9A9; border-width: 1px;
                         border-style: solid;"><strong>
                 &nbsp;&nbsp;{!ContractNumber}           

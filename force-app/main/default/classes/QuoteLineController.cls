@@ -16,7 +16,7 @@ public with sharing class QuoteLineController {
                    Average_Sales_Price__c, Sales_Price__c, Sales_Margin__c, 
                    Quote__r.Sales_Margin__c, Quote__r.Quote_Total_Base_Price__c, Quote__r.Quote_Total_List_Price__c,
                    Quote__r.Quote_Total_Discount_Value__c, Quote__r.Quote_Totoal__c, Quote__r.Quote_Number__c, Quote__r.CurrencyIsoCode,
-                   M1__c, M2__c, M3__c,
+                   P_M1__c, P_M2__c, P_M3__c, P_M4__c,
                    Total_List_Price__c, Total_Base_Price_including_Options__c,
                    Total_Discount_Value_including_options__c, 
                    Total_Sales_Price_including_Options__c,
@@ -27,7 +27,7 @@ public with sharing class QuoteLineController {
                            Desired_Price__c, Discount_Allowed_New__c, Discount_Value__c,
                            Average_Sales_Price__c, Sales_Price__c, Sales_Margin__c,
                            Total_List_Price__c, Discount_Amount__c, Total_Quantity__c, Unit_Sales_Price__c, Total_Sales_Price__c, Total_Transfer_Price__c,
-                           P_M1__c, P_M2__c, P_M3__c
+                           P_M1__c, P_M2__c, P_M3__c, P_M4__c
                     FROM Quote_Line_Options__r
                     ORDER BY Serial_Number__c ASC)
             FROM Quote_Line_Item_Custom__c

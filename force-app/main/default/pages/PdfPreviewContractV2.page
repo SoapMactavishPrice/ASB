@@ -333,28 +333,41 @@
                                 </td>		
                             </tr>
                             <apex:repeat value="{!qLine.childProd}" var="QLOpt">
-                                <tr rendered="{!!QLOpt.isstartWith_a}">
-                                    <td></td>
-                                    <td align="left" class="qlineitemOptions" style="font-size: 12px;">
-                                        <apex:outputPanel rendered="{!if(QLOpt.Description == '' &&  !QLOpt.isstartWith_a, true ,false)}"> 
-                                                            <li style="list-style-type: square;  margin-bottom: 4px; padding: 0 !important; margin: 0 !important;">{!QLOpt.Manual_Product_Name}</li>
-                                                        </apex:outputPanel>
-                                                        
-                                        
-                                          <li style="list-style-type: square;  margin-bottom: 4px; padding: 0 !important; margin: 0 !important;">
-                                                            <apex:outputtext rendered="{!if(QLOpt.Description != ''  &&  !QLOpt.isstartWith_a, true ,false)}"
-                                                                             escape="false" value="{!QLOpt.Description}">
-                                                            </apex:outputtext>
-                                                        </li>
-                                        
-                                         <li style="list-style-type: square;  margin-bottom: 4px; padding: 0 !important; margin: 0 !important;">
+                                <apex:outputPanel layout="none" rendered="{!NOT(QLOpt.Name_Hide)}">
+                                    <tr rendered="{!!QLOpt.isstartWith_a}">
+                                        <td></td>
+                                        <td align="left" class="qlineitemOptions" style="font-size: 12px;">
+                                            <apex:outputPanel rendered="{!if(QLOpt.Description == '' &&  !QLOpt.isstartWith_a, true ,false)}"> 
+                                                <li style="list-style-type: square;  margin-bottom: 4px; padding: 0 !important; margin: 0 !important;">{!QLOpt.Manual_Product_Name}</li>
+                                            </apex:outputPanel>
+                                            <li style="list-style-type: square;  margin-bottom: 4px; padding: 0 !important; margin: 0 !important;">
+                                                <apex:outputtext rendered="{!if(QLOpt.Description != ''  &&  !QLOpt.isstartWith_a, true ,false)}"
+                                                    escape="false" value="{!QLOpt.Description}">
+                                                </apex:outputtext>
+                                            </li>
+                                            <li style="list-style-type: square;  margin-bottom: 4px; padding: 0 !important; margin: 0 !important;">
                                                <!-- <apex:outputtext rendered="{!if(QLOpt.Description != ''  &&  !QLOpt.isstartWith_a, true ,false)}"
                                                               escape="false" value="{!QLOpt.Description}">
                                                     </apex:outputtext>-->
-                                        </li>
-                                       
-                                    </td>
-                                </tr>
+                                            </li>
+                                        </td>
+                                        <td style="text-align: left; vertical-align:top; padding-left: 13px;">
+                                            <apex:outputPanel rendered="{!QLOpt.Price_Visible}">
+                                                {!IF(QLOpt.Quantity != null, QLOpt.Quantity, '')}
+                                            </apex:outputPanel>
+                                        </td>
+                                        <td style="text-align: right; vertical-align:top;">
+                                            <apex:outputPanel rendered="{!QLOpt.Price_Visible}">
+                                                {!IF(QLOpt.Manual_Option_List_Price != null, QLOpt.Manual_Option_List_Price, '')}
+                                            </apex:outputPanel>
+                                        </td>
+                                        <td style="text-align: right; vertical-align:top;">
+                                            <apex:outputPanel rendered="{!QLOpt.Price_Visible}">
+                                                {!IF(QLOpt.Sales_Price != null, QLOpt.Sales_Price, '')}
+                                            </apex:outputPanel>
+                                        </td>
+                                    </tr>
+                                </apex:outputPanel>
                             </apex:repeat>
                         </apex:repeat>
                         <tr>

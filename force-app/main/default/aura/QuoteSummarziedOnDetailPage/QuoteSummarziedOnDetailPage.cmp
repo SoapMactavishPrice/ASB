@@ -127,76 +127,76 @@
 
                                             <!-- Checkbox column (only when select visible) -->
                                             <aura:if isTrue="{!(v.isSelectVisible)}">
-                                                <th class="col-stick" style="width: 35px;" />
+                                                <th class="col-stick" style="width: 35px; background: #1F3A5F; color: #FFFFFF; text-align: center; " />
                                             </aura:if>
 
                                             <!-- 1. SQ NO -->
-                                            <th class="col-stick" style="width: 75px;">
+                                            <th class="col-stick" style="width: 75px; background: #1F3A5F; color: #FFFFFF; text-align: center; ">
                                                 <div class="slds-truncate" title="SQ NO">SQ NO</div>
                                             </th>
 
                                             <!-- 2. Product Name -->
-                                            <th class="col-stick" style="width: 400px;">
+                                            <th class="col-stick" style="width: 400px; background: #1F3A5F; color: #FFFFFF; text-align: left; ">
                                                 <div class="slds-truncate" title="Product Name">Product Name</div>
                                             </th>
 
                                             <!-- 3. Product Code -->
-                                            <th class="col-stick" scope="col" style="width: 120px;">
+                                            <th class="col-stick" scope="col" style="width: 90px; background: #1F3A5F; color: #FFFFFF; text-align: left; ">
                                                 <div class="" style="text-wrap: balance;" title="Product Code">Product Code</div>
                                             </th>
 
                                             <!-- 4. Qty -->
-                                            <th class="col-stick" scope="col" style="width: 60px; text-align: right !important;">
+                                            <th class="col-stick" scope="col" style="width: 60px; background: #1F3A5F; color: #FFFFFF; text-align: center; ">
                                                 <div class="slds-truncate" title="Quantity">Qty</div>
                                             </th>
 
                                             <!-- 5. Total Qty -->
-                                            <th class="col-stick" scope="col" style="width: 75px; text-align: right !important;">
+                                            <th class="col-stick" scope="col" style="width: 75px; background: #1F3A5F; color: #FFFFFF; text-align: center; ">
                                                 <div class="" style="text-wrap: balance; white-space: normal;" title="Total Quantity">Total Qty</div>
                                             </th>
 
                                             <!-- 6. Unit TP -->
-                                            <th class="col-stick" scope="col" style="width: 101px; text-align: right !important;">
+                                            <th class="col-stick" scope="col" style="width: 101px; background: #1F3A5F; color: #FFFFFF; text-align: center; ">
                                                 <div class="" style="text-wrap: balance;" title="Unit Transfer Price">Unit TP</div>
                                             </th>
 
                                             <!-- 7. Unit List Price -->
-                                            <th class="col-stick" scope="col" style="width: 101px; text-align: right !important;">
+                                            <th class="col-stick" scope="col" style="width: 101px; background: #1F3A5F; color: #FFFFFF; text-align: center; ">
                                                 <div class="" style="text-wrap: balance;" title="Unit List Price">Unit List Price</div>
                                             </th>
 
                                             <!-- 8. Total TP — Total_Global_Price_Item__c (item) / Total_Transfer_Price__c (option) -->
-                                            <th class="col-stick" scope="col" style="width: 101px; text-align: right !important;">
+                                            <th class="col-stick" scope="col" style="width: 101px; background: #1F3A5F; color: #FFFFFF; text-align: center; ">
                                                 <div class="" style="text-wrap: balance;" title="Total Transfer Price">Total TP</div>
                                             </th>
 
                                             <!-- 9. Total List Price — Total_List_Price2__c (item) / Total_List_Price__c (option) -->
-                                            <th class="col-stick" scope="col" style="width: 110px; text-align: right !important;">
+                                            <th class="col-stick" scope="col" style="width: 110px; background: #1F3A5F; color: #FFFFFF; text-align: center; ">
                                                 <div class="" style="text-wrap: balance;" title="Total List Price">Total List Price</div>
                                             </th>
 
                                             <!-- 10. Discount % — Discount__c (item) / Discount__c (option) — NEW -->
-                                            <th class="col-stick" scope="col" style="width: 90px; text-align: right !important;">
+                                            <th class="col-stick" scope="col" style="width: 80px; background: #1F3A5F; color: #FFFFFF; text-align: center; ">
                                                 <div class="" style="text-wrap: balance;" title="Discount %">Discount %</div>
                                             </th>
 
                                             <!-- 11. Total Discount in Value — Discount_Value__c (item) / Discount_Amount__c (option) -->
-                                            <th class="col-stick" scope="col" style="width: 125px; text-align: right !important;">
+                                            <th class="col-stick" scope="col" style="width: 100px; background: #1F3A5F; color: #FFFFFF; text-align: center; ">
                                                 <div class="" style="text-wrap: balance; white-space: normal;" title="Total Discount in Value">Total Discount in Value</div>
                                             </th>
 
                                             <!-- 12. Unit Sales Price — Average_Sales_Price__c (item) / Unit_Sales_Price__c (option) -->
-                                            <th class="col-stick" scope="col" style="width: 101px; text-align: right !important;">
+                                            <th class="col-stick" scope="col" style="width: 101px; background: #1F3A5F; color: #FFFFFF; text-align: center; ">
                                                 <div class="" style="text-wrap: balance;" title="Unit Sales Price">Unit Sales Price</div>
                                             </th>
 
                                             <!-- 13. Total Sales Price — Sales_Price__c (item) / Total_Sales_Price__c (option) -->
-                                            <th class="col-stick" scope="col" style="width: 110px; text-align: right !important;">
+                                            <th class="col-stick" scope="col" style="width: 110px; background: #1F3A5F; color: #FFFFFF; text-align: center; ">
                                                 <div class="" style="text-wrap: balance;" title="Total Sales Price">Total Sales Price</div>
                                             </th>
 
                                             <!-- 14. Sales Margin% -->
-                                            <th class="col-stick" scope="col" style="width: 80px; text-align: right !important;">
+                                            <th class="col-stick" scope="col" style="width: 80px; background: #1F3A5F; color: #FFFFFF; text-align: center; ">
                                                 <div title="Sales Margin %" class="" style="text-wrap: balance;">Sales Margin%</div>
                                             </th>
 
@@ -232,68 +232,68 @@
 
                                                 <!-- Product Code -->
                                                 <aura:if isTrue="{!not(exp.Is_Manual__c)}">
-                                                    <th scope="row" style="width: 140px; font-weight: 700;">
+                                                    <th scope="row" style="width: 90px; font-weight: 700;">
                                                         <div class="slds-truncate" title="{!exp.Product_Code__c}">{!exp.Product_Code__c}</div>
                                                     </th>
                                                 </aura:if>
                                                 <aura:if isTrue="{!(exp.Is_Manual__c)}">
-                                                    <th scope="row" style="width: 140px; font-weight: 700;">
+                                                    <th scope="row" style="width: 100px; font-weight: 700;">
                                                         <div class="slds-truncate" title="{!exp.Manual_Product_Code__c}">{!exp.Manual_Product_Code__c}</div>
                                                     </th>
                                                 </aura:if>
 
                                                 <!-- Qty — Quantity__c -->
-                                                <td style="width: 60px; font-weight: 700; text-align-last: right !important;">
+                                                <td style="width: 60px; font-weight: 700; text-align: center !important;">
                                                     <div class="slds-truncate" title="{!exp.Quantity__c}">{!exp.Quantity__c}</div>
                                                 </td>
 
                                                 <!-- Total Qty — same as Qty for parent items -->
-                                                <td style="width: 75px; font-weight: 700; text-align-last: right !important;">
+                                                <td style="width: 75px; font-weight: 700; text-align: center !important;">
                                                     <div class="slds-truncate" title="{!exp.Quantity__c}">{!exp.Quantity__c}</div>
                                                 </td>
 
                                                 <!-- Unit TP — Base_Price__c -->
-                                                <td style="width: 130px; font-weight: 700; text-align-last: right !important;" class="textright">
+                                                <td style="width: 130px; font-weight: 700; text-align: center !important;" class="textright">
                                                     <lightning:formattedNumber value="{!exp.Base_Price__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                 </td>
 
                                                 <!-- Unit List Price — List_Price__c -->
-                                                <td style="width: 130px; font-weight: 700; text-align-last: right !important;">
+                                                <td style="width: 130px; font-weight: 700; text-align: center !important;">
                                                     <lightning:formattedNumber value="{!exp.List_Price__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                 </td>
 
                                                 <!-- Total TP — Total_Global_Price_Item__c -->
-                                                <td style="width: 130px; font-weight: 700; text-align-last: right !important;">
+                                                <td style="width: 130px; font-weight: 700; text-align: center !important;">
                                                     <lightning:formattedNumber value="{!exp.Total_Global_Price_Item__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                 </td>
 
                                                 <!-- Total List Price — Total_List_Price2__c -->
-                                                <td style="width: 130px; font-weight: 700; text-align-last: right !important;">
+                                                <td style="width: 130px; font-weight: 700; text-align: center !important;">
                                                     <lightning:formattedNumber value="{!exp.Total_List_Price2__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                 </td>
 
                                                 <!-- Discount % — Discount_in_Value_Percent__c (item) — NEW -->
-                                                <td style="width: 90px; font-weight: 700; text-align-last: right !important;">
+                                                <td style="width: 90px; font-weight: 700; text-align: center !important;">
                                                     <div class="slds-truncate" title="{!exp.Discount_in_Value_Percent__c}">{!exp.Discount_in_Value_Percent__c}%</div>
                                                 </td>
 
                                                 <!-- Total Discount in Value — Discount_Value__c -->
-                                                <th scope="row" style="width: 100px; font-weight: 700; text-align-last: right !important;">
+                                                <th scope="row" style="width: 100px; font-weight: 700; text-align: center !important;">
                                                     <lightning:formattedNumber value="{!exp.Discount_Value__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                 </th>
 
                                                 <!-- Unit Sales Price — Average_Sales_Price__c -->
-                                                <td style="width: 130px; font-weight: 700; text-align-last: right !important;">
+                                                <td style="width: 130px; font-weight: 700; text-align: center !important;">
                                                     <lightning:formattedNumber value="{!exp.Average_Sales_Price__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                 </td>
 
                                                 <!-- Total Sales Price — Sales_Price__c -->
-                                                <td style="width: 130px; font-weight: 700; text-align-last: right !important;">
+                                                <td style="width: 130px; font-weight: 700; text-align: center !important;">
                                                     <lightning:formattedNumber value="{!exp.Sales_Price__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                 </td>
 
                                                 <!-- Sales Margin% — Sales_Margin__c -->
-                                                <td style="width: 130px; font-weight: 700; text-align-last: right !important;">
+                                                <td style="width: 130px; font-weight: 700; text-align: center !important;">
                                                     <div class="slds-truncate" title="{!exp.Sales_Margin__c}">{!exp.Sales_Margin__c}%</div>
                                                 </td>
 
@@ -327,68 +327,68 @@
 
                                                     <!-- Product Code -->
                                                     <aura:if isTrue="{!not(QLO.Select_Option__c)}">
-                                                        <th scope="row" style="width: 140px;">
+                                                        <th scope="row" style="width: 90px;">
                                                             <div class="slds-truncate" title="{!QLO.Option_Product_Code__c}">{!QLO.Option_Product_Code__c}</div>
                                                         </th>
                                                     </aura:if>
                                                     <aura:if isTrue="{!(QLO.Select_Option__c)}">
-                                                        <th scope="row" style="width: 140px;">
+                                                        <th scope="row" style="width: 90px;">
                                                             <div class="slds-truncate" title="{!QLO.Manual_Product_Code__c}">{!QLO.Manual_Product_Code__c}</div>
                                                         </th>
                                                     </aura:if>
 
                                                     <!-- Qty — Quantity__c (option own qty) -->
-                                                    <td style="width: 60px; text-align-last: right !important;">
+                                                    <td style="width: 60px; text-align: center !important;">
                                                         <div class="slds-truncate" title="{!QLO.Quantity__c}">{!QLO.Quantity__c}</div>
                                                     </td>
 
                                                     <!-- Total Qty — Total_Quantity__c -->
-                                                    <td style="width: 75px; text-align-last: right !important;">
+                                                    <td style="width: 75px; text-align: center !important;">
                                                         <div class="slds-truncate" title="{!QLO.Total_Quantity__c}">{!QLO.Total_Quantity__c}</div>
                                                     </td>
 
                                                     <!-- Unit TP — Manual_Option_Base_Price__c -->
-                                                    <td style="width: 130px; text-align-last: right !important;">
+                                                    <td style="width: 130px; text-align: center !important;">
                                                         <lightning:formattedNumber value="{!QLO.Manual_Option_Base_Price__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </td>
 
                                                     <!-- Unit List Price — Manula_Option_List_Price__c -->
-                                                    <td style="width: 130px; text-align-last: right !important;">
+                                                    <td style="width: 130px; text-align: center !important;">
                                                         <lightning:formattedNumber value="{!QLO.Manula_Option_List_Price__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </td>
 
                                                     <!-- Total TP — Total_Transfer_Price__c -->
-                                                    <td style="width: 130px; text-align-last: right !important;">
+                                                    <td style="width: 130px; text-align: center !important;">
                                                         <lightning:formattedNumber value="{!QLO.Total_Transfer_Price__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </td>
 
                                                     <!-- Total List Price — Total_List_Price__c -->
-                                                    <td style="width: 130px; text-align-last: right !important;">
+                                                    <td style="width: 130px; text-align: center !important;">
                                                         <lightning:formattedNumber value="{!QLO.Total_List_Price__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </td>
 
                                                     <!-- Discount % — Discount_in_Value_Percent__c (option) — NEW -->
-                                                    <td style="width: 90px; text-align-last: right !important;">
+                                                    <td style="width: 90px; text-align: center !important;">
                                                         <div class="slds-truncate" title="{!QLO.Discount_in_Value_Percent__c}">{!QLO.Discount_in_Value_Percent__c}%</div>
                                                     </td>
 
                                                     <!-- Total Discount in Value — Discount_Amount__c -->
-                                                    <th scope="row" style="width: 150px; text-align-last: right !important;">
+                                                    <th scope="row" style="width: 150px; text-align: center !important;">
                                                         <lightning:formattedNumber value="{!QLO.Discount_Amount__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </th>
 
                                                     <!-- Unit Sales Price — Unit_Sales_Price__c -->
-                                                    <td style="width: 130px; text-align-last: right !important;">
+                                                    <td style="width: 130px; text-align: center !important;">
                                                         <lightning:formattedNumber value="{!QLO.Unit_Sales_Price__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </td>
 
                                                     <!-- Total Sales Price — Total_Sales_Price__c -->
-                                                    <td style="width: 130px; text-align-last: right !important;">
+                                                    <td style="width: 130px; text-align: center !important;">
                                                         <lightning:formattedNumber value="{!QLO.Total_Sales_Price__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </td>
 
                                                     <!-- Sales Margin% -->
-                                                    <td style="width: 130px; text-align-last: right !important;">
+                                                    <td style="width: 130px; text-align: center !important;">
                                                         <div class="slds-truncate" title="{!QLO.Sales_Margin__c}">{!QLO.Sales_Margin__c}%</div>
                                                     </td>
 
@@ -400,59 +400,59 @@
                                                 <tr style="font-weight: 700;">
 
                                                     <!-- Label spans fixed columns -->
-                                                    <th colspan="{!v.colspan}" style="font-weight: 700; text-overflow: ellipsis; overflow: hidden; background: #e8e8e8;">Sub Total</th>
-                                                    <th style="font-weight: 700; background: #e8e8e8;"></th>
+                                                    <th colspan="{!v.colspan}" style="font-weight: 700; text-overflow: ellipsis; overflow: hidden; background: #E8EEF5; color: #1F3A5F;;">Sub Total</th>
+                                                    <th style="font-weight: 700; background: #E8EEF5; color: #1F3A5F; width: 90px;"></th>
 
                                                     <!-- Qty -->
-                                                    <td style="width: 60px; font-weight: 700; text-align-last: right !important; background: #e8e8e8;">
+                                                    <td style="width: 60px; font-weight: 700; text-align: center !important; background: #E8EEF5; color: #1F3A5F;;">
                                                         <div class="slds-truncate" title="{!exp.sub_TotalQuantity__c}">{!exp.sub_TotalQuantity__c}</div>
                                                     </td>
 
                                                     <!-- Total Qty -->
-                                                    <td style="width: 75px; font-weight: 700; text-align-last: right !important; background: #e8e8e8;">
+                                                    <td style="width: 75px; font-weight: 700; text-align: center !important; background: #E8EEF5; color: #1F3A5F;;">
                                                         <div class="slds-truncate" title="{!exp.sub_TotalQuantity__c}">{!exp.sub_TotalQuantity__c}</div>
                                                     </td>
 
                                                     <!-- Unit TP — blank for sub-total -->
-                                                    <td style="width: 130px; font-weight: 700; text-align-last: right !important; background: #e8e8e8;">
-                                                        <lightning:formattedNumber value="{!exp.sub_unitTP}" style="currency" currencyCode="{!exp.CurrencyIsoCode}"/>
+                                                    <td style="width: 130px; font-weight: 700; text-align: center !important; background: #E8EEF5; color: #1F3A5F;;">
+                                                        <!-- <lightning:formattedNumber value="{!exp.sub_unitTP}" style="currency" currencyCode="{!exp.CurrencyIsoCode}"/> -->
                                                     </td>
 
                                                     <!-- Unit List Price — blank for sub-total -->
-                                                    <td style="width: 130px; font-weight: 700; text-align-last: right !important; background: #e8e8e8;">
-                                                        <lightning:formattedNumber value="{!exp.sub_unitListPrice}" style="currency" currencyCode="{!exp.CurrencyIsoCode}"/>
+                                                    <td style="width: 130px; font-weight: 700; text-align: center !important; background: #E8EEF5; color: #1F3A5F;;">
+                                                        <!-- <lightning:formattedNumber value="{!exp.sub_unitListPrice}" style="currency" currencyCode="{!exp.CurrencyIsoCode}"/> -->
                                                     </td>
 
                                                     <!-- Total TP -->
-                                                    <td style="width: 130px; font-weight: 700; text-align-last: right !important; background: #e8e8e8;" class="textright">
+                                                    <td style="width: 130px; font-weight: 700; text-align: center !important; background: #E8EEF5; color: #1F3A5F;;" class="textright">
                                                         <lightning:formattedNumber value="{!exp.sub_totalTP__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </td>
 
                                                     <!-- Total List Price -->
-                                                    <td style="width: 130px; font-weight: 700; text-align-last: right !important; background: #e8e8e8;" class="textright">
+                                                    <td style="width: 130px; font-weight: 700; text-align: center !important; background: #E8EEF5; color: #1F3A5F;;" class="textright">
                                                         <lightning:formattedNumber value="{!exp.sub_totalListPrice2__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </td>
 
                                                     <!-- Discount % — blank for sub-total — NEW -->
-                                                    <td style="width: 90px; font-weight: 700; text-align-last: right !important; background: #e8e8e8;"></td>
+                                                    <td style="width: 90px; font-weight: 700; text-align: center !important; background: #E8EEF5; color: #1F3A5F;;"></td>
 
                                                     <!-- Total Discount in Value -->
-                                                    <th scope="row" style="width: 100px; font-weight: 700; text-align-last: right !important; background: #e8e8e8;">
+                                                    <th scope="row" style="width: 100px; font-weight: 700; text-align: center !important; background: #E8EEF5; color: #1F3A5F;;">
                                                         <lightning:formattedNumber value="{!exp.sub_totalDiscountValue__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </th>
 
                                                     <!-- Unit Sales Price — blank for sub-total -->
-                                                    <td style="width: 100px; font-weight: 700; text-align-last: right !important; background: #e8e8e8;">
-                                                        <lightning:formattedNumber value="{!exp.sub_unitSalesPrice}" style="currency" currencyCode="{!exp.CurrencyIsoCode}"/>
+                                                    <td style="width: 100px; font-weight: 700; text-align: center !important; background: #E8EEF5; color: #1F3A5F;;">
+                                                        <!-- <lightning:formattedNumber value="{!exp.sub_unitSalesPrice}" style="currency" currencyCode="{!exp.CurrencyIsoCode}"/> -->
                                                     </td>
 
                                                     <!-- Total Sales Price -->
-                                                    <td style="width: 130px; font-weight: 700; text-align-last: right !important; background: #e8e8e8;">
+                                                    <td style="width: 130px; font-weight: 700; text-align: center !important; background: #E8EEF5; color: #1F3A5F;;">
                                                         <lightning:formattedNumber value="{!exp.sub_totalSalesPrice}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </td>
 
                                                     <!-- Sales Margin% -->
-                                                    <td style="width: 130px; font-weight: 700; text-align-last: right !important; background: #e8e8e8;">
+                                                    <td style="width: 130px; font-weight: 700; text-align: center !important; background: #E8EEF5; color: #1F3A5F;;">
                                                         <div class="slds-truncate" title="{!exp.subMargin}">{!exp.subMargin}%</div>
                                                     </td>
 
@@ -465,59 +465,59 @@
                                         <tr style="font-weight: 700;">
 
                                             <!-- Label spans fixed columns -->
-                                            <th colspan="{!v.colspan}" style="font-weight: 700; text-overflow: ellipsis; overflow: hidden; background: #c2c2c2;">Grand Total</th>
-                                            <th style="font-weight: 700; background: #c2c2c2;"></th>
+                                            <th colspan="{!v.colspan}" style="font-weight: 700; text-overflow: ellipsis; overflow: hidden;background: #2F5597; color: #FFFFFF;">Grand Total</th>
+                                            <th style="font-weight: 700;background: #2F5597; color: #FFFFFF; width: 90px;"></th>
 
                                             <!-- Qty -->
-                                            <td style="width: 60px; font-weight: 700; text-align-last: right !important; background: #c2c2c2;">
-                                                <div class="slds-truncate" title="{!v.totalQuantity}">{!v.totalQuantity}</div>
+                                            <td style="width: 60px; font-weight: 700; text-align: center !important;background: #2F5597; color: #FFFFFF;">
+                                                <!-- <div class="slds-truncate" title="{!v.totalQuantity}">{!v.totalQuantity}</div> -->
                                             </td>
 
                                             <!-- Total Qty -->
-                                            <td style="width: 75px; font-weight: 700; text-align-last: right !important; background: #c2c2c2;">
+                                            <td style="width: 75px; font-weight: 700; text-align: center !important;background: #2F5597; color: #FFFFFF;">
                                                 <div class="slds-truncate" title="{!v.totalQuantity}">{!v.totalQuantity}</div>
                                             </td>
 
                                             <!-- Unit TP — blank for grand total -->
-                                            <td style="width: 130px; font-weight: 700; text-align-last: right !important; background: #c2c2c2;">
-                                                <lightning:formattedNumber value="{!v.totalUnitTP}" style="currency" currencyCode="{!v.CurrencyIsoCode}"/>
+                                            <td style="width: 130px; font-weight: 700; text-align: center !important;background: #2F5597; color: #FFFFFF;">
+                                                <!-- <lightning:formattedNumber value="{!v.totalUnitTP}" style="currency" currencyCode="{!v.CurrencyIsoCode}"/> -->
                                             </td>
 
                                             <!-- Unit List Price — blank for grand total -->
-                                            <td style="width: 130px; font-weight: 700; text-align-last: right !important; background: #c2c2c2;">
-                                                <lightning:formattedNumber value="{!v.totalUnitListPrice}" style="currency" currencyCode="{!v.CurrencyIsoCode}"/>
+                                            <td style="width: 130px; font-weight: 700; text-align: center !important;background: #2F5597; color: #FFFFFF;">
+                                                <!-- <lightning:formattedNumber value="{!v.totalUnitListPrice}" style="currency" currencyCode="{!v.CurrencyIsoCode}"/> -->
                                             </td>
 
                                             <!-- Total TP -->
-                                            <td style="width: 130px; font-weight: 700; text-align-last: right !important; background: #c2c2c2;" class="textright">
+                                            <td style="width: 130px; font-weight: 700; text-align: center !important;background: #2F5597; color: #FFFFFF;" class="textright">
                                                 <lightning:formattedNumber value="{!v.totalTP}" style="currency" currencyCode="{!v.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                             </td>
 
                                             <!-- Total List Price -->
-                                            <td style="width: 130px; font-weight: 700; text-align-last: right !important; background: #c2c2c2;" class="textright">
+                                            <td style="width: 130px; font-weight: 700; text-align: center !important;background: #2F5597; color: #FFFFFF;" class="textright">
                                                 <lightning:formattedNumber value="{!v.totalListPrice2}" style="currency" currencyCode="{!v.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                             </td>
 
                                             <!-- Discount % — blank for grand total — NEW -->
-                                            <td style="width: 90px; font-weight: 700; text-align-last: right !important; background: #c2c2c2;"></td>
+                                            <td style="width: 90px; font-weight: 700; text-align: center !important;background: #2F5597; color: #FFFFFF;"></td>
 
                                             <!-- Total Discount in Value -->
-                                            <th scope="row" style="width: 100px; font-weight: 700; text-align-last: right !important; background: #c2c2c2;">
+                                            <th scope="row" style="width: 100px; font-weight: 700; text-align: center !important;background: #2F5597; color: #FFFFFF;">
                                                 <lightning:formattedNumber value="{!v.totalDiscountValue}" style="currency" currencyCode="{!v.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                             </th>
 
                                             <!-- Unit Sales Price — blank for grand total -->
-                                            <td style="width: 100px; font-weight: 700; text-align-last: right !important; background: #c2c2c2;">
-                                                <lightning:formattedNumber value="{!v.totalUnitSalesPrice}" style="currency" currencyCode="{!v.CurrencyIsoCode}"/>
+                                            <td style="width: 100px; font-weight: 700; text-align: center !important;background: #2F5597; color: #FFFFFF;">
+                                                <!-- <lightning:formattedNumber value="{!v.totalUnitSalesPrice}" style="currency" currencyCode="{!v.CurrencyIsoCode}"/> -->
                                             </td>
 
                                             <!-- Total Sales Price -->
-                                            <td style="width: 130px; font-weight: 700; text-align-last: right !important; background: #c2c2c2;">
+                                            <td style="width: 130px; font-weight: 700; text-align: center !important;background: #2F5597; color: #FFFFFF;">
                                                 <lightning:formattedNumber value="{!v.totalSalesPrice}" style="currency" currencyCode="{!v.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                             </td>
 
                                             <!-- Sales Margin% -->
-                                            <td style="width: 130px; font-weight: 700; text-align-last: right !important; background: #c2c2c2;">
+                                            <td style="width: 130px; font-weight: 700; text-align: center !important;background: #2F5597; color: #FFFFFF;">
                                                 <div class="slds-truncate" title="{!v.salesMargin}">{!v.salesMargin}%</div>
                                             </td>
 

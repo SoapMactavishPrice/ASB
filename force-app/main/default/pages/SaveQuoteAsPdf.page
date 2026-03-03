@@ -220,7 +220,7 @@ vf Page for attachPdf to the Quote
                                             <td class="align-right">{!IF(opt.Manual_Option_List_Price != null, opt.Manual_Option_List_Price, '')}</td>
                                             <td class="align-right">{!IF(opt.Sales_Price != null, opt.Sales_Price, '')}</td>
                                             <td></td>
-                                            <td class="center"><apex:inputCheckbox value="{!opt.Pdf_Checked}" onclick="handlePdfChecked(this)"/></td>
+                                            <td class="center"><apex:inputCheckbox value="{!opt.Pdf_Checked}" onclick="handlePdfChecked(this)" disabled="{!ObjQuote.Is_DTA_Quote__c && !isSystemAdmin}"/></td>
                                         </tr>
                                     </apex:repeat>
                                 </apex:repeat>

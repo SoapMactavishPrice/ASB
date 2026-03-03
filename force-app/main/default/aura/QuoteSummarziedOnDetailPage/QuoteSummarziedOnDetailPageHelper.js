@@ -104,7 +104,7 @@
                         item.sub_totalTP__c            = parseFloat(sub_totalTP).toFixed(2);
                         item.sub_totalListPrice2__c    = parseFloat(sub_totalListPrice2).toFixed(2);
                         item.sub_totalDiscountValue__c = parseFloat(sub_totalDiscountValue).toFixed(2);
-                        item.sub_totalSalesPrice       = Math.ceil(parseFloat(sub_totalSalesPrice)).toFixed(0);
+                        item.sub_totalSalesPrice       = Math.round(parseFloat(sub_totalSalesPrice)).toFixed(0);
                         let subMargin = 0;
 
                         if (sub_totalSalesPrice !== 0) {

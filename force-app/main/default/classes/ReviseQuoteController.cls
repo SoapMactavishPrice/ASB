@@ -57,7 +57,9 @@ public class ReviseQuoteController {
                     Text_After_Total__c,Q_PrintShipping__c,Q_PrintConclusion__c,SHIP_To_Contact_Name__c,Contract_Quote_Id__c,
                     FUNCTION__c,INCO_TERMS__c,MFG_AT__c,POSTAL_CODE__c,PREPARED_BY__c,PROBABILITY__c,QUOTATION_ADDRESSED_TO__c,QUOTATION_CREATE__c,QU_REVISION_NUMBER__c,
                     /*REGION__c,*/SHIP_TO__c,SOLD_TO__c,STATE__c,SUBSIDARY__c,TYPE__c,VALIDITY__c,VALITY_DATE__c,Quote_Number__c,Pricebook2Id,Use_Current_Price__c,
-                    Account.Global_Region__c,Account.Global_SubRegion__c,Price_in_Word_Required__c,Expected_Month_of_Consolidated_Order__c,Project_Management_Quote_Id__c, Payment_Terms__c
+                    Account.Global_Region__c,Account.Global_SubRegion__c,Price_in_Word_Required__c,Expected_Month_of_Consolidated_Order__c,Project_Management_Quote_Id__c, Payment_Terms__c,
+                    Select_Agent__c,Agent_Commission_Percent__c,Subsidiary_Picklist__c,Total_Quote_Other_Charges__c,Commission_Payable_to_Agent__c,
+                    Fiscal_Year_Master__c
                     FROM Quote WHERE id =:CurrentId limit 1]; //V1.1
         
         String QuoteStatus = objQuote.Status;
@@ -110,6 +112,17 @@ public class ReviseQuoteController {
                 QuoteClone.Ship_To_Global_SubRegion__c = objQuote.Account.Global_SubRegion__c;
                 QuoteClone.Price_in_Word_Required__c = objQuote.Price_in_Word_Required__c;
                 QuoteClone.Payment_Terms__c = objQuote.Payment_Terms__c;
+
+                QuoteClone.Select_Agent__c = objQuote.Select_Agent__c;
+                QuoteClone.Agent_Commission_Percent__c = objQuote.Agent_Commission_Percent__c;
+                QuoteClone.Subsidiary_Picklist__c = objQuote.Subsidiary_Picklist__c;
+                QuoteClone.Total_Quote_Other_Charges__c = objQuote.Total_Quote_Other_Charges__c;
+                
+                QuoteClone.ADVANCE_PAYMENT__c = objQuote.ADVANCE_PAYMENT__c;
+                QuoteClone.INCO_TERMS__c = objQuote.INCO_TERMS__c;
+                QuoteClone.Shipping_And_Handling__c = objQuote.Shipping_And_Handling__c;
+                QuoteClone.Machine_Delivery__c = objQuote.Machine_Delivery__c;
+                QuoteClone.Mould_Delivery__c = objQuote.Mould_Delivery__c;
                 
                 
                 
@@ -144,10 +157,10 @@ public class ReviseQuoteController {
                                    Expected_Delivery__c,Expected_Delivery_date__c,Expected_Drawing_Final__c,Advance_Percentage__c,Ceiling_Total_Sales_Price__c,CurrencyIsoCode,Product_Type__c,MFG_AT__c,Class_2__c,Product__r.Model__c,Model__c,Level_Of_Ceiling__c,
                                    Mach_Mold_No__c,Discount__c,Product__c,Quantity__c,Quote__c,Discount_Allowed__c,Discount_Approval_Note__c,Is_Manual__c,Payment_Terms__c,Scope_of_mould__c,Product_Name__c,Product__r.Division__c,Product_Description__c,
                                    Total_Base_Price_Options__c,Quote__r.Exchange_Rate__c, List_Price__c,Project_Unique_No__c,
-                                   Discount_in_Value__c,Sr_No__c,Is_Tax__c,Discount_Type__c,(Select id,Discount__c,Product_Type__c,Discount_Allowed_New__c,
+                                   Discount_in_Value__c,Sr_No__c,Is_Tax__c,Discount_Type__c, Desired_Price__c, Desired_Price_Subtotal__c,(Select id,Discount__c,Product_Type__c,Discount_Allowed_New__c,
                                                                                              Serial_Number__c,Discount_in_Value__c,Discount_Type__c,
                                                                                              Final_Price__c,Manual_Option__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,Product__r.UOM__c,
-                                                                                                         Other_Charges_Base_Price__c,Other_Charges_Function__c,Product__c,Quote__c,Select_Option__c,Mould_Cavity__c,Price_Type__c,Discount_Description__c,Description__c
+                                                                                                         Other_Charges_Base_Price__c,Other_Charges_Function__c,Product__c,Quote__c,Select_Option__c,Mould_Cavity__c,Price_Type__c,Discount_Description__c,Description__c, Desired_Price__c
                                                                                                          from Quote_Line_Options__r order by Serial_Number__c asc)
                                    from Quote_Line_Item_Custom__c Where Quote__c = : CurrentId and Quantity__c > 0 order by Sr_No__c asc];
             
@@ -166,7 +179,7 @@ public class ReviseQuoteController {
             List<Quote_Line_Options__c> lstQuoteOption = new List<Quote_Line_Options__c>();
             if(IdOfOpQuoteItem != null && IdOfOpQuoteItem.size() > 0){
                 lstQuoteOption = [Select id,CurrencyIsoCode,Discount__c,Serial_Number__c,Discount_in_Value__c,Discount_Type__c,Quote__r.Exchange_Rate__c,Option_Number__c,quantity__c,Discount_Allowed_New__c,Manual_Product_Name__c, Final_Price__c,Manual_Option__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,Product__r.UOM__c,Quote__r.Subsidiary__r.Additional_Margin__c,Quote__r.Subsidiary__r.M1__c, Quote__r.Subsidiary__r.D1__c,Quote__r.Subsidiary__r.D2__c,Quote__r.Additinal_Margin__c,
-                                     Other_Charges_Base_Price__c,Other_Charges_Function__c,Product__c,Product_Type__c,Quote__c,Select_Option__c,Manula_Option_List_Price__c,Mould_Cavity__c,Price_Type__c,Quote_Line_Item_Custom__c,Discount_Description__c,Description__c
+                                     Other_Charges_Base_Price__c,Other_Charges_Function__c,Product__c,Product_Type__c,Quote__c,Select_Option__c,Manula_Option_List_Price__c,Mould_Cavity__c,Price_Type__c,Quote_Line_Item_Custom__c,Discount_Description__c,Description__c, Desired_Price__c
                                      from Quote_Line_Options__c where Quote_Line_Item_Custom__c IN : IdOfOpQuoteItem];
             }
             
@@ -218,6 +231,14 @@ public class ReviseQuoteController {
                     }
                     if(pro1.Expected_Drawing_Final__c != null ){
                         cli.Expected_Drawing_Final__c = pro1.Expected_Drawing_Final__c;
+                    }
+
+                    if (pro1.Desired_Price__c != null) {
+                        cli.Desired_Price__c = pro1.Desired_Price__c;
+                    }
+
+                    if (pro1.Desired_Price_Subtotal__c != null) {
+                        cli.Desired_Price_Subtotal__c = pro1.Desired_Price_Subtotal__c;
                     }
                     
                     if( QuoteCloneId!=null && QuoteCloneId != ''){
@@ -358,6 +379,15 @@ public class ReviseQuoteController {
                     if(pro1.Expected_Drawing_Final__c != null ){
                         cli.Expected_Drawing_Final__c = pro1.Expected_Drawing_Final__c;
                     }
+
+                    if (pro1.Desired_Price__c != null) {
+                        cli.Desired_Price__c = pro1.Desired_Price__c;
+                    }
+
+                    if (pro1.Desired_Price_Subtotal__c != null) {
+                        cli.Desired_Price_Subtotal__c = pro1.Desired_Price_Subtotal__c;
+                    }
+
                     if(pro1.Expected_Delivery_date__c != null ){
                         cli.Expected_Delivery_date__c = pro1.Expected_Delivery_date__c;
                     }
@@ -474,7 +504,10 @@ public class ReviseQuoteController {
                     if(pro2.Discount_Type__c != null && pro2.Discount_Type__c != ''){
                         ContLO.Discount_Type__c = pro2.Discount_Type__c;
                     }
-                    
+
+                    if (pro2.Desired_Price__c != null) {
+                        ContLO.Desired_Price__c = pro2.Desired_Price__c;
+                    }
                     
                     if(pro2.Final_Price__c!=null)
                         ContLO.Final_Price__c = pro2.Final_Price__c;
@@ -591,6 +624,9 @@ public class ReviseQuoteController {
                         ContLO.Discount_Type__c = pro2.Discount_Type__c;
                     }
                     
+                    if (pro2.Desired_Price__c != null) {
+                        ContLO.Desired_Price__c = pro2.Desired_Price__c;
+                    }
                     
                     if(pro2.Final_Price__c!=null)
                         ContLO.Final_Price__c = pro2.Final_Price__c;

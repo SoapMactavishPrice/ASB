@@ -302,7 +302,9 @@ public class ReOpenQuoteFromContract {
                                                ADVANCE_PAYMENT__c,CITY__c,CLOSE_LOST_REASON__c,Contact__c,COUNTRY__c,COUNTRY_CODE__c,DATE__c,Designation__c,END_CUSTOMER_NAME__c,
                                                Text_After_Total__c,SHIP_To_Contact_Name__c,Project_Management_Quote_Id__c,Contract_Quote_Id__c,
                                                FUNCTION__c,INCO_TERMS__c,MFG_AT__c,POSTAL_CODE__c,PREPARED_BY__c,PROBABILITY__c,QUOTATION_ADDRESSED_TO__c,QUOTATION_CREATE__c,QU_REVISION_NUMBER__c,
-                                               /*REGION__c,*/SHIP_TO__c,SOLD_TO__c,STATE__c,SUBSIDARY__c,TYPE__c,VALIDITY__c,VALITY_DATE__c,Quote_Number__c,Pricebook2Id,Use_Current_Price__c,Global_Region__c,Global_SubRegion__c,Ship_To_Global_Region__c,Ship_To_Global_SubRegion__c,Expected_Month_of_Consolidated_Order__c
+                                               /*REGION__c,*/SHIP_TO__c,SOLD_TO__c,STATE__c,SUBSIDARY__c,TYPE__c,VALIDITY__c,VALITY_DATE__c,Quote_Number__c,Pricebook2Id,Use_Current_Price__c,Global_Region__c,Global_SubRegion__c,Ship_To_Global_Region__c,Ship_To_Global_SubRegion__c,Expected_Month_of_Consolidated_Order__c,
+                                               Select_Agent__c,Agent_Commission_Percent__c,Subsidiary_Picklist__c,Total_Quote_Other_Charges__c,Commission_Payable_to_Agent__c,Payment_Terms__c,
+                                               Fiscal_Year_Master__c
                                                from Quote Where id =:conData.Quote__c limit 1];
                             
                             decimal exeRate = CommonData.getExchangeRate(objQuote.Opportunity.CurrencyISOCode);
@@ -316,6 +318,28 @@ public class ReOpenQuoteFromContract {
                             QuoteClone.Exchange_Rate__c = exeRate;  
                             QuoteClone.Project_Management_Quote_Id__c = objQuote.Project_Management_Quote_Id__c;
                             QuoteClone.Contract_Quote_Id__c = objQuote.Contract_Quote_Id__c;
+                            
+                         
+                            QuoteClone.Select_Agent__c = objQuote.Select_Agent__c;
+                            QuoteClone.Agent_Commission_Percent__c = objQuote.Agent_Commission_Percent__c;
+                            QuoteClone.Subsidiary_Picklist__c = objQuote.Subsidiary_Picklist__c;
+                            QuoteClone.Total_Quote_Other_Charges__c = objQuote.Total_Quote_Other_Charges__c;
+                            //QuoteClone.Commission_Payable_to_Agent__c = objQuote.Commission_Payable_to_Agent__c;
+                            QuoteClone.Fiscal_Year_Master__c = objQuote.Fiscal_Year_Master__c;
+                            
+                            QuoteClone.ADVANCE_PAYMENT__c = objQuote.ADVANCE_PAYMENT__c;
+                            QuoteClone.Advance_Percentage__c = objQuote.Advance_Percentage__c;
+                            QuoteClone.INCO_TERMS__c = objQuote.INCO_TERMS__c;
+                            QuoteClone.Shipping_And_Handling__c = objQuote.Shipping_And_Handling__c;
+                            QuoteClone.Insurance__c = objQuote.Insurance__c;
+                            QuoteClone.Insurance_Amount__c = objQuote.Insurance_Amount__c;
+                            QuoteClone.Freight__c = objQuote.Freight__c;
+                            QuoteClone.Freight_Amount__c = objQuote.Freight_Amount__c;
+                            QuoteClone.Machine_Delivery__c = objQuote.Machine_Delivery__c;
+                            QuoteClone.Mould_Delivery__c = objQuote.Mould_Delivery__c;
+                            QuoteClone.Payment_Terms__c = objQuote.Payment_Terms__c;
+                            
+                            
                             insert QuoteClone;
                           
                             //Set the Revision Number + 1 and Original Quote Number at time of Revision Quote.
@@ -359,11 +383,11 @@ public class ReOpenQuoteFromContract {
                                                                         Mach_Mold_No__c,Product__c,Quantity__c,Quote__c,Discount_Allowed__c,Discount_Approval_Note__c,Is_Manual__c,Payment_Terms__c,Scope_of_mould__c,Product_Name__c,
                                                                         Total_Base_Price_Options__c, List_Price__c,Discount__c,Sr_No__c,Is_Tax__c,Discount_Type__c,Discount_in_Value__c,
                                                                         Product__r.id,Quote__r.Exchange_Rate__c,P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Manual_Product_Code__c,
-                                                                        Quote__r.Additinal_Margin__c,Product__r.ProductCode,Project_Unique_No__c,
+                                                                        Quote__r.Additinal_Margin__c,Product__r.ProductCode,Project_Unique_No__c, Desired_Price__c, Desired_Price_Subtotal__c,
                                                                         (Select id,Discount__c,Final_Price__c,Discount_in_Value__c,Discount_Allowed_New__c,Manual_Option__c,
                                                                          Quote__r.Additinal_Margin__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,Product_Type__c,
                                                                          P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Quote__r.Exchange_Rate__c,Manual_Product_Code__c,
-                                                                         Other_Charges_Base_Price__c,Other_Charges_Function__c,Product__c,Quote__c,Select_Option__c,Mould_Cavity__c,Price_Type__c,Discount_Description__c
+                                                                         Other_Charges_Base_Price__c,Other_Charges_Function__c,Product__c,Quote__c,Select_Option__c,Mould_Cavity__c,Price_Type__c,Discount_Description__c, Desired_Price__c
                                                                          ,Product__r.id,Serial_Number__c,Discount_Type__c from Quote_Line_Options__r order by Serial_Number__c asc)
                                                                         from Quote_Line_Item_Custom__c Where Quote__c = : oldQuote order by Sr_No__c asc];
                     Set<id>IdOfOpQuoteItem=new Set<id>();
@@ -387,7 +411,7 @@ public class ReOpenQuoteFromContract {
                     List<Quote_Line_Options__c> lstQuoteOption = new List<Quote_Line_Options__c>();
                     if(IdOfOpQuoteItem != null && IdOfOpQuoteItem.size() > 0){
                         lstQuoteOption = [Select id,Discount_in_Value__c,Discount_Allowed_New__c,Discount_Type__c,Quote__r.Exchange_Rate__c,Product_Type__c,CurrencyIsoCode,Discount__c,Option_Number__c,quantity__c,description__c,Manual_Product_Name__c, Final_Price__c,Manual_Option__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,
-                                          P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Serial_Number__c, Other_Charges_Base_Price__c,Manual_Product_Code__c,Quote__r.Additinal_Margin__c,Other_Charges_Function__c,Product__c,Quote__c,Select_Option__c,Manula_Option_List_Price__c,Mould_Cavity__c,Price_Type__c,Quote_Line_Item_Custom__c,Discount_Description__c
+                                          P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Serial_Number__c, Other_Charges_Base_Price__c,Manual_Product_Code__c,Quote__r.Additinal_Margin__c,Other_Charges_Function__c,Product__c,Quote__c,Select_Option__c,Manula_Option_List_Price__c,Mould_Cavity__c,Price_Type__c,Quote_Line_Item_Custom__c,Discount_Description__c, Desired_Price__c
                                           from Quote_Line_Options__c where Quote_Line_Item_Custom__c IN : IdOfOpQuoteItem];
                     }
                     
@@ -454,10 +478,14 @@ cli.Discount__c = pro1.Discount__c;
                         if(pro1.Is_Manual__c !=null){ 
                             cli.Is_Manual__c = pro1.Is_Manual__c; 
                         }
-                        
-                        /*    if(pro1.Is_Manual__c != null){
-cli.Manual_Product_Code__c = pro1.Manual_Product_Code__c;
-}	*/
+
+                        if (pro1.Desired_Price__c != null) {
+                            cli.Desired_Price__c = pro1.Desired_Price__c;
+                        }
+
+                        if (pro1.Desired_Price_Subtotal__c != null) {
+                            cli.Desired_Price_Subtotal__c = pro1.Desired_Price_Subtotal__c;
+                        }
                         
                         if(mapProductWisePriceEntry.containsKey(pro1.Product__c))
                         { 
@@ -639,10 +667,11 @@ cli.Manual_Product_Code__c = pro1.Manual_Product_Code__c;
                         
                         if(pro2.Product__c !=null){
                             ContLO.Product__c = pro2.Product__c;
-                        } 
-                        /*if(pro2.Discount__c != null){
-ContLO.Discount__c = pro2.Discount__c;
-}*/
+                        }
+
+                        if (pro2.Desired_Price__c != null) {
+                            ContLO.Desired_Price__c = pro2.Desired_Price__c;
+                        }
                         
                         if(pro2.Description__c != null && pro2.Description__c != ''){
                             ContLO.Description__c = pro2.Description__c;

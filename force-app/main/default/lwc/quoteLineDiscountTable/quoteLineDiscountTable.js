@@ -96,6 +96,7 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
     @track quoteName = '';
     @track quoteCurrency = '';
     originalData = [];
+    shouldScrollRightOnExpand = false;
 
     get quoteNameHeader() {
         return `Quote: ${this.quoteName}    |    Currency: ${this.quoteCurrency}`;
@@ -106,17 +107,28 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
     }
 
     get tableClasses() {
-        let classes = 'slds-table slds-table_cell-buffer slds-table_bordered';
+        let classes = 'slds-table slds-table_cell-buffer slds-table_bordered slds-table_fixed-layout';
         if (this.showAdditionalColumns) {
-            classes += ' slds-table_fixed-layout';
-        } else {
-            classes += ' slds-table_fixed-layout';
+            classes += ' expanded';
         }
         return classes;
     }
 
     handleToggleColumns() {
         this.showAdditionalColumns = !this.showAdditionalColumns;
+        this.shouldScrollRightOnExpand = this.showAdditionalColumns;
+    }
+
+    renderedCallback() {
+        if (!this.shouldScrollRightOnExpand) {
+            return;
+        }
+
+        const container = this.template.querySelector('.table-container');
+        if (container) {
+            container.scrollLeft = container.scrollWidth;
+            this.shouldScrollRightOnExpand = false;
+        }
     }
 
     setDisableFlags(row) {
@@ -246,6 +258,7 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                 m2: roundToTwoDecimals(item.P_M2__c),
                 m3: roundToTwoDecimals(item.P_M3__c),
                 m4: roundToTwoDecimals(item.P_M4__c),
+                roundingOffDigits: item.Rounding_Off_Digits__c,
                 parentQuantity: 0,
                 isEditable: true,
                 isLineItem: true,
@@ -307,6 +320,7 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                         m2: roundToTwoDecimals(option.P_M2__c),
                         m3: roundToTwoDecimals(option.P_M3__c),
                         m4: roundToTwoDecimals(option.P_M4__c),
+                        roundingOffDigits: option.Rounding_Off_Digits__c,
                         parentQuantity: parentQuantity,
                         isEditable: true,
                         isLineItem: false,
@@ -378,6 +392,7 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                 m2: '',
                 m3: '',
                 m4: '',
+                roundingOffDigits: '',
                 isEditable: false,
                 isLineItem: false,
                 isOption: false,
@@ -451,6 +466,7 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             m2: '',
             m3: '',
             m4: '',
+            roundingOffDigits: '',
             isEditable: false,
             isLineItem: false,
             isOption: false,

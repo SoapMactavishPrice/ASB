@@ -12,8 +12,8 @@
 
             @page {
                 size: A4;
-                margin-top: 130px;
-                margin-bottom: 90px;
+                margin-top: 230px;
+                margin-bottom: 120px;
                 margin-left: 40px;
                 margin-right: 40px;
 
@@ -97,7 +97,7 @@
                 border-collapse: collapse;
             }
             .footer-table td { padding: 0; }
-            .footer-left  { width: 72%; vertical-align: top; }
+            .footer-left  { width: 100%; vertical-align: top; }
             .footer-right { width: 28%; text-align: right; vertical-align: bottom; }
 
             .footer-company { font-size: 8pt; font-weight: bold; margin-bottom: 2px; }
@@ -111,7 +111,7 @@
                 margin-bottom: 14px;
             }
             .recipient-table td { padding: 0; vertical-align: top; font-size: 8.5pt; line-height: 1.65; }
-            .recipient-left  { width: 55%; }
+            .recipient-left  { width: 55%; font-weight: bold; }
             .recipient-right { width: 45%; }
             .recipient-name  { font-weight: bold; }
 
@@ -209,6 +209,14 @@
             <div id="header-inner">
                 <apex:image value="{!$Resource.GMBH_Quote_Header}" styleClass="header-banner"/>
             </div>
+            <br/>
+            <div style="font-size:15px; line-height:1;">
+                <span style="color:#000000;">Quotation No:</span>
+                <span style="color:#767676;">&nbsp;&nbsp;&nbsp;Q-39443</span><br/>
+
+                <span style="color:#000000;">Date:</span>
+                <span style="color:#767676;">&nbsp;&nbsp;&nbsp;20/06/2024</span>
+            </div>
         </div>
 
         <div id="footer">
@@ -223,6 +231,8 @@
                             St.-Nr.: 105/5832/0456 &#160;|&#160; VAT-No.: DE119353439 &#160;|&#160; Tel.: +49 (211) 941040 &#160;|&#160; www.nisseiasb.co.jp
                         </div>
                     </td>
+                </tr>
+                <tr>
                     <td class="footer-right">
                         <div class="footer-pagenum">
                             Page <span class="pagenumber"></span> of <span class="pagecount"></span>
@@ -238,10 +248,10 @@
         <table class="recipient-table">
             <tr>
                 <td class="recipient-left">
+                    <div>FRAPAK France</div>
                     <div>3 Le Bas de la Ruelle aux Chats ZI de Gron</div>
-                    <div class="recipient-name">FRAPAK France</div>
-                    <div>France</div>
                     <div>89100 Gron</div>
+                    <div>France</div>
                 </td>
                 <td class="recipient-right"></td>
             </tr>

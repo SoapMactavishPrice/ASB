@@ -496,10 +496,10 @@ cont.ExpirationDate__c = ObjQuote.ExpirationDate ;
                                 List_Price__c,Product__c,Quote__c,UOM__c,Product__r.UOM__c,Product__r.Product_Type__c,Product_Type__c,Product_Description__c,Level_Of_Ceiling__c,
                                 Advance_Percentage__c,Disable_Discoint_Percent__c,Disable_Discoint_Value__c,Product_Code__c,Manual_Product_Code__c,Discount_Type__c,
                                 Is_Manual__c,Is_Tax__c,Discount_Allowed_New__c,Original_SQ_No__c,
-                                P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Scope_of_mould__c,Sr_No__c,Discount_in_Value__c,
+                                P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Rounding_Off_Digits__c,Scope_of_mould__c,Sr_No__c,Discount_in_Value__c,
                                 Sales_Margin__c,Project_Unique_No__c, Desired_Price__c,
                                 
-                                (Select id,Discount__c,Final_Price__c,Manual_Option__c,Quantity__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,Mould_Cavity__c,Sales_price_Total__c, Desired_Price__c,
+                                (Select id,Discount__c,Final_Price__c,Manual_Option__c,Quantity__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,Mould_Cavity__c,Sales_price_Total__c, Desired_Price__c, Name_Hide__c, Pdf_Checked__c,
                                  Other_Charges_Base_Price__c,Sales_Margin__c,Product_Type__c,Other_Charges_Function__c,Manula_Option_List_Price__c,Product__c,Quote__c,Quote_Line_Item__c,Select_Option__c,Manual_Product_Name__c,Description__c
                                  from Quote_Line_Options__r)
                                 from Quote_Line_Item_Custom__c Where Quote__c = : RecordId and Quantity__c >: 0];
@@ -516,7 +516,7 @@ cont.ExpirationDate__c = ObjQuote.ExpirationDate ;
                 lstQuoteOption = [Select id,CurrencyIsoCode,Discount__c,Option_Number__c,Final_Price__c,Quantity__c,Manual_Option__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,Description__c,Quote_Line_Item_Custom__c,Product__r.UOM__c,Sales_price_Total__c,
                                   Other_Charges_Base_Price__c,Other_Charges_Function__c,Product_Type__c,Product__c,Quote__c,Manula_Option_List_Price__c,Quote_Line_Item__c,Select_Option__c,Manual_Product_Name__c,Mould_Cavity__c, Price_Type__c, Discount_Description__c
                                   ,Discount_Type__c,Discount_Allowed_New__c,P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Serial_Number__c,
-                                  Discount_in_Value__c,Manual_Product_Code__c,Sales_Margin__c, Desired_Price__c
+                                  Discount_in_Value__c,Manual_Product_Code__c,Sales_Margin__c, Desired_Price__c,Rounding_Off_Digits__c, Name_Hide__c, Pdf_Checked__c
                                   
                                   from Quote_Line_Options__c where Quote_Line_Item_Custom__c IN : IdOfOpQuoteItem];
             }
@@ -552,6 +552,7 @@ cont.ExpirationDate__c = ObjQuote.ExpirationDate ;
                 cli.Sr_No__c = pro1.Sr_No__c;
                 cli.Discount_in_Value__c = pro1.Discount_in_Value__c;
                 cli.Desired_Price__c = pro1.Desired_Price__c;
+                cli.Rounding_Off_Digits__c = pro1.Rounding_Off_Digits__c;
                
 				//end
                 
@@ -704,10 +705,19 @@ cli.Unit_Price_Clone__c =pro1.UnitPrice;
                 ContLO.P_M4__c = pro2.P_M4__c;
                 
                 
-                 ContLO.Description__c = pro2.Description__c;
-                 ContLO.Serial_Number__c = pro2.Serial_Number__c;
-                 ContLO.Discount_in_Value__c = pro2.Discount_in_Value__c;
-                 
+                ContLO.Description__c = pro2.Description__c;
+                ContLO.Serial_Number__c = pro2.Serial_Number__c;
+                ContLO.Discount_in_Value__c = pro2.Discount_in_Value__c;
+                ContLO.Rounding_Off_Digits__c = pro2.Rounding_Off_Digits__c;
+
+                if (pro2.Name_Hide__c != null) {
+                    ContLO.Name_Hide__c = pro2.Name_Hide__c;
+                }
+
+                if (pro2.Pdf_Checked__c != null) {
+                    ContLO.Price_Visible__c = pro2.Pdf_Checked__c;
+                }
+                
                  //ContLO.UOM_c__c = pro2.UOM__c;
                  
                 if(pro2.Manual_Product_Code__c != null && pro2.Select_Option__c){

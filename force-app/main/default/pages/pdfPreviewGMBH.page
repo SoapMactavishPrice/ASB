@@ -14,8 +14,8 @@
                 size: A4;
                 margin-top: 230px;
                 margin-bottom: 140px;
-                margin-left: 40px;
-                margin-right: 40px;
+                margin-left: 60px;
+                margin-right: 60px;
 
                 @top-left {
                     content: element(page-header);
@@ -85,25 +85,21 @@
             #footer {
                 position: running(page-footer);
                 padding-top: 0;
-                width: 720px;
+                width: 674.5px;
             }
             .footer-topline {
                 border-top: 1px solid #5f5f5f;
-                width: 714px;
+                width: 674.5px;
                 margin-bottom: 10px;
             }
             .footer-grid {
-                width: 720px;
+                width: 674.5px;
                 border-collapse: collapse;
-                table-layout: fixed;
             }
             .footer-grid td {
-                width: 180px;
-                min-width: 180px;
-                max-width: 180px;
                 padding: 0;
                 vertical-align: top;
-                font-size: 7.5pt;
+                font-size: 7.6pt;
                 line-height: 1.35;
             }
             .footer-page {
@@ -135,6 +131,12 @@
                 border-collapse: collapse;
                 margin-bottom: 8px;
             }
+            .items-total-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 0;
+                page-break-inside: avoid;
+            }
             .items-table th {
                 background: transparent;
                 color: #111111;
@@ -154,8 +156,15 @@
                 vertical-align: top;
                 font-size: 8.3pt;
             }
+            .items-total-table td {
+                border: 0;
+                padding: 7px 0;
+                vertical-align: top;
+                font-size: 8.3pt;
+            }
             .items-table td.r { text-align: right; }
             .items-table td.c { text-align: center; }
+            .items-total-table td.r { text-align: right; }
 
             .section-hdr td {
                 background: transparent;
@@ -172,6 +181,11 @@
                 border-top: 1px solid #1f1f1f;
                 border-bottom: 1px solid #1f1f1f;
                 padding: 7px 0 7px 0;
+            }
+
+            .total-hdr {
+                page-break-inside: avoid;
+                page-break-after: avoid;
             }
             .total-label {
                 text-align: center;
@@ -209,6 +223,25 @@
                 padding-bottom: 4px;
                 margin-bottom: 12px;
             }
+            .conditions-heading {
+                font-size: 11pt;
+                font-weight: bold;
+                color: #000000;
+                border: 0;
+                padding-bottom: 0;
+                margin-bottom: 2px;
+                line-height: 1.15;
+            }
+            .provisions-heading {
+                font-size: 9pt;
+                font-weight: bold;
+                color: #000000;
+                text-align: center;
+                border: 0;
+                padding: 0;
+                margin: 28px 0 12px 0;
+                line-height: 1.15;
+            }
             .clause-title {
                 font-weight: bold;
                 font-size: 8.5pt;
@@ -231,7 +264,7 @@
                 font-size: 8.2pt;
                 line-height: 1.55;
                 text-align: justify;
-                margin-bottom: 10px;
+                margin-bottom: 12px;
             }
             .sig-block {
                 margin-top: 32px;
@@ -242,7 +275,7 @@
     </head>
     <body>
 
-        <div id="header" style="width: 720px;">
+        <div id="header" style="width: 674.5px;">
             <div id="header-inner">
                 <apex:image value="{!$Resource.GMBH_Quote_Header}" styleClass="header-banner"/>
             </div>
@@ -258,32 +291,26 @@
 
         <div id="footer">
             <div class="footer-topline"></div>
-            <table class="footer-grid">
-                <colgroup>
-                    <col style="width:190px;" />
-                    <col style="width:217.5px;" />
-                    <col style="width:197.5px;" />
-                    <col style="width:180px;" />
-                </colgroup>
+            <table class="footer-grid">    
                 <tr>
-                    <td>
+                    <td style="width: 100px; padding-right: 57px;">
                         Nissei ASB GmbH<br/>
                         Wahlerstr. 8<br/>
                         40472 D&#252;sseldorf<br/>
                         Germany
                     </td>
-                    <td>
+                    <td style="width: 100px; padding-right: 57px;">
                         Gesch&#228;ftsf&#252;hrung:<br/>
                         Karel Keersmaekers-Michiels<br/>
                         Kota Aoki<br/>
                         Eva Alzas Guillen
                     </td>
-                    <td>
+                    <td style="width: 100px; padding-right: 57px;">
                         Sitz der Gesellschaft:<br/>
                         Amtsgericht D&#252;sseldorf<br/>
                         HRB 22191
                     </td>
-                    <td>
+                    <td style="width: 100px;">
                         St.-Nr.: 105/5832/0456<br/>
                         VAT-No.: DE119353439<br/>
                         Tel.:+49 (211) 941040<br/>
@@ -358,22 +385,22 @@
                     <td class="r">44,200,000.00</td>
                 </tr>
                 <tr>
-                    <td>2</td>
-                    <td>Vision1 Controller for Machine Pos. 1</td>
+                    <td><strong>2</strong></td>
+                    <td><strong>Vision1 Controller for Machine Pos. 1</strong></td>
                     <td class="c">1</td>
                     <td class="r">1,900,000.00</td>
                     <td class="r">1,900,000.00</td>
                 </tr>
                 <tr>
-                    <td>3</td>
-                    <td>BASCO-Mixing Screw 64 mm for Pos. 1</td>
+                    <td><strong>3</strong></td>
+                    <td><strong>BASCO-Mixing Screw 64 mm for Pos. 1</strong></td>
                     <td class="c">1</td>
                     <td class="r">1,300,000.00</td>
                     <td class="r">1,300,000.00</td>
                 </tr>
                 <tr>
-                    <td>4</td>
-                    <td>Blow Air Recovery to machine operation air</td>
+                    <td><strong>4</strong></td>
+                    <td><strong>Blow Air Recovery to machine operation air</strong></td>
                     <td class="c">1</td>
                     <td class="r">2,600,000.00</td>
                     <td class="r">2,600,000.00</td>
@@ -382,25 +409,18 @@
                     <td colspan="5">Auxiliaries</td>
                 </tr>
                 <tr>
-                    <td>5</td>
-                    <td>Bottle Takeout Device BTS-70DP pot type with conveyor</td>
+                    <td><strong>5</strong></td>
+                    <td><strong>Bottle Takeout Device BTS-70DP pot type with conveyor</strong></td>
                     <td class="c">1</td>
                     <td class="r">2,900,000.00</td>
                     <td class="r">2,900,000.00</td>
                 </tr>
-                <tr class="section-hdr">
-                    <td colspan="5">Services</td>
-                </tr>
-                <tr>
-                    <td>6</td>
-                    <td>One ASB technician for 5 working days including travelling time.</td>
-                    <td class="c">1</td>
-                    <td class="r">900,000.00</td>
-                    <td class="r">900,000.00</td>
-                </tr>
-                
+            </tbody>
+        </table>
+        <table class="items-total-table">
+            <tbody>
                 <tr class="total-hdr">
-                    <td colspan="4" class="total-label">Total FOB India &amp; Japan (JPY) :</td>
+                    <td colspan="4" class="total-label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Total FOB India &amp; Japan (JPY) :</td>
                     <td class="total-amt">53,800,000.00</td>
                 </tr>
             </tbody>
@@ -409,7 +429,7 @@
 
         <!-- PAGE 3-4: GENERAL CONDITIONS -->
         <div class="pgbreak">
-            <div class="section-heading">GENERAL CONDITIONS</div>
+            <div class="conditions-heading"><u>GENERAL CONDITIONS</u></div>
 
             <div class="clause-title">1. Place of delivery</div>
             <div class="clause-body">All equipment will be delivered FOB Mumbai, India or FOB Japan, Yokohama (Pos. 5)</div>
@@ -473,7 +493,7 @@
 
         <!-- PAGE 5-6: GENERAL PROVISIONS -->
         <div class="pgbreak">
-            <div class="section-heading">GENERAL PROVISIONS</div>
+            <div class="provisions-heading">GENERAL PROVISIONS</div>
 
             <div class="preamble">The following terms and conditions shall apply to terms and conditions of the Quotation and the Sales Contract unless otherwise specified on the face of this Sales Contract and/or agreed in writing executed by duly authorized representative of Seller. If Buyer uses its own purchase form, it is understood that such form is subject to and deemed to include the terms and conditions hereof.</div>
 
@@ -516,8 +536,7 @@
             <div class="clause-title">13. Arbitration:</div>
             <div class="clause-body">Any dispute arising out of or relating to this Contract, its interpretation or breach, shall be settled in D&#252;sseldorf, Germany under the Rules of Conciliation and Arbitration of the International Chamber of Commerce by one or more arbitrators appointed in accordance with the said Rules. The award shall be final and binding upon both parties.</div>
 
-            <div class="clause-title">14.</div>
-            <div class="clause-body">The Sales Contract shall constitute the entire agreement between the parties. No statement subsequent to the acceptance of the Sales Contract purporting to modify the said terms and conditions shall be binding upon the parties unless otherwise consented to in writing by duly authorized representative of Seller.</div>
+            <div class="clause-body"><b>14.&nbsp;</b>The Sales Contract shall constitute the entire agreement between the parties. No statement subsequent to the acceptance of the Sales Contract purporting to modify the said terms and conditions shall be binding upon the parties unless otherwise consented to in writing by duly authorized representative of Seller.</div>
 
             <div class="clause-title">15. Governing Laws:</div>
             <div class="clause-body">The Sales Contract shall be governed in all respects by the Laws of Germany with the exception of the UN convention on international contracts of sale of goods.</div>

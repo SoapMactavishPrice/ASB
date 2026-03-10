@@ -271,11 +271,11 @@
                                 <div class="slds-truncate" title="Product Name">PRODUCT TYPE</div>
                             </th>-->
                             <th scope="col">
-                                <div class="slds-truncate" title="LIST PRICE">LIST PRICE</div>
-                            </th>
-                            <th scope="col">
                                 <div class="slds-truncate" title="Transfer PRICE">Transfer PRICE</div>
                             </th> 
+                            <th scope="col">
+                                <div class="slds-truncate" title="LIST PRICE">LIST PRICE</div>
+                            </th>
                             <th scope="col">
                                 <div class="slds-truncate" title="QUANTITY">QUANTITY</div>
                             </th> 
@@ -323,11 +323,11 @@
                                     <lightning:input  id="text-input-id-3"  name="{!index}" type="text"  maxlength="10" label="" value="{!acc.Product_Type__c}" />
                                 </td> -->
                                 <td>
-                                    <lightning:input  id="text-input-id-2 " name="{!index}" type="phone" maxlength="10" label="" value="{!acc.List_Price__c}" />
-                                </td>
-                                <td>
                                     <lightning:input name="{!index}"  maxlength="10" label="" value="{!acc.Base_Price__c}"  />
                                 </td>  
+                                <td>
+                                    <lightning:input  id="text-input-id-2 " name="{!index}" type="phone" maxlength="10" label="" value="{!acc.List_Price__c}" />
+                                </td>
                                 <td>
                                     <lightning:input name="{!index}"  maxlength="10" label="" value="{!acc.Quantity__c}"  />
                                 </td> 

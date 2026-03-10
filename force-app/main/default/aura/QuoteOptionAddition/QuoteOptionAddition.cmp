@@ -344,10 +344,11 @@
                             </th>
 
                             <th scope="col">
-                                <div class="slds-truncate" title="List price">List price</div>
-                            </th>
-                            <th scope="col">
                                 <div class="slds-truncate" title="Discount">Transfer Price</div>
+                            </th>
+
+                            <th scope="col">
+                                <div class="slds-truncate" title="List price">List price</div>
                             </th>
                             <!-- <th scope="col">
                             <div class="slds-truncate" title="Discount">Price Type</div>
@@ -394,12 +395,12 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <lightning:input id="text-input-id-3" name="{!index}" type="text" maxlength="10"
-                                        label="List Price" value="{!acc.Manula_Option_List_Price__c}" />
-                                </td>
-                                <td>
                                     <lightning:input id="text-input-id-4" name="{!index}" type="phone" maxlength="10"
                                         label="Transfer Price" value="{!acc.Manual_Option_Base_Price__c}" />
+                                </td>
+                                <td>
+                                    <lightning:input id="text-input-id-3" name="{!index}" type="text" maxlength="10"
+                                        label="List Price" value="{!acc.Manula_Option_List_Price__c}" />
                                 </td>
                                 <!-- <td>
                                 <lightning:input name="{!index}" type="phone" maxlength="10" label="Price Type" value="{!acc.Price_Type__c}" disabled="true" default= "1"/>

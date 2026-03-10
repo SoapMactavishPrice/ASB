@@ -387,7 +387,7 @@ public class ReOpenQuoteFromContract {
                                                                         (Select id,Discount__c,Final_Price__c,Discount_in_Value__c,Discount_Allowed_New__c,Manual_Option__c,
                                                                          Quote__r.Additinal_Margin__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,Product_Type__c,
                                                                          P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Quote__r.Exchange_Rate__c,Manual_Product_Code__c,
-                                                                         Other_Charges_Base_Price__c,Other_Charges_Function__c,Product__c,Quote__c,Select_Option__c,Mould_Cavity__c,Price_Type__c,Discount_Description__c, Desired_Price__c
+                                                                         Other_Charges_Base_Price__c,Other_Charges_Function__c,Product__c,Quote__c,Select_Option__c,Mould_Cavity__c,Price_Type__c,Discount_Description__c, Desired_Price__c, Name_Hide__c, Pdf_Checked__c
                                                                          ,Product__r.id,Serial_Number__c,Discount_Type__c from Quote_Line_Options__r order by Serial_Number__c asc)
                                                                         from Quote_Line_Item_Custom__c Where Quote__c = : oldQuote order by Sr_No__c asc];
                     Set<id>IdOfOpQuoteItem=new Set<id>();
@@ -411,7 +411,7 @@ public class ReOpenQuoteFromContract {
                     List<Quote_Line_Options__c> lstQuoteOption = new List<Quote_Line_Options__c>();
                     if(IdOfOpQuoteItem != null && IdOfOpQuoteItem.size() > 0){
                         lstQuoteOption = [Select id,Discount_in_Value__c,Discount_Allowed_New__c,Discount_Type__c,Quote__r.Exchange_Rate__c,Product_Type__c,CurrencyIsoCode,Discount__c,Option_Number__c,quantity__c,description__c,Manual_Product_Name__c, Final_Price__c,Manual_Option__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,
-                                          P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Serial_Number__c, Other_Charges_Base_Price__c,Manual_Product_Code__c,Quote__r.Additinal_Margin__c,Other_Charges_Function__c,Product__c,Quote__c,Select_Option__c,Manula_Option_List_Price__c,Mould_Cavity__c,Price_Type__c,Quote_Line_Item_Custom__c,Discount_Description__c, Desired_Price__c
+                                          P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Serial_Number__c, Other_Charges_Base_Price__c,Manual_Product_Code__c,Quote__r.Additinal_Margin__c,Other_Charges_Function__c,Product__c,Quote__c,Select_Option__c,Manula_Option_List_Price__c,Mould_Cavity__c,Price_Type__c,Quote_Line_Item_Custom__c,Discount_Description__c, Desired_Price__c, Name_Hide__c, Pdf_Checked__c
                                           from Quote_Line_Options__c where Quote_Line_Item_Custom__c IN : IdOfOpQuoteItem];
                     }
                     
@@ -727,7 +727,10 @@ ContLO.Manual_Option_Base_Price__c = pro2.Manual_Option_Base_Price__c;
                         if(pro2.Quantity__c!=null){
                             ContLO.Quantity__c = pro2.Quantity__c; 
                         }
-                        
+
+                        ContLO.Name_Hide__c = pro2.Name_Hide__c;
+                        ContLO.Pdf_Checked__c = pro2.Pdf_Checked__c;
+
                         /*     if(pro2.Select_Option__c != null){
 ContLO.Manual_Product_Code__c = pro2.Manual_Product_Code__c;
 }	*/

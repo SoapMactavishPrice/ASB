@@ -160,7 +160,7 @@ public class ReviseQuoteController {
                                    Discount_in_Value__c,Sr_No__c,Is_Tax__c,Discount_Type__c, Desired_Price__c, Desired_Price_Subtotal__c,(Select id,Discount__c,Product_Type__c,Discount_Allowed_New__c,
                                                                                              Serial_Number__c,Discount_in_Value__c,Discount_Type__c,
                                                                                              Final_Price__c,Manual_Option__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,Product__r.UOM__c,
-                                                                                                         Other_Charges_Base_Price__c,Other_Charges_Function__c,Product__c,Quote__c,Select_Option__c,Mould_Cavity__c,Price_Type__c,Discount_Description__c,Description__c, Desired_Price__c
+                                                                                                         Other_Charges_Base_Price__c,Other_Charges_Function__c,Product__c,Quote__c,Select_Option__c,Mould_Cavity__c,Price_Type__c,Discount_Description__c,Description__c, Desired_Price__c, Name_Hide__c, Pdf_Checked__c
                                                                                                          from Quote_Line_Options__r order by Serial_Number__c asc)
                                    from Quote_Line_Item_Custom__c Where Quote__c = : CurrentId and Quantity__c > 0 order by Sr_No__c asc];
             
@@ -179,7 +179,7 @@ public class ReviseQuoteController {
             List<Quote_Line_Options__c> lstQuoteOption = new List<Quote_Line_Options__c>();
             if(IdOfOpQuoteItem != null && IdOfOpQuoteItem.size() > 0){
                 lstQuoteOption = [Select id,CurrencyIsoCode,Discount__c,Serial_Number__c,Discount_in_Value__c,Discount_Type__c,Quote__r.Exchange_Rate__c,Option_Number__c,quantity__c,Discount_Allowed_New__c,Manual_Product_Name__c, Final_Price__c,Manual_Option__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,Product__r.UOM__c,Quote__r.Subsidiary__r.Additional_Margin__c,Quote__r.Subsidiary__r.M1__c, Quote__r.Subsidiary__r.D1__c,Quote__r.Subsidiary__r.D2__c,Quote__r.Additinal_Margin__c,
-                                     Other_Charges_Base_Price__c,Other_Charges_Function__c,Product__c,Product_Type__c,Quote__c,Select_Option__c,Manula_Option_List_Price__c,Mould_Cavity__c,Price_Type__c,Quote_Line_Item_Custom__c,Discount_Description__c,Description__c, Desired_Price__c
+                                     Other_Charges_Base_Price__c,Other_Charges_Function__c,Product__c,Product_Type__c,Quote__c,Select_Option__c,Manula_Option_List_Price__c,Mould_Cavity__c,Price_Type__c,Quote_Line_Item_Custom__c,Discount_Description__c,Description__c, Desired_Price__c, Name_Hide__c, Pdf_Checked__c
                                      from Quote_Line_Options__c where Quote_Line_Item_Custom__c IN : IdOfOpQuoteItem];
             }
             
@@ -695,6 +695,9 @@ public class ReviseQuoteController {
                         ContLO.Quantity__c = pro2.Quantity__c;
                     }
                 }
+
+                ContLO.Name_Hide__c = pro2.Name_Hide__c;
+                ContLO.Pdf_Checked__c = pro2.Pdf_Checked__c;
                 ListQLo.add(ContLO);
                 
             }

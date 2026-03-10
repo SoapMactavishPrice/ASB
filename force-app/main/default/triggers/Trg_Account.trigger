@@ -340,8 +340,9 @@ update pmnListToUpdate;
     }
     
     if(Trigger.isBefore &&(Trigger.isUpdate || Trigger.isInsert)){
+        Id currentUserId = UserInfo.getUserId();
         for (Account acc : Trigger.new) {
-            
+        acc.Prepared_By__c = currentUserId;  // lookup(User) or text Id    
             if (acc.LastModifiedById != null) {
                 
                 acc.Prepared_By__c = acc.LastModifiedById;

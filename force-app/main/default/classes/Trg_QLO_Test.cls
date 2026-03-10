@@ -2,7 +2,7 @@
 public class Trg_QLO_Test {
     public static testMethod void unitTest1(){
         Subsidiari_Master__c sub = new Subsidiari_Master__c();
-        sub.Name = 'ABC';
+        sub.Name = 'ASI';
         sub.Name__c = 'xyg';
         sub.Active__c = true;
         sub.Office__c = 'Airforce';
@@ -66,7 +66,7 @@ public class Trg_QLO_Test {
         acc.Type = 'Press';
         insert acc;
         
-        lead ld= new lead(lastName='Test User', Status='New', Company='Test Company');
+        lead ld= new lead(lastName='Test User', Status='New', Company='Test Company',ADDRESS_LINE_1__c ='Test');
         insert ld;
         
         Contact con = new Contact();

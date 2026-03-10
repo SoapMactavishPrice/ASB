@@ -28,7 +28,7 @@ public class mapaddress_Test {
         insert uu;
         
         Subsidiari_Master__c sub = new Subsidiari_Master__c();
-        sub.Name = 'A12';
+        sub.Name = 'ASI';
         sub.Name__c = 'xyg';
         sub.Active__c = true;
         sub.Office__c = 'Airforce';
@@ -80,7 +80,7 @@ public class mapaddress_Test {
         con.Email = 'vd@gmail.com';
         insert con;
         
-        lead ld= new lead(lastName='Test User', Status='New', Company='Test Company');
+        lead ld= new lead(lastName='Test User', Status='New', Company='Test Company',ADDRESS_LINE_1__c = 'Test');
         insert ld;
         
         Pricebook2 pb = new Pricebook2();
@@ -250,7 +250,7 @@ public class mapaddress_Test {
         insert uu;
         
         Subsidiari_Master__c sub = new Subsidiari_Master__c();
-        sub.Name = 'A12';
+        sub.Name = 'ASI';
         sub.Name__c = 'xyg';
         sub.Active__c = true;
         sub.Office__c = 'Airforce';
@@ -302,7 +302,7 @@ public class mapaddress_Test {
         con.Email = 'vd@gmail.com';
         insert con;
         
-        lead ld= new lead(lastName='Test User', Status='New', Company='Test Company');
+        lead ld= new lead(lastName='Test User', Status='New', Company='Test Company',ADDRESS_LINE_1__c = 'Test');
         insert ld;
         
         Pricebook2 pb = new Pricebook2();

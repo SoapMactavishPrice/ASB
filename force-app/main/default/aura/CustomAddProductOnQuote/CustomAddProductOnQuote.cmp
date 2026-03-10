@@ -274,7 +274,7 @@
                                 <div class="slds-truncate" title="LIST PRICE">LIST PRICE</div>
                             </th>
                             <th scope="col">
-                                <div class="slds-truncate" title="BASE PRICE">BASE PRICE</div>
+                                <div class="slds-truncate" title="Transfer PRICE">Transfer PRICE</div>
                             </th> 
                             <th scope="col">
                                 <div class="slds-truncate" title="QUANTITY">QUANTITY</div>

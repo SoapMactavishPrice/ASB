@@ -241,16 +241,6 @@
     
     getSelectedRecords: function(component, event, helper)
     {
-        
-        if (helper.validateAccountList(component, event)) {
-            console.log('in if in submit');
-            console.log('in if in submit', component);
-            helper.saveAccountList(component, event);
-        }
-        
-        
-        
-        
         var recordId = component.get('v.recordId');
         var checkCmp =   component.find("PicklistId").get("v.value");
         // console.log(component.find("PicklistId").get("v.Product2.Name"));
@@ -350,11 +340,31 @@
         console.log('selectedRecordsDesc ===>>>> ' + JSON.stringify(selectedRecordsDesc));
         console.log(' ====>>>>> selctedRecords ' + JSON.stringify(selectedRecords));
         
-        //=====================================================================
-        //goAhead = false;
-        if(goAhead){
-            console.log('in goAhead');
-            var SelectedLead = JSON.stringify(selectedRecords);
+        var varOptionList = component.get("v.OptionList") || [];
+        var hasManualOptions = varOptionList.length > 0;
+        var hasBuiltInOptions = selectedRecords.length > 0;
+
+        if (hasManualOptions && !helper.validateAccountList(component, event)) {
+            return;
+        }
+
+        if (!goAhead) {
+            return;
+        }
+
+        if (!hasManualOptions && !hasBuiltInOptions) {
+            var emptyToast = $A.get('e.force:showToast');
+            emptyToast.setParams({
+                'type' : 'error',
+                'message' : 'Select at least one built-in option or add one manual row before saving.'
+            });
+            emptyToast.fire();
+            return;
+        }
+
+        // Submit built-in options first; if manual rows exist, save them from the callback.
+        if (hasBuiltInOptions) {
+            console.log('Saving built-in options');
             var action = component.get("c.SelectedLead");
             action.setParams({  
                 'selectedRecordList':JSON.stringify(selectedRecords),
@@ -364,22 +374,33 @@
             });
             action.setCallback(this, function(response){
                 var state = response.getState();
-                console.log('state');
-                if(state == 'SUCCESS')
+                console.log('Built-in save state', state);
+                if(state === 'SUCCESS')
                 {
-                    console.log('List Sent Successfully');
-                     $A.get('e.force:refreshView').fire();
-                    $A.get('e.force:closeQuickAction').fire();
+                    if (hasManualOptions) {
+                        helper.saveAccountList(component, function() {
+                            $A.get('e.force:refreshView').fire();
+                            $A.get('e.force:closeQuickAction').fire();
+                        });
+                    } else {
+                        $A.get('e.force:refreshView').fire();
+                        $A.get('e.force:closeQuickAction').fire();
+                    }
+                } else {
+                    console.error('Built-in option save failed:', response.getError());
                 }
             });
-            let varOptionList = component.get("v.OptionList");
-            if(varOptionList.length > 0){
-             save();
-            }
-            
-            $A.enqueueAction(action)   
+            $A.enqueueAction(action);
+            return;
         }
-        //==========================================================================
+
+        if (hasManualOptions) {
+            helper.saveAccountList(component, function() {
+                $A.get('e.force:refreshView').fire();
+                $A.get('e.force:closeQuickAction').fire();
+            });
+            return;
+            }
     },
     handleFieldFiler : function(component, event, helper)
     {
@@ -410,7 +431,7 @@
     
     save: function(component, event, helper) {
         if (helper.validateAccountList(component, event)) {
-            helper.saveAccountList(component, event);
+            helper.saveAccountList(component);
         }
     },
     OnBlured : function(component,event,helper){

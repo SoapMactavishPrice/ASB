@@ -2,7 +2,7 @@
 public class ReviseQuoteController_test {
     public static testMethod void unitTest1(){
         Subsidiari_Master__c sub = new Subsidiari_Master__c();
-        sub.Name = 'ABC';
+        sub.Name = 'ASI';
         sub.Name__c = 'xyg';
         sub.Active__c = true;
         sub.Office__c = 'Airforce';
@@ -122,7 +122,7 @@ public class ReviseQuoteController_test {
         
         quote qt = new quote();
         qt.Status = 'RELEASED';
-        qt.Name = 'qt test';
+        qt.Name = 'ASI';
         qt.Subsidiary__c = sub.Id;
         qt.OpportunityId = op.id;
         qt.VALITY_DATE__c = system.today() +2;
@@ -145,6 +145,7 @@ public class ReviseQuoteController_test {
         qt.Discount__c = 12;
         qt.SOLD_TO__c = acc.Id;
         qt.SHIP_TO__c = acc.Id;
+        qt.Subsidiary_Picklist__c = 'ASI';
         insert qt;
         
         Quote_Line_Item_Custom__c qli = new Quote_Line_Item_Custom__c();
@@ -271,12 +272,13 @@ public class ReviseQuoteController_test {
         insert qlo;
         
         test.startTest();
-        ApexPages.StandardController sc = new ApexPages.standardController(qt);
-        ReviseQuoteController ctrl = new ReviseQuoteController(sc);
-        PageReference pageRef = Page.ReviseQuote; // Add your VF page Name here
-        pageRef.getParameters().put('id', String.valueOf(qt.Id));
-        Test.setCurrentPage(pageRef);
-        
+
+PageReference pageRef = Page.ReviseQuote;
+pageRef.getParameters().put('id', qt.Id);
+Test.setCurrentPage(pageRef);
+
+ApexPages.StandardController sc = new ApexPages.StandardController(qt);
+ReviseQuoteController ctrl = new ReviseQuoteController(sc);        
         
         List<Opportunity> opLst = new List<Opportunity>();
         opLst.add(op);
@@ -287,7 +289,7 @@ public class ReviseQuoteController_test {
     
     public static testMethod void unitTest2(){
         Subsidiari_Master__c sub = new Subsidiari_Master__c();
-        sub.Name = 'ABC';
+        sub.Name = 'ASI';
         sub.Name__c = 'xyg';
         sub.Active__c = true;
         sub.Office__c = 'Airforce';
@@ -407,7 +409,7 @@ public class ReviseQuoteController_test {
         
         quote qt = new quote();
         qt.Status = 'RELEASED';
-        qt.Name = 'qt test';
+        qt.Name = 'ASI';
         qt.Subsidiary__c = sub.Id;
         qt.OpportunityId = op.id;
         qt.VALITY_DATE__c = system.today() +2;
@@ -429,6 +431,7 @@ public class ReviseQuoteController_test {
         qt.Additinal_Margin__c = 0.22;
         qt.Discount__c = 12;
         qt.Use_Current_Price__c = true;
+        qt.Subsidiary_Picklist__c = 'ASI';
         insert qt;
         
         Quote_Line_Item_Custom__c qli = new Quote_Line_Item_Custom__c();
@@ -554,11 +557,13 @@ public class ReviseQuoteController_test {
         insert qlo;
         
         test.startTest();
-        ApexPages.StandardController sc = new ApexPages.standardController(qt);
-        ReviseQuoteController ctrl = new ReviseQuoteController(sc);
-        PageReference pageRef = Page.ReviseQuote; // Add your VF page Name here
-        pageRef.getParameters().put('id', String.valueOf(qt.Id));
-        Test.setCurrentPage(pageRef);
+
+PageReference pageRef = Page.ReviseQuote;
+pageRef.getParameters().put('id', qt.Id);
+Test.setCurrentPage(pageRef);
+
+ApexPages.StandardController sc = new ApexPages.StandardController(qt);
+ReviseQuoteController ctrl = new ReviseQuoteController(sc);
         
         
         List<Opportunity> opLst = new List<Opportunity>();

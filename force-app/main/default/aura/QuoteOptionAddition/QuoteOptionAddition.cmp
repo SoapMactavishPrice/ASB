@@ -399,7 +399,7 @@
                                 </td>
                                 <td>
                                     <lightning:input id="text-input-id-4" name="{!index}" type="phone" maxlength="10"
-                                        label="Base Price" value="{!acc.Manual_Option_Base_Price__c}" />
+                                        label="Transfer Price" value="{!acc.Manual_Option_Base_Price__c}" />
                                 </td>
                                 <!-- <td>
                                 <lightning:input name="{!index}" type="phone" maxlength="10" label="Price Type" value="{!acc.Price_Type__c}" disabled="true" default= "1"/>

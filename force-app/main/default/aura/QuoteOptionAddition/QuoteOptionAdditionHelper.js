@@ -541,14 +541,20 @@
     },
     
     validateAccountList: function(component, event) {
-     //   alert('Reached ..... Validated.....');
-        //Validate all account records
         var isValid = true;
-        var OptionList = component.get("v.OptionList");
+        var OptionList = component.get("v.OptionList") || [];
         for (var i = 0; i < OptionList.length; i++) {
-            if (OptionList[i].Name == '') {
+            if (!OptionList[i].Manual_Product_Name__c || OptionList[i].Manual_Product_Name__c.trim() === '') {
                 isValid = false;
-                alert('Account Name cannot be blank on row number ' + (i + 1));
+                var toastEvent = $A.get('e.force:showToast');
+                toastEvent.setParams({
+                    'title': 'Error',
+                    'type': 'error',
+                    'message': 'Product Name cannot be blank on row ' + (i + 1) + '.',
+                    'mode': 'dismissible'
+                });
+                toastEvent.fire();
+                break;
             }
         }
         return isValid;
@@ -601,74 +607,60 @@
     },*/
     
     
-    saveAccountList: function(component, event, helper) {
-    let varOptionList = component.get("v.OptionList");
-    console.log('Call to save manual button. Option list:', JSON.stringify(varOptionList));
-    console.log('Option list length:', varOptionList.length);
+    saveAccountList: function(component, onSuccess) {
+        let varOptionList = component.get("v.OptionList") || [];
+        console.log('Call to save manual button. Option list:', JSON.stringify(varOptionList));
+        console.log('Option list length:', varOptionList.length);
 
-    let checkList = 0;
-
-    // Validation: Check if any Product_Type__c is missing
-    for (let i = 0; i < varOptionList.length; i++) {
-        let item = varOptionList[i];
-
-        if (!item.Product_Type__c || item.Product_Type__c.trim() === '') {
-            checkList++;
-            console.warn('Missing Product_Type__c at index', i);
-
-            // Show toast once and break loop
-            let toastEvent = $A.get('e.force:showToast');
-            toastEvent.setParams({
-                'title': 'Error',
-                'type': 'error',
-                'message': 'Please fill in Product Type for all items.',
-                'mode': 'dismissible'
-            });
-            toastEvent.fire();
-            break; // Exit loop after first error
-        }
-    }
-
-    // If all validations pass, save after 1.5 sec delay
-    window.setTimeout(
-        $A.getCallback(function() {
-            if (checkList === 0) {
-                let recordId = component.get('v.recordId');
-                let action = component.get("c.SaveOptions");
-
-                action.setParams({
-                    "recordId": recordId,
-                    "OptList": varOptionList
+        for (let i = 0; i < varOptionList.length; i++) {
+            let item = varOptionList[i];
+            if (!item.Product_Type__c || item.Product_Type__c.trim() === '') {
+                let toastEvent = $A.get('e.force:showToast');
+                toastEvent.setParams({
+                    'title': 'Error',
+                    'type': 'error',
+                    'message': 'Please fill in Product Type for all items.',
+                    'mode': 'dismissible'
                 });
-
-                action.setCallback(this, function(response) {
-                    let state = response.getState();
-                    if (state === "SUCCESS") {
-                        console.log('Save successful.');
-                        component.set("v.OptionList", []);
-                        // Optionally show success toast
-                        let toastEvent = $A.get('e.force:showToast');
-                        toastEvent.setParams({
-                            'title': 'Success',
-                            'type': 'success',
-                            'message': 'Options saved successfully.',
-                            'mode': 'dismissible'
-                        });
-                        toastEvent.fire();
-                        $A.get('e.force:refreshView').fire();
-                    $A.get('e.force:closeQuickAction').fire();
-                    } else {
-                        console.error('Save failed:', response.getError());
-                    }
-                });
-
-                $A.enqueueAction(action);
+                toastEvent.fire();
+                return;
             }
-        }),
-        1500 // 1.5 seconds delay
-    );
-}
-,
+        }
+
+        let recordId = component.get('v.recordId');
+        let action = component.get("c.SaveOptions");
+
+        action.setParams({
+            "recordId": recordId,
+            "OptList": varOptionList
+        });
+
+        action.setCallback(this, function(response) {
+            let state = response.getState();
+            if (state === "SUCCESS") {
+                console.log('Save successful.');
+                component.set("v.OptionList", []);
+                let toastEvent = $A.get('e.force:showToast');
+                toastEvent.setParams({
+                    'title': 'Success',
+                    'type': 'success',
+                    'message': 'Options saved successfully.',
+                    'mode': 'dismissible'
+                });
+                toastEvent.fire();
+                if (onSuccess) {
+                    onSuccess();
+                } else {
+                    $A.get('e.force:refreshView').fire();
+                    $A.get('e.force:closeQuickAction').fire();
+                }
+            } else {
+                console.error('Save failed:', response.getError());
+            }
+        });
+
+        $A.enqueueAction(action);
+    },
     
     
     

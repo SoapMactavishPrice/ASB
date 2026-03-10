@@ -271,21 +271,46 @@
                 font-size: 8.5pt;
                 line-height: 1.85;
             }
+            .signature-section {
+                margin-top: 72px;
+                width: 100%;
+                table-layout: fixed;
+                border-collapse: collapse;
+            }
+            .signature-section td {
+                width: 50%;
+                vertical-align: top;
+                text-align: center;
+            }
+            .signature-line {
+                width: 78%;
+                margin: 0 auto 6px auto;
+                border-top: 1px solid #000000;
+                height: 1px;
+            }
+            .signature-role,
+            .signature-name,
+            .signature-title {
+                font-size: 8.5pt;
+                font-weight: bold;
+                line-height: 1.35;
+                color: #000000;
+            }
     </style>
     </head>
     <body>
 
         <div id="header" style="width: 674.5px;">
             <div id="header-inner">
-                <apex:image value="{!$Resource.GMBH_Quote_Header}" styleClass="header-banner"/>
+                <apex:image value="{!$Resource.GMBH_Contract_Header}" styleClass="header-banner"/>
             </div>
             <br/>
             <div style="font-size:15px; line-height:1;">
-                <span style="color:#000000;">Quotation No:</span>
-                <span style="color:#656565;">&nbsp;&nbsp;&nbsp;Q-39443</span><br/>
+                <span style="color:#000000;">No:</span>
+                <span style="color:#434343;">&nbsp;&nbsp;&nbsp;Q-39443</span><br/>
 
                 <span style="color:#000000;">Date:</span>
-                <span style="color:#656565;">&nbsp;&nbsp;&nbsp;20/06/2024</span>
+                <span style="color:#434343;">&nbsp;&nbsp;&nbsp;20/06/2024</span>
             </div>
         </div>
 
@@ -324,11 +349,10 @@
         </div>
 
         <!-- CONTENT -->
-
-        <!-- PAGE 1-2: LINE ITEMS -->
         <table class="recipient-table">
             <tr>
                 <td class="recipient-left">
+                    <div style="font-weight: normal; padding-left: 440px; font-size: 9.2pt;">Delivery&nbsp;To:</div>
                     <div>FRAPAK France</div>
                     <div>3 Le Bas de la Ruelle aux Chats ZI de Gron</div>
                     <div>89100 Gron</div>
@@ -420,7 +444,7 @@
         <table class="items-total-table">
             <tbody>
                 <tr class="total-hdr">
-                    <td colspan="4" class="total-label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Total FOB India &amp; Japan (JPY) :</td>
+                    <td colspan="4" class="total-label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Total (EUR) :</td>
                     <td class="total-amt">53,800,000.00</td>
                 </tr>
             </tbody>
@@ -432,24 +456,34 @@
             <div class="conditions-heading"><u>GENERAL CONDITIONS</u></div>
 
             <div class="clause-title">1. Place of delivery</div>
-            <div class="clause-body">All equipment will be delivered FOB Mumbai, India or FOB Japan, Yokohama (Pos. 5)</div>
+            <div class="clause-body">All equipment will be delivered FOB Mumbai, India (Pos. 1 - Pos. 4) and EXW D&#252;sseldorf, Germany (Pos. 5).</div>
 
             <div class="clause-title">2. Time of delivery</div>
-            <div class="clause-body">Machine: appx. 3 - 4 months ex-factory from receipt of order and down payment</div>
-            <div class="clause-body">Take-Out: Appx. 4,5 months until ready for ex-factory ASB Japan</div>
+            <div class="clause-body">Machine and dryer: Appx. 3 - 4 months EXF Nissei ASB India plant</div>
+            <div class="clause-body">Molds:</div>
+            <ul style="list-style-type: disc; margin-left: 10px;">
+                <li>Design &amp; manufacturing completion: 12 weeks from order receipt and ASB drawing approval</li>
+                <li>Mold trial start: 1 week from mold completion</li>
+                <li>T1 sample submission: 1 week from mold trial start</li>
+                <li>Ex-factory: 1 week from sample approval</li>
+            </ul><br/>
+            <div class="clause-body">Take-Out: Appx. 2 weeks until ex-factory Nissei ASB D&#252;sseldorf from order receipt and receipt of down payment</div>
 
             <div class="clause-title">3. Terms of payment</div>
             <div class="clause-body">The contracted goods shall be paid following the below terms of payment</div>
-            <div class="bullet">&#183;&#160; 30% down payment on order by bank transfer</div>
-            <div class="bullet">&#183;&#160; 60% second payment before ex-factory shipment by bank transfer.</div>
-            <div class="bullet">&#183;&#160; 10% balance payment at commissioning but no later than 60 days from shipping date.</div>
+            <ul style="list-style-type:disc; margin-left: 10px;">
+                <li>50% down payment on order by bank transfer</li>
+                <li>40% second payment before ex-factory shipment by bank transfer</li>
+                <li>10% balance payment at commissioning but no later than 60 days from shipping date</li>
+            </ul>
             <div class="clause-body" style="margin-top:4px;">Seller&#8217;s bank account: DEUTSCHE BANK AG DUESSELDORF, IBAN: DE 74 3007 0010 0310 4999 00, BIC: DEUTDEDD, ACCOUNT NO: 310 4999</div>
 
             <div class="clause-title">4. Technical specifications</div>
             <div class="clause-body">The contracted goods shall be made as per the attached Seller&#8217;s standard specifications (subject to change for improvement) and painted with the Seller&#8217;s standard colour. The mold shall be made in accordance with the Seller&#8217;s standard specifications to produce bottles specified in the approved drawing and specifications.</div>
             <div class="clause-body">The quoted prices and time of delivery shall be subject to review in the following cases:</div>
-            <div class="bullet">&#183;&#160; Machine and auxiliary equipment: the incorporation of special specifications has become necessary to meet local regulations and/or to operate the mold to produce special bottles.</div>
-            <div class="bullet">&#183;&#160; Mold: Special design/specifications including patterns, art letters, logo, characters and mark becomes necessary to the bottle after this quotation was issued.</div>
+            <ul style="list-style-type:disc; margin-left: 10px;">
+                <li>Machine and auxiliary equipment: the incorporation of special specifications has become necessary to meet local regulations and/or to operate the mold to produce special bottles.</li>
+            </ul>
 
             <div class="clause-title">5. Inspection prior to ex-factory</div>
             <div class="clause-body">The Seller will conduct the inspection of the contracted goods in the Seller&#8217;s factory in accordance with the Seller&#8217;s standard practice. This inspection shall be final, however if requested by the Buyer, the Seller is ready to accept an internationally accepted third party inspection such as SGS at the Buyer&#8217;s cost. The Seller will make the contracted goods ready for ex-factory shipment only after successfully finishing the inspection. Molds will be made ready for ex-factory shipment after the confirmation and approval that the sample bottles are produced in accordance with the agreed product drawing and specifications.</div>
@@ -463,31 +497,26 @@
 
             <div class="clause-title">8. Startup Service</div>
             <div class="clause-body">The Seller will provide start up service under supervisory capacity and training of the Buyer&#8217;s technical staff. The start-up and training will be conducted in accordance with the Seller&#8217;s standard practice. The Buyer will cover all cost including travelling cost, hotel expenses and meals. The engineer will be dispatched upon confirmation of all electric, air and water connections having been completed by the Buyer. The Buyer shall request the dispatch of the engineer minimum 1 week in advance of the projected time for start-up.</div>
+            <div class="clause-body">Should delays in start-up occur due to reasons not attributable to the Seller, the Buyer shall be charged in accordance with the standard fees for technical service. In any case the Seller&#8217;s engineer will not stay longer than 30 days without a separate agreement.</div>
+            <div class="clause-body">Should the start-up not be carried out within 6 months after the date of the bill of lading due to reasons not attributable to the Seller, the Seller shall not have the obligation to conduct the start-up. However, the Seller will send an engineer for start-up under the condition to be mutually agreed under a separate contract.</div>
 
             <div class="clause-title">9. Installation</div>
             <div class="clause-body">The Seller&#8217;s scope of work does not include wiring, piping and consumables required to install/operate the equipment at the Buyer&#8217;s factory. This work shall be carried out by the Buyer at responsibility and cost.</div>
             <div class="clause-body">Should it be required, the Seller can provide supervision of the installation of the contracted goods at a fee of 4.500 EUR excluding travel and hotel expenses for a maximum period of 5 days including traveling.</div>
 
             <div class="clause-title">10. Auxiliary equipment</div>
-            <div class="clause-body">This quotation does not include the dryer, chiller, dehumidifier, mold temperature controllers, compressor for operation and blowing air and the cooling tower for hydraulic oil cooling. The selection of auxiliary equipment to be used with the machines and molds is to be based on the understanding that the contracted goods shall be operated in factory operating conditions of 10-40C temperature, less than 70% humidity in accordance with operation manual with the power source of 380V 3 phases 50 cycles, with a maximum 10% voltage fluctuation. The Buyer will prepare auxiliary equipment including compressors and a cooling tower at its own cost and responsibility. The Seller shall submit the utility list for the Buyer&#8217;s reference only.</div>
+            <div class="clause-body">This quotation does not include the chiller, dehumidifier, mold temperature controllers, compressor for operation and blowing air and the cooling tower for hydraulic oil cooling. The selection of auxiliary equipment to be used with the machines and molds is to be based on the understanding that the contracted goods shall be operated in factory operating conditions of 10-40C temperature, less than 70% humidity in accordance with operation manual with the power source of 380V 3 phases 50 cycles, with a maximum 10% voltage fluctuation. The Buyer will prepare auxiliary equipment including compressors and a cooling tower at its own cost and responsibility. The Seller shall submit the utility list for the Buyer&#8217;s reference only.</div>
 
             <div class="clause-title">11. Cancellation Charges</div>
             <div class="clause-body">The following charges will be applied in case of cancellation.</div>
-            <div class="bullet">&#183;&#160; Mold: Cancellation within 30 days of the order and finalization of specifications: 50%. Cancellation after more than 30 days after the order and finalization of specifications: 100%</div>
-            <div class="bullet">&#183;&#160; Machine: Cancellation within 30 days of the order and finalization of specifications: 5%. Cancellation after more than 30 days after the order and finalization of specifications: 30%</div>
-            <div class="bullet">&#183;&#160; Auxiliaries: Cancellation within 30 days of the order and finalization of specifications: 5%. Cancellation after more than 30 days after the order and finalization of specifications: 100%</div>
+            <ul style="list-style-type:disc; margin-left: 10px;">
+                <li>Mold: Cancellation within 30 days of the order and finalization of specifications: 50%. Cancellation after more than 30 days after the order and finalization of specifications: 100%</li>
+                <li>Machine: Cancellation within 30 days of the order and finalization of specifications: 5%. Cancellation after more than 30 days after the order and finalization of specifications: 30%</li>
+                <li>Auxiliaries: Cancellation within 30 days of the order and finalization of specifications: 50%. Cancellation after more than 30 days after the order and finalization of specifications: 100%</li>
+            </ul>
 
             <div class="clause-title">12. Warranty</div>
             <div class="clause-body">The warranty period shall be in accordance with the warranty policy in the attachment.</div>
-
-            <div class="clause-title">13. Validity</div>
-            <div class="clause-body">The prices and conditions of this quotation are valid for a period of 30 days to be counted from the date of the quotation.</div>
-
-            <div class="sig-block">
-                <div>Nissei ASB GmbH</div>
-                <div>Gregor Tag</div>
-                <div>Area Sales Manager</div>
-            </div>
         </div>
 
 
@@ -543,6 +572,23 @@
 
             <div class="clause-title">16. Validity:</div>
             <div class="clause-body">Should any provision of these General Provisions be invalid, this shall not affect the validity of the remaining provisions.</div>
+
+            <table class="signature-section">
+                <tr>
+                    <td>
+                        <div class="signature-line"></div>
+                        <div class="signature-role">Seller</div>
+                        <div class="signature-name">Nissei ASB GmbH</div>
+                        <div class="signature-name">Karel Keersmaekers-Michiels</div>
+                        <div class="signature-title">Managing Director</div>
+                    </td>
+                    <td>
+                        <div class="signature-line"></div>
+                        <div class="signature-role">Buyer</div>
+                        <div class="signature-name">Cosline Packaging</div>
+                    </td>
+                </tr>
+            </table>
         </div>
     </body>
     </html>

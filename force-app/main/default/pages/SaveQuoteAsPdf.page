@@ -268,28 +268,30 @@ vf Page for attachPdf to the Quote
                 </div>
             </div>
             <!-- PDF previews shown only after options modal is closed -->
-            <apex:outputPanel rendered="{!(ObjQuote.Is_DTA_Quote__c) && (showSaveQuote)}">
+            <apex:outputPanel rendered="{!ObjQuote.Is_DTA_Quote__c && showSaveQuote}">
                 <apex:iframe src="/apex/pdfPreviewDTA?Id={!ObjQuote.id}" scrolling="false" height="760"/>                
             </apex:outputPanel>
             
-            
-            <apex:outputPanel rendered="{!(ObjQuote.Is_DTA_Quote__c) && !(showSaveQuote)}">
+            <apex:outputPanel rendered="{!ObjQuote.Is_DTA_Quote__c && NOT(showSaveQuote)}">
                 <apex:iframe src="/apex/pdfPreviewDTA?Id={!ObjQuote.id}#toolbar=0" scrolling="false" height="760"/>                
             </apex:outputPanel>
+
+            <apex:outputPanel rendered="{!NOT(ObjQuote.Is_DTA_Quote__c) && ObjQuote.Is_GMBH_Quote__c && showSaveQuote}">
+                <apex:iframe src="/apex/pdfPreviewGMBH?Id={!ObjQuote.id}" scrolling="false" height="760"/>                
+            </apex:outputPanel>
             
-            <apex:outputPanel rendered="{!NOT(ObjQuote.Is_DTA_Quote__c) && (showSaveQuote)}" style="overflow-y: auto;">
+            <apex:outputPanel rendered="{!NOT(ObjQuote.Is_DTA_Quote__c) && ObjQuote.Is_GMBH_Quote__c && NOT(showSaveQuote)}">
+                <apex:iframe src="/apex/pdfPreviewGMBH?Id={!ObjQuote.id}#toolbar=0" scrolling="false" height="760"/>                
+            </apex:outputPanel>
+            
+            <apex:outputPanel rendered="{!NOT(ObjQuote.Is_DTA_Quote__c) && NOT(ObjQuote.Is_GMBH_Quote__c) && showSaveQuote}" style="overflow-y: auto;">
                 <apex:iframe src="/apex/pdfPreview?Id={!ObjQuote.id}" scrolling="false" height="760"/>                
             </apex:outputPanel>
             
-            <apex:outputPanel rendered="{!NOT(ObjQuote.Is_DTA_Quote__c) && !(showSaveQuote)}" style="overflow-y: auto;">
+            <apex:outputPanel rendered="{!NOT(ObjQuote.Is_DTA_Quote__c) && NOT(ObjQuote.Is_GMBH_Quote__c) && NOT(showSaveQuote)}" style="overflow-y: auto;">
                 <apex:iframe src="/apex/pdfPreview?Id={!ObjQuote.id}#toolbar=0" scrolling="false" height="760"/>                
             </apex:outputPanel>
                     
-                    <!-- <div style="margin-top: 10px; margin-bottom: 10px;" align="center">
-        <apex:commandButton value="Save To Quote" action="{!SaveToQuote}" style="background:#AFEEEE" rendered="{!showSaveQuote}"  />&nbsp;&nbsp;
-        <apex:commandButton value="Save and Email Quote" action="{!SaveAndEmailQuote}" style="background:#AFEEEE" rendered="{!showSaveQuote}" />&nbsp;&nbsp;
-        <apex:commandButton value="Cancel" action="{!Cancel}" style="background:#AFEEEE"/>  
-</div> -->
         </apex:outputPanel>
     </apex:form>
 </apex:page>

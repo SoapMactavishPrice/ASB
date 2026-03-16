@@ -236,21 +236,29 @@
             <apex:outputPanel rendered="{!NOT(showSaveQuote)}" style="overflow-y: auto;">
                 <apex:iframe src="/apex/PdfPreviewContractV2?Id={!ObjQuote.id}#toolbar=0" scrolling="false" height="760"/>                
             </apex:outputPanel>-->
-            
-            
-            <apex:outputPanel rendered="{!(ObjQuote.Is_DTA_Contract__c) && (showSaveQuote)}">
+            <!-- -->
+
+            <apex:outputPanel rendered="{!ObjQuote.Is_DTA_Contract__c && showSaveQuote}">
                 <apex:iframe src="/apex/PdfPreviewContractDTA?Id={!ObjQuote.id}" scrolling="false" height="760"/>                
             </apex:outputPanel>
             
-            <apex:outputPanel rendered="{!(ObjQuote.Is_DTA_Contract__c) && !(showSaveQuote)}">
+            <apex:outputPanel rendered="{!ObjQuote.Is_DTA_Contract__c && NOT(showSaveQuote)}">
                 <apex:iframe src="/apex/PdfPreviewContractDTA?Id={!ObjQuote.id}#toolbar=0" scrolling="false" height="760"/>                
             </apex:outputPanel>
+
+            <apex:outputPanel rendered="{!NOT(ObjQuote.Is_DTA_Contract__c) && ObjQuote.Is_GMBH_Contract__c && showSaveQuote}">
+                <apex:iframe src="/apex/PdfPreviewContractGMBH?Id={!ObjQuote.id}" scrolling="false" height="760"/>                
+            </apex:outputPanel>
             
-            <apex:outputPanel rendered="{!NOT(ObjQuote.Is_DTA_Contract__c) && (showSaveQuote)}" style="overflow-y: auto;">
+            <apex:outputPanel rendered="{!NOT(ObjQuote.Is_DTA_Contract__c) && ObjQuote.Is_GMBH_Contract__c && NOT(showSaveQuote)}">
+                <apex:iframe src="/apex/PdfPreviewContractGMBH?Id={!ObjQuote.id}#toolbar=0" scrolling="false" height="760"/>                
+            </apex:outputPanel>
+            
+            <apex:outputPanel rendered="{!NOT(ObjQuote.Is_DTA_Contract__c) && NOT(ObjQuote.Is_GMBH_Contract__c) && showSaveQuote}" style="overflow-y: auto;">
                 <apex:iframe src="/apex/PdfPreviewContractV2?Id={!ObjQuote.id}" scrolling="false" height="760"/>                
             </apex:outputPanel>
             
-            <apex:outputPanel rendered="{!NOT(ObjQuote.Is_DTA_Contract__c) && !(showSaveQuote)}" style="overflow-y: auto;">
+            <apex:outputPanel rendered="{!NOT(ObjQuote.Is_DTA_Contract__c) && NOT(ObjQuote.Is_GMBH_Contract__c) && NOT(showSaveQuote)}" style="overflow-y: auto;">
                 <apex:iframe src="/apex/PdfPreviewContractV2?Id={!ObjQuote.id}#toolbar=0" scrolling="false" height="760"/>                
             </apex:outputPanel>
 

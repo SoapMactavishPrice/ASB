@@ -20,6 +20,7 @@ public class SaveContract {
     public String no2words {get;set;}
     public Contract qobj ;
     public Boolean showSaveQuote{get;set;}
+    public Boolean showSaveContract{get;set;}
     public String freight {get; set;}
     public String insurance {get; set;}
     Public Boolean toshowSaveButton{get;set;}
@@ -48,6 +49,7 @@ public class SaveContract {
     
     public SaveContract(ApexPages.StandardController standardPageController) {
         showSaveQuote= false;
+        showSaveContract = false;
         getWithoutTaxGrandValue = 0;
         isTaxCounter = 0;
         isModalOpen = false;
@@ -78,6 +80,7 @@ showSaveQuote=true;
         if(qobj.Status == 'RELEASED' || qobj.Status =='Waiting for DP/LC' || qobj.Status =='Converted to PM – Partial' ||
            qobj.Status =='Converted to PM – Complete' || qobj.Status =='Close – Revised' || qobj.Status =='Close - Lost'){
                showSaveQuote=true;
+               showSaveContract=true;
            }     
         
         
@@ -267,7 +270,7 @@ showSaveQuote=true;
         System.debug('RecordId'+RecordId);
         Map<String, Schema.SObjectField> fieldMap = Contract.sObjectType.getDescribe().fields.getMap();
         list<String> lstFieldNames = new List<String>(fieldMap.keySet());
-        ObjQuote=Database.query('SELECT ' + String.join(lstFieldNames, ',') + ',CreatedBy.Name, CreatedBy.Email,CreatedBy.title,Owner.Name, Owner.Email,Owner.title from Contract Where id =:RecordId limit 1');
+        ObjQuote=Database.query('SELECT ' + String.join(lstFieldNames, ',') + ',CreatedBy.Name, CreatedBy.Email,CreatedBy.title,Owner.Name, Owner.Email,Owner.title, QUOTATION_ADDRESSED_TO__r.Name from Contract Where id =:RecordId limit 1');
         /*ObjQuote = [Select id,Quotes_Barcode__c,Factory_Location__c, AccountId,AdditionalAddress,AdditionalName,BillingAddress,BillingName,ContactId,Description,Mould_Delivery__c,Machine_Delivery__c,
 Discount,Email,ExpirationDate,Fax,GrandTotal,LineItemCount,OpportunityId,Phone,CurrencyIsoCode,Name,Quote_Total_Summary_of_Sales_Price__c,Advance_Payment_Average__c,
 ContractNumber,QuoteToAddress,QuoteToName,ShippingHandling,ShippingAddress,ShippingName,Status,Total_Price_Ceiling__c,Quote_Release_Date__c,
@@ -278,6 +281,10 @@ REGION__c,SHIP_TO__c,SOLD_TO__c,STATE__c,Advance_Percentage__c,SUBSIDARY__c,TYPE
 Freight_Pick__c,Freight_Amount__c,Insurance__c,Insurance_Amount__c, CreatedBy.Name, CreatedBy.Email,CreatedBy.title from Quote Where id =:RecordId limit 1];
 */
         System.debug('ObjQuote : : '+ObjQuote);
+        
+        // Replace CurrencyIsoCode placeholder in Q_PrintShipping__c
+        ObjQuote.Q_PrintShipping__c = String.isNotBlank(ObjQuote.Q_PrintShipping__c) ? ObjQuote.Q_PrintShipping__c.replace('CurrencyIsoCode', ObjQuote.CurrencyIsoCode) : ObjQuote.Q_PrintShipping__c;
+        
         if(objQuote.Status == 'RELEASED' || objquote.Status =='Waiting for DP/LC' || objquote.Status =='Converted to PM – Partial' ||
            objquote.Status =='Converted to PM – Complete' || objquote.Status =='Close – Revised' || objquote.Status =='Close - Lost'){
                toshowSaveButton = true;
@@ -346,12 +353,12 @@ Freight_Pick__c,Freight_Amount__c,Insurance__c,Insurance_Amount__c, CreatedBy.Na
                       from Account where id = : AccountId];
         System.debug('ObjAccount : : '+ ObjAccount);
         QlineItm = new List<Contract_Line_Item__c>(); 
-        QlineItm = [select Product2Id__c, Product2Id__r.Name,List_Price__c,Is_Tax__c,Name,Quantity__c,Division__c,Total_List_Price__c,Product_Number__c,Total_Sales_Price2__c,UOM__c,Ceiling_Total_Sales_Price__c,Product_Name__c,Overall_Discount__c,Product_Description__c,
+        QlineItm = [select Product2Id__c, Product2Id__r.Name,List_Price__c,Is_Tax__c,Name,Quantity__c,Division__c,Total_List_Price__c,Product_Number__c,Total_Sales_Price2__c,UOM__c,Ceiling_Total_Sales_Price__c,Product_Name__c,Overall_Discount__c,Product_Description__c,Product_Type__c,Sr_No__c,
                     (select Id, Name,Product_Name__c,Manual_Product_Name_c__c,Discount__c,Final_Price__c,Manual_Option_Number__c,Manual_Option_Base_Price__c,Description__c, Select_Option__c, Product__r.Name, Name_Hide__c, Price_Visible__c, Quantity__c, Unit_Sales_Price__c, Total_Sales_Price__c from Contract_Line_Option__r ORDER BY Serial_Number__c) 
                     from Contract_Line_Item__c where ContractId__c = :RecordId Order BY Sr_No__c];  
         System.debug('QlineItm'+QlineItm.size());
         
-        List<Contract_Line_Item__c> QlineItm1 = [select Product2Id__c,Product_Name_2__c,Manual_Product_Number__c,Is_Manual__c,Product_Number__c,Is_Tax__c, Product2Id__r.Name,List_Price__c,Name,Quantity__c,Division__c,Total_List_Price__c,Total_Sales_Price2__c,UOM__c,Ceiling_Total_Sales_Price__c,Product_Name__c,Overall_Discount__c,Product_Description__c,
+        List<Contract_Line_Item__c> QlineItm1 = [select Product2Id__c,Product_Name_2__c,Manual_Product_Number__c,Is_Manual__c,Product_Number__c,Is_Tax__c, Product2Id__r.Name,List_Price__c,Name,Quantity__c,Division__c,Total_List_Price__c,Total_Sales_Price2__c,UOM__c,Ceiling_Total_Sales_Price__c,Product_Name__c,Overall_Discount__c,Product_Description__c,Product_Type__c,Sr_No__c,
                                                  (select Id, Name,Product_Name__c,Manual_Product_Name_c__c,Discount__c,Final_Price__c,Manual_Option_Base_Price__c,Description__c, Select_Option__c, Product__r.Name, Name_Hide__c, Price_Visible__c, Quantity__c, Unit_Sales_Price__c, Total_Sales_Price__c from Contract_Line_Option__r ORDER BY Serial_Number__c) 
                                                  from Contract_Line_Item__c where ContractId__c = :RecordId Order BY Sr_No__c]; 
         
@@ -366,6 +373,9 @@ Freight_Pick__c,Freight_Amount__c,Insurance__c,Insurance_Amount__c, CreatedBy.Na
                 pli.Product_Name = ql.Product_Name__c;
             else 
                 pli.Product_Name = ql.Product_Name_2__c;
+            
+            pli.Product_Type = getPicklistLabel('Product_Type__c', ql.Product_Type__c);
+            pli.Position_Number = ql.Sr_No__c;
             pli.isstartWith_a = false;
             pli.isstartWith_Hash = false;
             pli.Is_Tax = ql.Is_Tax__c;
@@ -429,59 +439,73 @@ Freight_Pick__c,Freight_Amount__c,Insurance__c,Insurance_Amount__c, CreatedBy.Na
             pli.UOM =  ql.UOM__c;
             
             pli.childProd = new List<childProductWrapper>();
-            Decimal visibleOptTotalPrice = 0;
-            Decimal visibleOptUnitPrice = 0;
+            pli.Visible_Option_Count = 0;
+            pli.ContractLineId = ql.Id;
+            
+            Decimal checkedOptTotalPrice = 0;
+            Decimal checkedOptUnitPrice = 0;
             for(Contract_Line_Option__c qpl : ql.Contract_Line_Option__r){
                 if(qpl.Price_Visible__c == true){
-                    visibleOptTotalPrice += (qpl.Total_Sales_Price__c != null ? qpl.Total_Sales_Price__c : 0);
-                    visibleOptUnitPrice  += (qpl.Unit_Sales_Price__c != null ? qpl.Unit_Sales_Price__c : 0);
+                    checkedOptTotalPrice += (qpl.Total_Sales_Price__c != null ? qpl.Total_Sales_Price__c : 0);
+                    checkedOptUnitPrice  += (qpl.Unit_Sales_Price__c != null ? qpl.Unit_Sales_Price__c : 0);
                 }
-                if(qpl.Manual_Product_Name_c__c !=null){
-                    if(!qpl.Manual_Product_Name_c__c.startsWith('.')){
-                        childProductWrapper chl = new childProductWrapper();
-                        chl.OptionId = qpl.Id;
-                        chl.Manual_Product_Name = qpl.Manual_Product_Name_c__c;
-                        chl.isstartWith_a = false;
+                
+                if(String.isBlank(qpl.Manual_Product_Name_c__c) && String.isBlank(qpl.Description__c)){
+                    continue;
+                }
+                if(String.isNotBlank(qpl.Manual_Product_Name_c__c) && qpl.Manual_Product_Name_c__c.startsWith('.')){
+                    continue;
+                }
+                
+                childProductWrapper chl = new childProductWrapper();
+                chl.OptionId = qpl.Id;
+                chl.Manual_Product_Name = qpl.Manual_Product_Name_c__c;
+                chl.isstartWith_a = false;
+                chl.isstartWith_Hash = false;
+                chl.Name_Hide = qpl.Name_Hide__c;
+                chl.Price_Visible = (qpl.Price_Visible__c == true);
+                chl.Quantity = (qpl.Quantity__c == null) ? null : Integer.valueOf(qpl.Quantity__c);
+                chl.Manual_Option_List_Price = CurrencyFormatter.formatDouble(qpl.Unit_Sales_Price__c, ObjQuote.CurrencyIsoCode);
+                chl.Sales_Price = CurrencyFormatter.formatDouble(qpl.Total_Sales_Price__c, ObjQuote.CurrencyIsoCode);
+                
+                if(string.isNotBlank(qpl.Description__c)){
+                    if(qpl.Description__c.contains('<p>') || qpl.Description__c.contains('</p>')){
+                 qpl.Description__c=   qpl.Description__c.replace('<p>','<span>');
+                  qpl.Description__c=  qpl.Description__c.replace('</p>','</span>');
+                }
+                    if(qpl.Description__c.contains('>@') || qpl.Description__c.startsWith('@')){
+                        chl.isstartWith_a = true;
                         chl.isstartWith_Hash = false;
-                        chl.Name_Hide = qpl.Name_Hide__c;
-                        chl.Price_Visible = (qpl.Price_Visible__c == true);
-                        chl.Quantity = (qpl.Quantity__c == null) ? null : Integer.valueOf(qpl.Quantity__c);
-                        chl.Manual_Option_List_Price = CurrencyFormatter.formatDouble(qpl.Unit_Sales_Price__c, ObjQuote.CurrencyIsoCode);
-                        chl.Sales_Price = CurrencyFormatter.formatDouble(qpl.Total_Sales_Price__c, ObjQuote.CurrencyIsoCode);
-                        
-                        if(string.isNotBlank(qpl.Description__c)){
-                            if(qpl.Description__c.contains('<p>') || qpl.Description__c.contains('</p>')){
-                     qpl.Description__c=   qpl.Description__c.replace('<p>','<span>');
-                      qpl.Description__c=  qpl.Description__c.replace('</p>','</span>');
+                        chl.Description = qpl.Description__c;
+                        pli.isstartWith_a = true;
+                    } 
+                    else if(string.isNotBlank(qpl.Description__c) && (qpl.Description__c.contains('>#') || qpl.Description__c.startsWith('#'))){
+                        chl.isstartWith_Hash = true;
+                        chl.isstartWith_a = false;
+                        chl.Description = qpl.Description__c;
+                    } else{
+                        chl.Description = qpl.Description__c;
                     }
-                            if(qpl.Description__c.contains('>@') || qpl.Description__c.startsWith('@')){
-                                chl.isstartWith_a = true;
-                                chl.isstartWith_Hash = false;
-                                chl.Description = qpl.Description__c;
-                                pli.isstartWith_a = true;
-                            } 
-                            else if(string.isNotBlank(qpl.Description__c) && (qpl.Description__c.contains('>#') || qpl.Description__c.startsWith('#'))){
-                                chl.isstartWith_Hash = true;
-                                chl.isstartWith_a = false;
-                                chl.Description = qpl.Description__c;
-                            } else{
-                                chl.Description = qpl.Description__c;
-                            }
-                        }
-                        pli.childProd.add(chl);
-                        system.debug(pli.Name+' ==> '+pli.childProd.size());
-                    }
-                    
-                    
                 }
+                
+                if(qpl.Name_Hide__c != true){
+                    pli.Visible_Option_Count++;
+                }
+                
+                pli.childProd.add(chl);
+                system.debug(pli.Name+' ==> '+pli.childProd.size());
+            }
+
+            if(pli.Visible_Option_Count > 0){
+                pli.Option_Header = String.isNotBlank(pli.Product_Type) ? pli.Product_Type + ' Option' : 'Option';
             }
 
             if(!pli.isstartWith_a && !pli.isstartWith_Hash
-            && visibleOptTotalPrice > 0
+            && checkedOptTotalPrice > 0
             && runtimeTotalSales != null
             && runtimeUnitSales != null){
-                Decimal adjustedTotal = runtimeTotalSales - visibleOptTotalPrice;
-                Decimal adjustedUnit = runtimeUnitSales - visibleOptUnitPrice;
+                Decimal adjustedTotal = runtimeTotalSales - checkedOptTotalPrice;
+                Decimal adjustedUnit = runtimeUnitSales - checkedOptUnitPrice;
                 pli.Ceiling_Total_Sales_Pricestring = CurrencyFormatter.formatDouble(adjustedTotal, ObjQuote.CurrencyIsoCode);
                 pli.totalValueString = CurrencyFormatter.formatDouble(adjustedUnit, ObjQuote.CurrencyIsoCode);
             }
@@ -511,48 +535,58 @@ Freight_Pick__c,Freight_Amount__c,Insurance__c,Insurance_Amount__c, CreatedBy.Na
             }
         }
         
-        contractTemplate = [SELECT id,Show_Ex_Works__c,Active__c, CurrencyIsoCode, Introduction__c, Label__c, Label_For_Colum_1__c, Label_For_Colum_2__c, Label_For_Colum_3__c, 
-                            Label_For_Colum_4__c, Label_For_Colum_5__c, Label_for_Date__c, Label_for_Draft_Contract__c, Label_for_General_Provision__c,
-                            Label_for_General_Remarks__c, Label_for_Page_No__c, Label_for_Page_No_2__c, Label_for_Price_in_Word__c, Label_for_Product_table__c,
-                            Label_For_Ref_No__c, Label_For_TO__c, Language__c, Logo__c, OwnerId, Name, Salutation__c, Subsidiary__c,
-                            Subsidiary__r.Factory_Location__c, Subsidiary__r.Name__c, ISO_Code_Label__c, ISO_Code_Text__c,Manufacture_Place__c,
-                            Company_Name_Label__c, Sales_Engineer_Label__c, Contract_No_Label__c, Contract_Date_Label__c, Cover_Page__c,
-                            ASB_Sign_Section2__c, ASB_Sign_Section3__c, ASB_Sign_Section4__c, ASB_Sign_Section5__c, Cover_Page_Required__c,
-                            Customer_Sign_Section2__c, Customer_Sign_Section3__c, Customer_Sign_Section4__c, Customer_Sign_Section5__c, Footer_Image__c,
-                            Header_Image__c, Section_2_Required__c, Section_4_Required__c, Section_5_Required__c, Footer_Image_Required__c, Footer_Text__c, Footer_Text_Required__c,
-                            S2_Introduction__c,S2_Title__c,S3_title__c,S4_Title__c,S5_Title__c, Draft_Image__c, Label_For_Contract_No__c
-                            FROM Contract_Template__c WHERE ID =:ObjQuote.Contract_Template__c and Active__c=true];
+        terms = new List<Contract_Template_Line__c>();
+        gRemark = new List<Contract_Template_Line__c>();
+        gProvision = new List<Contract_Template_Line__c>();
         
-        system.debug('ObjQuote.Contract_Template__c'+ObjQuote.Contract_Template__c);
-        system.debug('contractTemplate.id'+contractTemplate.id);
-        terms = [SELECT id, Active__c, Content__c,Content_2__c, Is_Terms_Condition__c, Label__c, Name, Contract_Template__c, Sr_No__c,(select id,name,Dynamic_Field__c,Field_To_Replace__c from Contract_Dynamic_Text__r where Active__c=true)
-                 FROM Contract_Template_Line__c WHERE Contract_Template__c =:contractTemplate.id and Active__c=true and Is_Terms_Condition__c=true order By Sr_No__c];
-        gRemark = [SELECT id, Active__c, Content__c,Content_2__c, Is_General_Remarks__c, Label__c, Name, Contract_Template__c, Sr_No__c,(select id,name,Dynamic_Field__c,Field_To_Replace__c from Contract_Dynamic_Text__r where Active__c=true)
-                   FROM Contract_Template_Line__c WHERE Contract_Template__c =:contractTemplate.id and Active__c=true and Is_General_Remarks__c=true order By Sr_No__c];
-        system.debug('gRemark'+gRemark);
-        
-        gProvision = [SELECT id, Active__c, Content__c, Content_2__c,Is_General_Provision__c, Label__c, Name, Contract_Template__c, Sr_No__c,(select id,name,Dynamic_Field__c,Field_To_Replace__c from Contract_Dynamic_Text__r where Active__c=true)
-                      FROM Contract_Template_Line__c WHERE Contract_Template__c =:contractTemplate.id and Active__c=true and Is_General_Provision__c=true order By Sr_No__c];
-        
-        map<String,Object> amap=(Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(ObjQuote));
-        if(terms.size() > 0){
-            terms=getDynamicValue(terms,amap);
-            system.debug('terms'+terms);
-        }
-        
-        
-        for(Contract_Template_Line__c qtp  : gRemark){
-            if(qtp.Label__c == 'SCOPE OF SUPPLY'){
-                system.debug('inside label'+qtp.Label__c);
-                qtp.Label__c = '<b>'+qtp.Label__c+'</b>';
-                system.debug('inside label'+qtp.Label__c);
+        if(ObjQuote.Contract_Template__c != null){
+            List<Contract_Template__c> contractTemplateList = [SELECT id,Show_Ex_Works__c,Active__c, CurrencyIsoCode, Introduction__c, Label__c, Label_For_Colum_1__c, Label_For_Colum_2__c, Label_For_Colum_3__c, 
+                                Label_For_Colum_4__c, Label_For_Colum_5__c, Label_for_Date__c, Label_for_Draft_Contract__c, Label_for_General_Provision__c,
+                                Label_for_General_Remarks__c, Label_for_Page_No__c, Label_for_Page_No_2__c, Label_for_Price_in_Word__c, Label_for_Product_table__c,
+                                Label_For_Ref_No__c, Label_For_TO__c, Language__c, Logo__c, OwnerId, Name, Salutation__c, Subsidiary__c,
+                                Subsidiary__r.Factory_Location__c, Subsidiary__r.Name__c, ISO_Code_Label__c, ISO_Code_Text__c,Manufacture_Place__c,
+                                Company_Name_Label__c, Sales_Engineer_Label__c, Contract_No_Label__c, Contract_Date_Label__c, Cover_Page__c,
+                                ASB_Sign_Section2__c, ASB_Sign_Section3__c, ASB_Sign_Section4__c, ASB_Sign_Section5__c, Cover_Page_Required__c,
+                                Customer_Sign_Section2__c, Customer_Sign_Section3__c, Customer_Sign_Section4__c, Customer_Sign_Section5__c, Footer_Image__c,
+                                Header_Image__c, Section_2_Required__c, Section_4_Required__c, Section_5_Required__c, Footer_Image_Required__c, Footer_Text__c, Footer_Text_Required__c,
+                                S2_Introduction__c,S2_Title__c,S3_title__c,S4_Title__c,S5_Title__c, Draft_Image__c, Label_For_Contract_No__c
+                                FROM Contract_Template__c WHERE ID =:ObjQuote.Contract_Template__c and Active__c=true LIMIT 1];
+            
+            if(!contractTemplateList.isEmpty()){
+                contractTemplate = contractTemplateList[0];
+                
+                system.debug('ObjQuote.Contract_Template__c'+ObjQuote.Contract_Template__c);
+                system.debug('contractTemplate.id'+contractTemplate.id);
+                terms = [SELECT id, Active__c, Content__c,Content_2__c, Is_Terms_Condition__c, Label__c, Name, Contract_Template__c, Sr_No__c,(select id,name,Dynamic_Field__c,Field_To_Replace__c from Contract_Dynamic_Text__r where Active__c=true)
+                         FROM Contract_Template_Line__c WHERE Contract_Template__c =:contractTemplate.id and Active__c=true and Is_Terms_Condition__c=true order By Sr_No__c];
+                gRemark = [SELECT id, Active__c, Content__c,Content_2__c, Is_General_Remarks__c, Label__c, Name, Contract_Template__c, Sr_No__c,(select id,name,Dynamic_Field__c,Field_To_Replace__c from Contract_Dynamic_Text__r where Active__c=true)
+                           FROM Contract_Template_Line__c WHERE Contract_Template__c =:contractTemplate.id and Active__c=true and Is_General_Remarks__c=true order By Sr_No__c];
+                system.debug('gRemark'+gRemark);
+                
+                gProvision = [SELECT id, Active__c, Content__c, Content_2__c,Is_General_Provision__c, Label__c, Name, Contract_Template__c, Sr_No__c,(select id,name,Dynamic_Field__c,Field_To_Replace__c from Contract_Dynamic_Text__r where Active__c=true)
+                              FROM Contract_Template_Line__c WHERE Contract_Template__c =:contractTemplate.id and Active__c=true and Is_General_Provision__c=true order By Sr_No__c];
+                
+                map<String,Object> amap=(Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(ObjQuote));
+                if(terms.size() > 0){
+                    terms=getDynamicValue(terms,amap);
+                    system.debug('terms'+terms);
+                }
+                
+                
+                for(Contract_Template_Line__c qtp  : gRemark){
+                    if(qtp.Label__c == 'SCOPE OF SUPPLY'){
+                        system.debug('inside label'+qtp.Label__c);
+                        qtp.Label__c = '<b>'+qtp.Label__c+'</b>';
+                        system.debug('inside label'+qtp.Label__c);
+                    }
+                } 
+                system.debug('--->gRemark'+gRemark);
+                gRemark=getDynamicValue(gRemark,amap);
+                system.debug('getDynamicValue->gRemark'+getDynamicValue(gRemark,amap));
+                
+                gProvision=getDynamicValue(gProvision,amap);
             }
-        } 
-        system.debug('--->gRemark'+gRemark);
-        gRemark=getDynamicValue(gRemark,amap);
-        system.debug('getDynamicValue->gRemark'+getDynamicValue(gRemark,amap));
-        
-        // gProvision=getDynamicValue(gProvision,amap); 
+        }
         
     }
     
@@ -669,6 +703,10 @@ Freight_Pick__c,Freight_Amount__c,Insurance__c,Insurance_Amount__c, CreatedBy.Na
         return null;
     }
     
+    public void closeOptions(){
+        showOptionsModal = false;
+    }
+    
     public void showModal() {
         User_Setup__c u=[select id,name,Subsidiari__c, Signature_Image__c from User_Setup__c where User__c=:userinfo.getUserId() limit 1];
         //imageSignature = u.Signature_Image__c;
@@ -733,8 +771,13 @@ Freight_Pick__c,Freight_Amount__c,Insurance__c,Insurance_Amount__c, CreatedBy.Na
         public Boolean isstartWith_a {get; set;}
         public string Name {get;set;}
         public string Line_Item_Id {get;set;}
+        public Decimal Position_Number {get;set;}
+        public Id ContractLineId {get; set;}
         public string UOM {get;set;}
         public string Product_Name {get;set;}
+        public String Product_Type {get; set;}
+        public String Option_Header {get; set;}
+        public Integer Visible_Option_Count {get; set;}
         public string Product_Description {get;set;}
         public decimal Ceiling_Total_Sales_Price {get;set;}
         public string Ceiling_Total_Sales_Pricestring {get;set;}
@@ -758,9 +801,15 @@ Freight_Pick__c,Freight_Amount__c,Insurance__c,Insurance_Amount__c, CreatedBy.Na
         public String Sales_Price {get; set;}
     }
     
-    
-    
-    
-    
-    
+    private static String getPicklistLabel(String fieldApiName, String apiValue) {
+        if(String.isBlank(apiValue)) return null;
+        Map<String, Schema.SObjectField> fieldMap = Schema.SObjectType.Contract_Line_Item__c.fields.getMap();
+        List<Schema.PicklistEntry> entries = fieldMap.get(fieldApiName).getDescribe().getPicklistValues();
+        for (Schema.PicklistEntry pe : entries) {
+            if (pe.getValue() == apiValue) {
+                return pe.getLabel();
+            }
+        }
+        return null;
+    }
 }

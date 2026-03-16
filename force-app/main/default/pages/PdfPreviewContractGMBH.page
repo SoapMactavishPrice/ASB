@@ -1,595 +1,447 @@
-<apex:page showHeader="false" sidebar="false" renderAs="pdf" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" docType="xhtml-1.0">
-    <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-    <style type="text/css">
-            * {
-                margin: 0;
-                padding: 0;
-                font-family: Arial, Helvetica, sans-serif;
-                font-size: 8.5pt;
-                color: #1a1a1a;
-            }
+<apex:page standardController="Contract" extensions="SaveContract" action="{!CreateContract}" showHeader="false" sidebar="false" renderAs="pdf" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" docType="xhtml-1.0">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style type="text/css">
+    /* ── identical reset + @page rules as Quote VF ── */
+    * {
+        margin: 0; padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 8.5pt;
+        color: #1a1a1a;
+    }
+    @page {
+        size: A4;
+        margin-top: 230px;
+        margin-bottom: 140px;
+        margin-left: 60px;
+        margin-right: 60px;
 
-            @page {
-                size: A4;
-                margin-top: 230px;
-                margin-bottom: 140px;
-                margin-left: 60px;
-                margin-right: 60px;
+        @top-left {
+            content: element(page-header);
+        }
 
-                @top-left {
-                    content: element(page-header);
-                }
+        @bottom-left {
+            content: element(page-footer);
+        }
+    }
+    body { margin-right: 0; margin-left: 0; }
 
-                @bottom-left {
-                    content: element(page-footer);
-                }
-            }
+    /* HEADER */
+    #header            { position: running(page-header); }
+    #header-inner      { width: 100%; padding-bottom: 6px; margin-bottom: 4px; }
+    .header-banner     { width: 100%; display: block; }
 
-            body {
-                margin-right: 0;
-                margin-left: 0;
-            }
+    /* FOOTER */
+    #footer            { position: running(page-footer); padding-top: 0; width: 674.5px; }
+    .footer-topline    { border-top: 1px solid #5f5f5f; width: 674.5px; margin-bottom: 10px; }
+    .footer-grid       { width: 674.5px; border-collapse: collapse; }
+    .footer-grid td    { padding: 0; vertical-align: top; font-size: 7.6pt; line-height: 1.35; }
+    .footer-page       { margin-top: 14px; text-align: right; font-size: 8pt; }
+    .pagenumber:before { content: counter(page); }
+    .pagecount:before  { content: counter(pages); }
 
-            /* HEADER */
-            #header {
-                position: running(page-header);
-            }
+    /* RECIPIENT */
+    .recipient-table    { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+    .recipient-table td { padding: 0; vertical-align: top; font-size: 8.5pt; line-height: 1.65; }
+    .recipient-left     { width: 55%; font-weight: bold; }
+    .recipient-right    { width: 45%; }
 
-            #header-inner {
-                width: 100%;
-                padding-bottom: 6px;
-                margin-bottom: 4px;
-            }
-            .header-banner {
-                width: 100%;
-                display: block;
-            }
+    /* TERMS */
+    .terms-table    { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+    .terms-table td { padding: 2px 0; vertical-align: top; font-size: 8.3pt; line-height: 1.55; }
+    .terms-value    { width: 100%; text-align: justify; }
 
-            .header-table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-            .header-table td {
-                padding: 0;
-                vertical-align: top;
-            }
-            .header-left  { width: 55%; }
-            .header-right { width: 45%; text-align: right; }
+    /* ITEMS TABLE */
+    .items-table        { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+    .items-total-table  { width: 100%; border-collapse: collapse; margin-top: 0; page-break-inside: avoid; }
+    .items-table th     { background: transparent; color: #111; border: 0;
+                          border-bottom: 1px solid #1f1f1f; padding: 0 0 4px 0;
+                          font-size: 8.3pt; text-align: left; font-weight: bold; }
+    .items-table th.r   { text-align: right; }
+    .items-table th.c   { text-align: center; }
+    .items-table td     { border: 0; padding: 4px 0; vertical-align: top; font-size: 8.3pt; }
+    .items-total-table td { border: 0; padding: 7px 0; vertical-align: top; font-size: 8.3pt; }
+    .items-table td.r   { text-align: right; }
+    .items-table td.c   { text-align: center; }
+    .items-total-table td.r { text-align: right; }
+    .section-hdr td     { font-weight: bold; font-size: 8.3pt; color: #111;
+                          border: 0; padding: 3px 0 5px 0; }
+    .main-item-row td   { font-weight: bold; }
+    .total-hdr td       { font-weight: bold;
+                          border-top: 1px solid #1f1f1f;
+                          border-bottom: 1px solid #1f1f1f;
+                          padding: 7px 0; }
+    .total-hdr          { page-break-inside: avoid; page-break-after: avoid; }
+    .total-label        { text-align: center; }
+    .total-amt          { text-align: right; }
+    .opt-head           { font-weight: bold; font-style: italic; margin-top: 6px;
+                          margin-bottom: 4px; font-size: 8.3pt; color: #4f4f4f; }
+    .opt-item           { font-size: 8.3pt; font-style: italic; color: #5a5a5a;
+                          line-height: 1.55; font-weight: normal; }
+    .price-in-words     { page-break-inside: avoid; margin-top: 8px;
+                          font-size: 8.3pt; line-height: 1.5; padding-top: 7px; }
+    .text-after-total   { page-break-inside: avoid; margin-top: 8px;
+                          font-size: 8.3pt; line-height: 1.5; }
 
-            .quotation-label {
-                font-size: 22pt;
-                font-weight: bold;
-                color: #1a3a6b;
-                line-height: 1;
-            }
+    /* PAGE BREAK */
+    .pgbreak { page-break-before: always; }
 
-            .meta-table { border-collapse: collapse; margin-top: 5px; }
-            .meta-table td { padding: 1px 8px 1px 0; font-size: 8pt; vertical-align: top; }
-            .meta-label { color: #555555; }
-            .meta-value { font-weight: bold; }
+    /* CONDITIONS / PROVISIONS */
+    .conditions-heading  { font-size: 11pt; font-weight: bold; color: #000;
+                           border: 0; padding-bottom: 0; margin-bottom: 2px; line-height: 1.15; }
+    .provisions-heading  { font-size: 9pt; font-weight: bold; color: #000;
+                           text-align: center; border: 0; padding: 0;
+                           margin: 28px 0 12px 0; line-height: 1.15; }
+    .clause-body         { font-size: 8.2pt; line-height: 1.55; text-align: justify; margin-bottom: 3px; }
+    .preamble            { font-size: 8.2pt; line-height: 1.55; text-align: justify; margin-bottom: 12px; }
 
-            .brand-name {
-                font-size: 13pt;
-                font-weight: bold;
-                color: #1a3a6b;
-            }
-            .brand-asb {
-                font-size: 26pt;
-                font-weight: bold;
-                color: #cc0000;
-                line-height: 1;
-            }
+    /* SIGNATURE */
+    .signature-section  { margin-top: 72px; width: 100%;
+                          table-layout: fixed; border-collapse: collapse; }
+    .signature-section td { width: 50%; vertical-align: top; text-align: center; }
+    .signature-line     { width: 78%; margin: 0 auto 6px auto;
+                          border-top: 1px solid #000; height: 1px; }
+    .signature-role,
+    .signature-name,
+    .signature-title    { font-size: 8.5pt; font-weight: bold; line-height: 1.35; color: #000; }
+</style>
+</head>
+<body>
 
-            /* FOOTER */
-            #footer {
-                position: running(page-footer);
-                padding-top: 0;
-                width: 674.5px;
-            }
-            .footer-topline {
-                border-top: 1px solid #5f5f5f;
-                width: 674.5px;
-                margin-bottom: 10px;
-            }
-            .footer-grid {
-                width: 674.5px;
-                border-collapse: collapse;
-            }
-            .footer-grid td {
-                padding: 0;
-                vertical-align: top;
-                font-size: 7.6pt;
-                line-height: 1.35;
-            }
-            .footer-page {
-                margin-top: 14px;
-                text-align: right;
-                font-size: 8pt;
-            }
-            .pagenumber:before {
-                content: counter(page);
-            }
-            .pagecount:before {
-                content: counter(pages);
-            }
-
-            /* RECIPIENT */
-            .recipient-table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-bottom: 14px;
-            }
-            .recipient-table td { padding: 0; vertical-align: top; font-size: 8.5pt; line-height: 1.65; }
-            .recipient-left  { width: 55%; font-weight: bold; }
-            .recipient-right { width: 45%; }
-            .recipient-name  { font-weight: bold; }
-
-            /* ITEMS TABLE */
-            .items-table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-bottom: 8px;
-            }
-            .items-total-table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 0;
-                page-break-inside: avoid;
-            }
-            .items-table th {
-                background: transparent;
-                color: #111111;
-                border: 0;
-                border-bottom: 1px solid #1f1f1f;
-                padding: 0 0 4px 0;
-                font-size: 8.3pt;
-                text-align: left;
-                font-weight: bold;
-            }
-            .items-table th.r { text-align: right; }
-            .items-table th.c { text-align: center; }
-
-            .items-table td {
-                border: 0;
-                padding: 4px 0;
-                vertical-align: top;
-                font-size: 8.3pt;
-            }
-            .items-total-table td {
-                border: 0;
-                padding: 7px 0;
-                vertical-align: top;
-                font-size: 8.3pt;
-            }
-            .items-table td.r { text-align: right; }
-            .items-table td.c { text-align: center; }
-            .items-total-table td.r { text-align: right; }
-
-            .section-hdr td {
-                background: transparent;
-                font-weight: bold;
-                font-size: 8.3pt;
-                color: #111111;
-                border: 0;
-                padding: 3px 0 5px 0;
-            }
-            .main-item-row td { font-weight: bold; }
-            .total-hdr td {
-                background: transparent;
-                font-weight: bold;
-                border-top: 1px solid #1f1f1f;
-                border-bottom: 1px solid #1f1f1f;
-                padding: 7px 0 7px 0;
-            }
-
-            .total-hdr {
-                page-break-inside: avoid;
-                page-break-after: avoid;
-            }
-            .total-label {
-                text-align: center;
-            }
-            .total-amt {
-                text-align: right;
-            }
-
-            .opt-head {
-                font-weight: bold;
-                font-style: italic;
-                margin-top: 6px;
-                margin-bottom: 4px;
-                font-size: 8.3pt;
-                color: #4f4f4f;
-            }
-            .opt-item {
-                font-size: 8.3pt;
-                font-style: italic;
-                color: #5a5a5a;
-                line-height: 1.55;
-                margin-left: 0;
-                font-weight: normal;
-            }
-
-            /* Page break */
-            .pgbreak { page-break-before: always; }
-
-            /* CONDITIONS / PROVISIONS */
-            .section-heading {
-                font-size: 12pt;
-                font-weight: bold;
-                color: #1a3a6b;
-                border-bottom: 1.5px solid #1a3a6b;
-                padding-bottom: 4px;
-                margin-bottom: 12px;
-            }
-            .conditions-heading {
-                font-size: 11pt;
-                font-weight: bold;
-                color: #000000;
-                border: 0;
-                padding-bottom: 0;
-                margin-bottom: 2px;
-                line-height: 1.15;
-            }
-            .provisions-heading {
-                font-size: 9pt;
-                font-weight: bold;
-                color: #000000;
-                text-align: center;
-                border: 0;
-                padding: 0;
-                margin: 28px 0 12px 0;
-                line-height: 1.15;
-            }
-            .clause-title {
-                font-weight: bold;
-                font-size: 8.5pt;
-                margin-top: 10px;
-                margin-bottom: 3px;
-            }
-            .clause-body {
-                font-size: 8.2pt;
-                line-height: 1.55;
-                text-align: justify;
-                margin-bottom: 3px;
-            }
-            .bullet {
-                font-size: 8.2pt;
-                line-height: 1.5;
-                margin-left: 14px;
-                margin-bottom: 2px;
-            }
-            .preamble {
-                font-size: 8.2pt;
-                line-height: 1.55;
-                text-align: justify;
-                margin-bottom: 12px;
-            }
-            .sig-block {
-                margin-top: 32px;
-                font-size: 8.5pt;
-                line-height: 1.85;
-            }
-            .signature-section {
-                margin-top: 72px;
-                width: 100%;
-                table-layout: fixed;
-                border-collapse: collapse;
-            }
-            .signature-section td {
-                width: 50%;
-                vertical-align: top;
-                text-align: center;
-            }
-            .signature-line {
-                width: 78%;
-                margin: 0 auto 6px auto;
-                border-top: 1px solid #000000;
-                height: 1px;
-            }
-            .signature-role,
-            .signature-name,
-            .signature-title {
-                font-size: 8.5pt;
-                font-weight: bold;
-                line-height: 1.35;
-                color: #000000;
-            }
-    </style>
-    </head>
-    <body>
-
-        <div id="header" style="width: 674.5px;">
-            <div id="header-inner">
-                <apex:image value="{!$Resource.GMBH_Contract_Header}" styleClass="header-banner"/>
-            </div>
-            <br/>
-            <div style="font-size:15px; line-height:1;">
-                <span style="color:#000000;">No:</span>
-                <span style="color:#434343;">&nbsp;&nbsp;&nbsp;Q-39443</span><br/>
-
-                <span style="color:#000000;">Date:</span>
-                <span style="color:#434343;">&nbsp;&nbsp;&nbsp;20/06/2024</span>
-            </div>
+    <!-- ═══════════════════════════════════════════════════════════════════
+         RUNNING HEADER
+    ════════════════════════════════════════════════════════════════════ -->
+    <div id="header" style="width: 674.5px;">
+        <div id="header-inner">
+            <!-- Released contract → full header image; Draft → watermark image -->
+            <apex:outputPanel rendered="{!showSaveContract}">
+                <apex:image value="{!contractTemplate.Header_Image__c}"
+                            styleClass="header-banner"/>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!NOT(showSaveContract)}">
+                <apex:image value="{!contractTemplate.Draft_Image__c}"
+                            style="width:200px;height:90px;position:relative;"/>
+            </apex:outputPanel>
         </div>
-
-        <div id="footer">
-            <div class="footer-topline"></div>
-            <table class="footer-grid">    
-                <tr>
-                    <td style="width: 100px; padding-right: 57px;">
-                        Nissei ASB GmbH<br/>
-                        Wahlerstr. 8<br/>
-                        40472 D&#252;sseldorf<br/>
-                        Germany
-                    </td>
-                    <td style="width: 100px; padding-right: 57px;">
-                        Gesch&#228;ftsf&#252;hrung:<br/>
-                        Karel Keersmaekers-Michiels<br/>
-                        Kota Aoki<br/>
-                        Eva Alzas Guillen
-                    </td>
-                    <td style="width: 100px; padding-right: 57px;">
-                        Sitz der Gesellschaft:<br/>
-                        Amtsgericht D&#252;sseldorf<br/>
-                        HRB 22191
-                    </td>
-                    <td style="width: 100px;">
-                        St.-Nr.: 105/5832/0456<br/>
-                        VAT-No.: DE119353439<br/>
-                        Tel.:+49 (211) 941040<br/>
-                        www.nisseiasb.co.jp
-                    </td>
-                </tr>
-            </table>
-            <div class="footer-page">
-                Page <span class="pagenumber"></span> of <span class="pagecount"></span>
-            </div>
+        <br/>
+        <div style="font-size:15px; line-height:1;">
+            <span style="color:#000000;">No:</span>
+            <span style="color:#656565;">&nbsp;&nbsp;&nbsp;{!ContractNumber}</span><br/>
+            <span style="color:#000000;">Date:</span>
+            <span style="color:#656565;">&nbsp;&nbsp;&nbsp;{!IF(NOT(ISBLANK(TodayDate_string)), TodayDate_string, TEXT(ObjQuote.DATE__c))}</span>
         </div>
+    </div>
 
-        <!-- CONTENT -->
-        <table class="recipient-table">
+    <!-- ═══════════════════════════════════════════════════════════════════
+         RUNNING FOOTER  (static — Nissei ASB GmbH)
+    ════════════════════════════════════════════════════════════════════ -->
+    <div id="footer">
+        <div class="footer-topline"></div>
+        <table class="footer-grid">
             <tr>
-                <td class="recipient-left">
-                    <div style="font-weight: normal; padding-left: 440px; font-size: 9.2pt;">Delivery&nbsp;To:</div>
-                    <div>FRAPAK France</div>
-                    <div>3 Le Bas de la Ruelle aux Chats ZI de Gron</div>
-                    <div>89100 Gron</div>
-                    <div>France</div>
+                <td style="width:100px; padding-right:57px;">
+                    Nissei ASB GmbH<br/>
+                    Wahlerstr. 8<br/>
+                    40472 D&#252;sseldorf<br/>
+                    Germany
                 </td>
-                <td class="recipient-right"></td>
+                <td style="width:100px; padding-right:57px;">
+                    Gesch&#228;ftsf&#252;hrung:<br/>
+                    Karel Keersmaekers-Michiels<br/>
+                    Kota Aoki<br/>
+                    Eva Alzas Guillen
+                </td>
+                <td style="width:100px; padding-right:57px;">
+                    Sitz der Gesellschaft:<br/>
+                    Amtsgericht D&#252;sseldorf<br/>
+                    HRB 22191
+                </td>
+                <td style="width:100px;">
+                    St.-Nr.: 105/5832/0456<br/>
+                    VAT-No.: DE119353439<br/>
+                    Tel.:+49 (211) 941040<br/>
+                    www.nisseiasb.co.jp
+                </td>
             </tr>
         </table>
-
-        <table class="items-table">
-            <thead>
-                <tr>
-                    <th style="width:5%;">Pos.</th>
-                    <th style="width:54%;">Description</th>
-                    <th class="c" style="width:10%;">Quantity</th>
-                    <th class="r" style="width:16%;">Unit Price JPY</th>
-                    <th class="r" style="width:15%;">Total JPY</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="section-hdr">
-                    <td colspan="5">Machine</td>
-                </tr>
-                <tr class="main-item-row">
-                    <td>1</td>
-                    <td>
-                        <strong>ASB-70DPH V4 1-step injection stretch blow-molding machine CE Servo</strong>
-                        <div class="opt-head">Machine Option</div>
-                        <div class="opt-item">Zero Cooling (incl. Inj. Core Air Eject Circuit)</div>
-                        <div class="opt-item">Blow Air Circuit (B)</div>
-                        <div class="opt-item">Hydraulic Oil Level Alarm</div>
-                        <div class="opt-item">Hydraulic. Oil Temp. Regulating Valve</div>
-                        <div class="opt-item">Blow Mold Locking Device</div>
-                        <div class="opt-item">Machine Leveling Pads</div>
-                        <div class="opt-item">Design For Gate Cut Device (Circuit Only)</div>
-                        <div class="opt-item">Design For Bottle Takeout Device BTS with Universal Safety Doors &amp; Chutes</div>
-                        <div class="opt-item">Valve Gate H.R. Circuit</div>
-                        <div class="opt-item">Blow Air Circulation Circuit 6 Cav.</div>
-                        <div class="opt-item">Manual Language French</div>
-                        <div class="opt-item">External Molding Conditions Memory (USB)</div>
-                        <div class="opt-item">High Pressure Regulator For Blow Air (external)</div>
-                        <div class="opt-item">Injection Mold Clamping Force Increase 70t --&gt; 80t</div>
-                        <div class="opt-item">Bottom Mold Clamping Force Increase 4t --&gt; 8t</div>
-                        <div class="opt-item">Blow Mold Clamping Force Increase 24t --&gt; 30t</div>
-                        <div class="opt-item">Blow Mold Conditioning Provision (blade hoses, fittings)</div>
-                        <div class="opt-item">Auto Lubrication Food Grade Grease</div>
-                        <div class="opt-item">Standard Spare Parts</div>
-                        <div class="opt-item">Tool Box</div>
-                        <div class="opt-item">Quick Mold Change</div>
-                        <div class="opt-item">Charge Pump Pressure Setting Limit to 17.5MPa</div>
-                    </td>
-                    <td class="c">1</td>
-                    <td class="r">44,200,000.00</td>
-                    <td class="r">44,200,000.00</td>
-                </tr>
-                <tr>
-                    <td><strong>2</strong></td>
-                    <td><strong>Vision1 Controller for Machine Pos. 1</strong></td>
-                    <td class="c">1</td>
-                    <td class="r">1,900,000.00</td>
-                    <td class="r">1,900,000.00</td>
-                </tr>
-                <tr>
-                    <td><strong>3</strong></td>
-                    <td><strong>BASCO-Mixing Screw 64 mm for Pos. 1</strong></td>
-                    <td class="c">1</td>
-                    <td class="r">1,300,000.00</td>
-                    <td class="r">1,300,000.00</td>
-                </tr>
-                <tr>
-                    <td><strong>4</strong></td>
-                    <td><strong>Blow Air Recovery to machine operation air</strong></td>
-                    <td class="c">1</td>
-                    <td class="r">2,600,000.00</td>
-                    <td class="r">2,600,000.00</td>
-                </tr>
-                <tr class="section-hdr">
-                    <td colspan="5">Auxiliaries</td>
-                </tr>
-                <tr>
-                    <td><strong>5</strong></td>
-                    <td><strong>Bottle Takeout Device BTS-70DP pot type with conveyor</strong></td>
-                    <td class="c">1</td>
-                    <td class="r">2,900,000.00</td>
-                    <td class="r">2,900,000.00</td>
-                </tr>
-            </tbody>
-        </table>
-        <table class="items-total-table">
-            <tbody>
-                <tr class="total-hdr">
-                    <td colspan="4" class="total-label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Total (EUR) :</td>
-                    <td class="total-amt">53,800,000.00</td>
-                </tr>
-            </tbody>
-        </table>
-
-
-        <!-- PAGE 3-4: GENERAL CONDITIONS -->
-        <div class="pgbreak">
-            <div class="conditions-heading"><u>GENERAL CONDITIONS</u></div>
-
-            <div class="clause-title">1. Place of delivery</div>
-            <div class="clause-body">All equipment will be delivered FOB Mumbai, India (Pos. 1 - Pos. 4) and EXW D&#252;sseldorf, Germany (Pos. 5).</div>
-
-            <div class="clause-title">2. Time of delivery</div>
-            <div class="clause-body">Machine and dryer: Appx. 3 - 4 months EXF Nissei ASB India plant</div>
-            <div class="clause-body">Molds:</div>
-            <ul style="list-style-type: disc; margin-left: 10px;">
-                <li>Design &amp; manufacturing completion: 12 weeks from order receipt and ASB drawing approval</li>
-                <li>Mold trial start: 1 week from mold completion</li>
-                <li>T1 sample submission: 1 week from mold trial start</li>
-                <li>Ex-factory: 1 week from sample approval</li>
-            </ul><br/>
-            <div class="clause-body">Take-Out: Appx. 2 weeks until ex-factory Nissei ASB D&#252;sseldorf from order receipt and receipt of down payment</div>
-
-            <div class="clause-title">3. Terms of payment</div>
-            <div class="clause-body">The contracted goods shall be paid following the below terms of payment</div>
-            <ul style="list-style-type:disc; margin-left: 10px;">
-                <li>50% down payment on order by bank transfer</li>
-                <li>40% second payment before ex-factory shipment by bank transfer</li>
-                <li>10% balance payment at commissioning but no later than 60 days from shipping date</li>
-            </ul>
-            <div class="clause-body" style="margin-top:4px;">Seller&#8217;s bank account: DEUTSCHE BANK AG DUESSELDORF, IBAN: DE 74 3007 0010 0310 4999 00, BIC: DEUTDEDD, ACCOUNT NO: 310 4999</div>
-
-            <div class="clause-title">4. Technical specifications</div>
-            <div class="clause-body">The contracted goods shall be made as per the attached Seller&#8217;s standard specifications (subject to change for improvement) and painted with the Seller&#8217;s standard colour. The mold shall be made in accordance with the Seller&#8217;s standard specifications to produce bottles specified in the approved drawing and specifications.</div>
-            <div class="clause-body">The quoted prices and time of delivery shall be subject to review in the following cases:</div>
-            <ul style="list-style-type:disc; margin-left: 10px;">
-                <li>Machine and auxiliary equipment: the incorporation of special specifications has become necessary to meet local regulations and/or to operate the mold to produce special bottles.</li>
-            </ul>
-
-            <div class="clause-title">5. Inspection prior to ex-factory</div>
-            <div class="clause-body">The Seller will conduct the inspection of the contracted goods in the Seller&#8217;s factory in accordance with the Seller&#8217;s standard practice. This inspection shall be final, however if requested by the Buyer, the Seller is ready to accept an internationally accepted third party inspection such as SGS at the Buyer&#8217;s cost. The Seller will make the contracted goods ready for ex-factory shipment only after successfully finishing the inspection. Molds will be made ready for ex-factory shipment after the confirmation and approval that the sample bottles are produced in accordance with the agreed product drawing and specifications.</div>
-
-            <div class="clause-title">6. Training at the Seller&#8217;s factory</div>
-            <div class="clause-body">The Seller shall provide training of maximum two of the Buyer&#8217;s technicians for a period of 5 working days at the Seller&#8217;s facilities. The training shall be organized in accordance with the Seller&#8217;s standard practice and training program. The Seller shall provide the following free of charge: Local transportation, Hotel, Meals in the facility, Visa invitation for the period of the training.</div>
-
-            <div class="clause-title">7. Sample bottles</div>
-            <div class="clause-body">If the Buyer will give the approval of the contracted goods based on the approval of the sample bottles, the Buyer shall inform the Seller in advance how many sample bottles are required for approval purpose.</div>
-            <div class="clause-body">If more than 200 pcs &lt; 3L bottles, 50 pcs &gt;3L &lt;10L bottles or 20 pcs &gt; 10L bottles are required this is subject to up charge and the freight will be on collect basis.</div>
-
-            <div class="clause-title">8. Startup Service</div>
-            <div class="clause-body">The Seller will provide start up service under supervisory capacity and training of the Buyer&#8217;s technical staff. The start-up and training will be conducted in accordance with the Seller&#8217;s standard practice. The Buyer will cover all cost including travelling cost, hotel expenses and meals. The engineer will be dispatched upon confirmation of all electric, air and water connections having been completed by the Buyer. The Buyer shall request the dispatch of the engineer minimum 1 week in advance of the projected time for start-up.</div>
-            <div class="clause-body">Should delays in start-up occur due to reasons not attributable to the Seller, the Buyer shall be charged in accordance with the standard fees for technical service. In any case the Seller&#8217;s engineer will not stay longer than 30 days without a separate agreement.</div>
-            <div class="clause-body">Should the start-up not be carried out within 6 months after the date of the bill of lading due to reasons not attributable to the Seller, the Seller shall not have the obligation to conduct the start-up. However, the Seller will send an engineer for start-up under the condition to be mutually agreed under a separate contract.</div>
-
-            <div class="clause-title">9. Installation</div>
-            <div class="clause-body">The Seller&#8217;s scope of work does not include wiring, piping and consumables required to install/operate the equipment at the Buyer&#8217;s factory. This work shall be carried out by the Buyer at responsibility and cost.</div>
-            <div class="clause-body">Should it be required, the Seller can provide supervision of the installation of the contracted goods at a fee of 4.500 EUR excluding travel and hotel expenses for a maximum period of 5 days including traveling.</div>
-
-            <div class="clause-title">10. Auxiliary equipment</div>
-            <div class="clause-body">This quotation does not include the chiller, dehumidifier, mold temperature controllers, compressor for operation and blowing air and the cooling tower for hydraulic oil cooling. The selection of auxiliary equipment to be used with the machines and molds is to be based on the understanding that the contracted goods shall be operated in factory operating conditions of 10-40C temperature, less than 70% humidity in accordance with operation manual with the power source of 380V 3 phases 50 cycles, with a maximum 10% voltage fluctuation. The Buyer will prepare auxiliary equipment including compressors and a cooling tower at its own cost and responsibility. The Seller shall submit the utility list for the Buyer&#8217;s reference only.</div>
-
-            <div class="clause-title">11. Cancellation Charges</div>
-            <div class="clause-body">The following charges will be applied in case of cancellation.</div>
-            <ul style="list-style-type:disc; margin-left: 10px;">
-                <li>Mold: Cancellation within 30 days of the order and finalization of specifications: 50%. Cancellation after more than 30 days after the order and finalization of specifications: 100%</li>
-                <li>Machine: Cancellation within 30 days of the order and finalization of specifications: 5%. Cancellation after more than 30 days after the order and finalization of specifications: 30%</li>
-                <li>Auxiliaries: Cancellation within 30 days of the order and finalization of specifications: 50%. Cancellation after more than 30 days after the order and finalization of specifications: 100%</li>
-            </ul>
-
-            <div class="clause-title">12. Warranty</div>
-            <div class="clause-body">The warranty period shall be in accordance with the warranty policy in the attachment.</div>
+        <div class="footer-page">
+            Page <span class="pagenumber"></span> of <span class="pagecount"></span>
         </div>
+    </div>
 
+    <!-- ═══════════════════════════════════════════════════════════════════
+         PAGE BODY — RECIPIENT
+    ════════════════════════════════════════════════════════════════════ -->
+    <table class="recipient-table">
+        <tr>
+            <td class="recipient-left">
+                <!-- "Delivery To:" label — mirrors Quote's "To:" convention -->
+                <div style="font-weight:normal; font-size:9.2pt; padding-left: 450px;">Delivery&#160;To:</div>
 
-        <!-- PAGE 5-6: GENERAL PROVISIONS -->
-        <div class="pgbreak">
-            <div class="provisions-heading">GENERAL PROVISIONS</div>
+                <!-- Priority: QUOTATION_ADDRESSED_TO lookup → QuoteToName → Legal Name -->
+                <apex:outputPanel rendered="{!NOT(ISBLANK(ObjQuote.QUOTATION_ADDRESSED_TO__c))}">
+                    <div>{!ObjQuote.QUOTATION_ADDRESSED_TO__r.Name}</div>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!AND(ISBLANK(ObjQuote.QUOTATION_ADDRESSED_TO__c),
+                                                  NOT(ISBLANK(ObjAccount.Legal_Name__c)))}">
+                    <div>{!ObjAccount.Legal_Name__c}</div>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!AND(ISBLANK(ObjQuote.QUOTATION_ADDRESSED_TO__c),
+                                                  ISBLANK(ObjAccount.Legal_Name__c))}">
+                    <div>{!ObjAccount.Name}</div>
+                </apex:outputPanel>
 
-            <div class="preamble">The following terms and conditions shall apply to terms and conditions of the Quotation and the Sales Contract unless otherwise specified on the face of this Sales Contract and/or agreed in writing executed by duly authorized representative of Seller. If Buyer uses its own purchase form, it is understood that such form is subject to and deemed to include the terms and conditions hereof.</div>
+                <!-- Address block: custom fields first, fallback message -->
+                <apex:outputPanel rendered="{!NOT(ISBLANK(address))}">
+                    <div><apex:outputText escape="false" value="{!address}"/></div>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!ISBLANK(address)}">
+                    <div>(Recipient address not mapped)</div>
+                </apex:outputPanel>
+            </td>
+            <td class="recipient-right"></td>
+        </tr>
+    </table>
 
-            <div class="clause-title">1. Acceptance of Orders:</div>
-            <div class="clause-body">Orders based on such Quotation/Sales Contract are subject to Seller&#8217;s written acceptance and no contract shall be deemed to have been created until such acceptance has been delivered to Buyer by Seller. Buyer shall make an advance payment as provided on the face of the Sales Contract. Buyer shall also provide Seller with the specifications of the product which Buyer intends to make using the machine (the &#8220;Machine&#8221;) and/or the mold (the &#8220;Mold&#8221;) manufactured by Seller. If the specifications are going to be revised, the delivery schedule and sales amount specified on the face of the Sales Contract shall be re-quoted or revised. Buyer may terminate the Sales Contract only before Seller begins designing and/or manufacturing the Machine or the Mold, provided that, even in such case, advance payment shall not be refunded to Buyer.</div>
-
-            <div class="clause-title">2. Delayed Payment:</div>
-            <div class="clause-body">In case Buyer delays in paying any amount under the Sales Contract by any cause or reason whatsoever, Buyer shall be liable to pay to Seller an overdue interest of 6 months LIBOR plus 4% p.a. over the period of such delay. In case the L/C should get dishonoured, Buyer shall be liable to pay to Seller an overdue interest of 6 months LIBOR plus 4% p.a. over the period from the L/C due date until the sum is paid by Buyer to Seller.</div>
-
-            <div class="clause-title">3. Termination:</div>
-            <div class="clause-body">Seller may terminate the Sales Contract forthwith by giving a written notice, if Buyer fails to open an L/C required under the Sales Contract within the period reasonably specified by Seller or sixty (60) days before the expected shipment date, whichever is earlier, or if Buyer violates any provisions of the Sales Contract. In such case, Seller may claim compensation for all damages to Seller in respect of the Sales Contract and the amount of advance payment paid to Seller by Buyer shall be considered as the minimum amount of compensation to Seller.</div>
-
-            <div class="clause-title">4. Delivery:</div>
-            <div class="clause-body">The date of the Bill of Lading shall be accepted as the date of shipment. Seller can appoint any steamship company, carrier or vessel for shipment. Neither Seller nor its suppliers shall be responsible or liable for failure in performing the obligation for shipment and any other obligations under the Sales Contract if such failure is caused by Force Majeure, including but not limited to strikes, labour disputes, floods, civil commotion, war, riot, act of god, rules, laws, orders, restrictions, embargoes, quotas or actions of any government, foreign or domestic, or any agency or subdivision thereof, casualties, fires, accidents, shortage of transportation facilities, detention of goods by customs authorities; loss of goods in public or private warehouses, or other casualty or contingency beyond Seller&#8217;s reasonable control or the control of Seller&#8217;s supplier or otherwise unavoidable. In any such event Seller shall have the right, at its sole and absolute discretion and option and without any liability to Buyer, to (a) cancel all or any portion of the Sales Contract or (b) perform the Sales Contract as so restricted or modified to the extent determined by Seller and Buyer in mutual consent or (c) perform the Sales Contract within a reasonable time after the causes for the nonperformance or delay have ceased. The delivery date or the quotation is only an estimate based on present scheduling requirements and requires the Seller only to use its best efforts to meet such date.</div>
-
-            <div class="clause-title">5. Retention of Title:</div>
-            <div class="clause-body">The title to all goods delivered remains with Seller until Buyer has paid all and any claims arising from the business relationship with Seller, in the case of bills of exchange or cheques until due collection of the cash equivalent. Buyer holds the retained property in custody for Seller free of charge and undertakes to insure it against the normal risks, such as fire, water, theft, etc. All claims covered by the insurance are herewith assigned to Seller in advance. In case the goods with retained title are seized or otherwise claimed by third parties, Buyer shall notify Seller immediately. All intervention costs shall be borne by Buyer. Buyer grants Seller an irrevocable licence to enter at any time any vehicles or premises owned or occupied by Buyer or in its possession for the purpose of repossessing and removing any such goods with retained title. In the event of the resale to third parties, Buyer assigns to Seller herewith in advance all claims arising from the resale to third parties. Upon request of Seller, Buyer shall furnish Seller with the names and addresses of those respective customers.</div>
-
-            <div class="clause-title">6. Inspection:</div>
-            <div class="clause-body">Inspection by Seller shall be considered final, unless otherwise agreed in writing between Seller and Buyer, by duly authorized representatives of the parties.</div>
-
-            <div class="clause-title">7. Claim:</div>
-            <div class="clause-body">Any claim by Buyer must be made in writing with photograph within twenty-one (21) days after receipt of such products supplied by Seller or within twenty-one (21) days after invisible defect is found.</div>
-
-            <div class="clause-title">8. Installation:</div>
-            <div class="clause-body">Seller shall provide, upon Buyer&#8217;s request, recommendable installation specifications and, where possible, a functional check of the machine after it has been properly installed by Buyer and prior to its being placed in service.</div>
-
-            <div class="clause-title">9. INDEMNIFICATION AND DAMAGES:</div>
-            <div class="clause-body">Buyer shall use and shall require his employees to use all the safety devices, guards, and proper safe operating procedures as set forth in the machine&#8217;s manual and specification sheet. Buyer shall not remove or modify any such devices or guards or warning signs. Buyer shall not perform any changes and modifications to the machine(s), mold(s), and ancillary equipment supplied by Seller without Seller&#8217;s written recommendations or requests. Buyer shall not permit any person other than qualified operating personnel to remain within arm&#8217;s length of any machine or ancillary equipment manufactured or supplied by Seller during operation thereof. If Buyer fails to strictly observe each and every one of the obligations set forth in this paragraph with regard to any products manufactured or supplied by Seller, Buyer agrees to indemnify and save Seller harmless from any liabilities and obligations incurred by Seller to persons injured directly or indirectly in connection with the operation of such products.</div>
-
-            <div class="clause-title">10. Warranty:</div>
-            <div class="clause-body">The warranty period shall be one year after the date of starting up of the machine or 14 months after the date of the bill of lading whichever comes first. Provided that the electric devices, hydraulic and pneumatic devices, sealing material and bearing, and their parts shall be guaranteed for a period of six months from the date of start-up of the machine or eight months from the date of the bill of lading, whichever comes earlier. The warranty only extends to those parts of the Machine originally engineered or manufactured by Seller. With the exception of normal routine maintenance service and repair parts and expendable items, Seller shall repair or replace, at its option, those original parts which are found and acknowledged by Seller to be defective in manufacture or workmanship. This warranty is in lieu of all other warranties, both express and implied, including WARRANTIES OF FITNESS FOR A PARTICULAR PURPOSE or WARRANTIES OF MERCHANTIBILITY. Neither Seller&#8217;s agent nor Seller shall be responsible for special or consequential damages.</div>
-
-            <div class="clause-title">11. Specifications:</div>
-            <div class="clause-body">All working drawings or other materials provided by Seller are for informational purpose only. Seller shall only be responsible for the specifications contained therein. Seller reserves the right to make, at any time, such changes in detail of design or construction as shall, in Seller&#8217;s sole judgment, constitute an improvement over former designs. Any proposals, prints, brochures, drawings or other information furnished to Buyer by Seller are intended for confidential use by Buyer; shall remain the property of Seller; and shall not be used to the detriment of Seller&#8217;s competitive position.</div>
-
-            <div class="clause-title">12. Infringement:</div>
-            <div class="clause-body">Buyer shall indemnify Seller for and hold Seller harmless from any liability or alleged liability for infringement of rights of third parties as a result of the use of any patent, trademark, design and/or copyright originating from or chosen by Buyer on products produced on the Machine. Buyer will also defend Seller in any such action at Buyer&#8217;s sole expense. This provision only applies to the products produced on the Machine and in no way relieves Seller from full and sole responsibility for patents, trademarks, designs or copyrights relating to the Machine and manufacturing process.</div>
-
-            <div class="clause-title">13. Arbitration:</div>
-            <div class="clause-body">Any dispute arising out of or relating to this Contract, its interpretation or breach, shall be settled in D&#252;sseldorf, Germany under the Rules of Conciliation and Arbitration of the International Chamber of Commerce by one or more arbitrators appointed in accordance with the said Rules. The award shall be final and binding upon both parties.</div>
-
-            <div class="clause-body"><b>14.&nbsp;</b>The Sales Contract shall constitute the entire agreement between the parties. No statement subsequent to the acceptance of the Sales Contract purporting to modify the said terms and conditions shall be binding upon the parties unless otherwise consented to in writing by duly authorized representative of Seller.</div>
-
-            <div class="clause-title">15. Governing Laws:</div>
-            <div class="clause-body">The Sales Contract shall be governed in all respects by the Laws of Germany with the exception of the UN convention on international contracts of sale of goods.</div>
-
-            <div class="clause-title">16. Validity:</div>
-            <div class="clause-body">Should any provision of these General Provisions be invalid, this shall not affect the validity of the remaining provisions.</div>
-
-            <table class="signature-section">
-                <tr>
-                    <td>
-                        <div class="signature-line"></div>
-                        <div class="signature-role">Seller</div>
-                        <div class="signature-name">Nissei ASB GmbH</div>
-                        <div class="signature-name">Karel Keersmaekers-Michiels</div>
-                        <div class="signature-title">Managing Director</div>
-                    </td>
-                    <td>
-                        <div class="signature-line"></div>
-                        <div class="signature-role">Buyer</div>
-                        <div class="signature-name">Cosline Packaging</div>
-                    </td>
-                </tr>
+    <!-- ═══════════════════════════════════════════════════════════════════
+         TERMS / INTRO TEXT  (from Contract_Template_Line__c)
+    ════════════════════════════════════════════════════════════════════ -->
+    <apex:outputPanel rendered="{!NOT(ISBLANK(contractTemplate.Id))}">
+        <apex:outputPanel rendered="{!terms.size > 0}">
+            <table class="terms-table">
+                <tbody>
+                    <apex:repeat value="{!terms}" var="cTerms">
+                        <tr>
+                            <td class="terms-value">
+                                <apex:outputField value="{!cTerms.Content_2__c}"/>
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                </tbody>
             </table>
+        </apex:outputPanel>
+    </apex:outputPanel>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         LINE ITEMS TABLE
+    ════════════════════════════════════════════════════════════════════ -->
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width:5%;">Pos.</th>
+                <th style="width:54%;">Description</th>
+                <th class="c" style="width:10%;">Quantity</th>
+                <th class="r" style="width:16%;">
+                    Unit Price {!ObjQuote.CurrencyIsoCode}
+                </th>
+                <th class="r" style="width:15%;">
+                    Total {!ObjQuote.CurrencyIsoCode}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <apex:repeat value="{!prodLineList}" var="cLine">
+                <apex:outputPanel layout="none" rendered="{!NOT(cLine.Is_Tax)}">
+
+                    <!-- Section header (Product_Type grouping) -->
+                    <apex:outputPanel layout="none"
+                                      rendered="{!NOT(ISBLANK(cLine.Product_Type))}">
+                        <tr class="section-hdr">
+                            <td colspan="5">{!cLine.Product_Type}</td>
+                        </tr>
+                    </apex:outputPanel>
+
+                    <!-- Main item row -->
+                    <tr class="main-item-row">
+                        <td>{!cLine.Position_Number}</td>
+                        <td>
+                            <apex:outputPanel rendered="{!ISBLANK(cLine.Product_Description)}">
+                                <strong>{!cLine.Product_Name}</strong>
+                            </apex:outputPanel>
+                            <apex:outputText rendered="{!NOT(ISBLANK(cLine.Product_Description))}"
+                                            escape="false"
+                                            value="{!cLine.Product_Description}"/>
+                            <!-- Options header label -->
+                            <apex:outputPanel rendered="{!NOT(ISBLANK(cLine.Option_Header))}">
+                                <div class="opt-head">{!cLine.Option_Header}</div>
+                            </apex:outputPanel>
+                        </td>
+                        <td class="c">{!cLine.Quantity}</td>
+                        <td class="r">{!cLine.totalValueString}</td>
+                        <td class="r">{!cLine.Ceiling_Total_Sales_Pricestring}</td>
+                    </tr>
+
+                    <!-- Child options -->
+                    <apex:repeat value="{!cLine.childProd}" var="cOpt">
+                        <apex:outputPanel layout="none"
+                                          rendered="{!NOT(cOpt.Name_Hide)}">
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <div class="opt-item">
+                                        <apex:outputPanel
+                                            rendered="{!NOT(ISBLANK(cOpt.Description))}">
+                                            <apex:outputText escape="false"
+                                                            value="{!cOpt.Description}"/>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel
+                                            rendered="{!ISBLANK(cOpt.Description)}">
+                                            {!cOpt.Manual_Product_Name}
+                                        </apex:outputPanel>
+                                    </div>
+                                </td>
+                                <td class="c">
+                                    <apex:outputPanel rendered="{!cOpt.Price_Visible}">
+                                        {!IF(cOpt.Quantity != null, cOpt.Quantity, '')}
+                                    </apex:outputPanel>
+                                </td>
+                                <td class="r">
+                                    <apex:outputPanel rendered="{!cOpt.Price_Visible}">
+                                        {!IF(cOpt.Manual_Option_List_Price != null,
+                                             cOpt.Manual_Option_List_Price, '')}
+                                    </apex:outputPanel>
+                                </td>
+                                <td class="r">
+                                    <apex:outputPanel rendered="{!cOpt.Price_Visible}">
+                                        {!IF(cOpt.Sales_Price != null,
+                                             cOpt.Sales_Price, '')}
+                                    </apex:outputPanel>
+                                </td>
+                            </tr>
+                        </apex:outputPanel>
+                    </apex:repeat>
+
+                </apex:outputPanel>
+            </apex:repeat>
+        </tbody>
+    </table>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         GRAND TOTAL ROW
+    ════════════════════════════════════════════════════════════════════ -->
+    <table class="items-total-table">
+        <tbody>
+            <tr class="total-hdr">
+                <td colspan="4" class="total-label">
+                    <!-- Q_PrintShipping__c holds the label with incoterm text    -->
+                    <!-- e.g. "CIF Port of ..., Total (CurrencyIsoCode):"         -->
+                    <apex:outputPanel rendered="{!NOT(ISBLANK(ObjQuote.Q_PrintShipping__c))}">
+                        <apex:outputText escape="false"
+                                         value="{!ObjQuote.Q_PrintShipping__c}"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!ISBLANK(ObjQuote.Q_PrintShipping__c)}">
+                        Total ({!ObjQuote.CurrencyIsoCode}) :
+                    </apex:outputPanel>
+                </td>
+                <td class="total-amt">{!getWithoutTaxGrandValueString}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Price in words -->
+    <apex:outputPanel rendered="{!ObjQuote.Price_in_Word_Required__c}">
+        <div class="price-in-words">
+            <apex:outputText value="{!IF(NOT(ISBLANK(contractTemplate.Label_for_Price_in_Word__c)),
+                                        contractTemplate.Label_for_Price_in_Word__c,
+                                        'Price In Words:')}"/>
+            <apex:outputText value=" {!no2words}"/>
         </div>
-    </body>
-    </html>
+    </apex:outputPanel>
+
+    <!-- Free-text block after total (e.g. validity note, bank details) -->
+    <apex:outputPanel rendered="{!NOT(ISBLANK(ObjQuote.Text_After_Total__c))}">
+        <div class="text-after-total">
+            <apex:outputText escape="false" value="{!ObjQuote.Text_After_Total__c}"/>
+        </div>
+    </apex:outputPanel>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         GENERAL CONDITIONS  (Section 4 — from gRemark template lines)
+    ════════════════════════════════════════════════════════════════════ -->
+    <apex:outputPanel rendered="{!NOT(ISBLANK(contractTemplate.Id))}">
+        <apex:outputPanel rendered="{!contractTemplate.Section_4_Required__c}">
+            <div class="pgbreak">
+                <div class="conditions-heading">
+                    <apex:outputPanel
+                        rendered="{!NOT(ISBLANK(contractTemplate.S4_Title__c))}">
+                        <apex:outputText escape="false"
+                                         value="{!contractTemplate.S4_Title__c}"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!ISBLANK(contractTemplate.S4_Title__c)}">
+                        <u>GENERAL CONDITIONS</u>
+                    </apex:outputPanel>
+                </div>
+                <apex:repeat value="{!gRemark}" var="remark">
+                    <div class="clause-body">
+                        <apex:outputField value="{!remark.Content_2__c}"/>
+                    </div>
+                </apex:repeat>
+            </div>
+        </apex:outputPanel>
+
+        <!-- ═══════════════════════════════════════════════════════════════
+             GENERAL PROVISIONS  (Section 5 — from gProvision template lines)
+        ════════════════════════════════════════════════════════════════ -->
+        <apex:outputPanel rendered="{!contractTemplate.Section_5_Required__c}">
+            <div class="pgbreak">
+                <div class="provisions-heading">
+                    <apex:outputPanel
+                        rendered="{!NOT(ISBLANK(contractTemplate.S5_Title__c))}">
+                        <apex:outputText escape="false"
+                                         value="{!contractTemplate.S5_Title__c}"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!ISBLANK(contractTemplate.S5_Title__c)}">
+                        GENERAL PROVISIONS
+                    </apex:outputPanel>
+                </div>
+
+                <!-- Preamble rendered first if it exists as first provision record -->
+                <apex:repeat value="{!gProvision}" var="provision">
+                    <div class="clause-body">
+                        <apex:outputField value="{!provision.Content_2__c}"/>
+                    </div>
+                </apex:repeat>
+
+                <!-- ── Signature block (dynamic) ─────────────────────── -->
+                <table class="signature-section">
+                    <tr>
+                        <td>
+                            <div class="signature-line"></div>
+                            <div class="signature-role">Seller</div>
+                            <!-- Subsidiary name from template; fallback to static -->
+                            <div class="signature-name">
+                                <apex:outputPanel
+                                    rendered="{!NOT(ISBLANK(contractTemplate.Subsidiary__r.Name__c))}">
+                                    {!contractTemplate.Subsidiary__r.Name__c}
+                                </apex:outputPanel>
+                                <apex:outputPanel
+                                    rendered="{!ISBLANK(contractTemplate.Subsidiary__r.Name__c)}">
+                                    Nissei ASB GmbH
+                                </apex:outputPanel>
+                            </div>
+                            <div class="signature-name">{!ObjUser.Name}</div>
+                            <div class="signature-title">{!ObjUser.Title}</div>
+                        </td>
+                        <td>
+                            <div class="signature-line"></div>
+                            <div class="signature-role">Buyer</div>
+                            <div class="signature-name">
+                                <apex:outputPanel
+                                    rendered="{!NOT(ISBLANK(ObjAccount.Legal_Name__c))}">
+                                    {!ObjAccount.Legal_Name__c}
+                                </apex:outputPanel>
+                                <apex:outputPanel
+                                    rendered="{!ISBLANK(ObjAccount.Legal_Name__c)}">
+                                    {!ObjAccount.Name}
+                                </apex:outputPanel>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+    </apex:outputPanel>
+
+</body>
+</html>
 </apex:page>

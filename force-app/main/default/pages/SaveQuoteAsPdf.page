@@ -267,7 +267,7 @@ vf Page for attachPdf to the Quote
                     </div>
                 </div>
             </div>
-            <!-- PDF previews shown only after options modal is closed -->
+            
             <apex:outputPanel rendered="{!ObjQuote.Is_DTA_Quote__c && showSaveQuote}">
                 <apex:iframe src="/apex/pdfPreviewDTA?Id={!ObjQuote.id}" scrolling="false" height="760"/>                
             </apex:outputPanel>

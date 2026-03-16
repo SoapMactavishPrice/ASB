@@ -98,7 +98,6 @@ pt.Discount_in_Value__c = 0;
                     system.debug('inside '+qli.Discount_in_Value__c / qli.List_Price__c);
                     qli.Discount_in_Value__c.addError('Discount Value '+ ((qli.Discount_in_Value__c / qli.List_Price__c)*100).SetScale(2) +'% Should not be greater than '+qli.P_D3__c+'%');
                 }
-                
             }
         }
     }

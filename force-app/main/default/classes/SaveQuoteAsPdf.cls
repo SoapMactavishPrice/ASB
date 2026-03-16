@@ -275,6 +275,7 @@ public class SaveQuoteAsPdf {
         ObjQuote=Database.query('SELECT ' + String.join(lstFieldNames, ',') + ',CreatedBy.Name, CreatedBy.Email,CreatedBy.title,Owner.Name, Owner.Email,Owner.title, QUOTATION_ADDRESSED_TO__r.Name from Quote Where id=:RecordId limit 1');
         
         System.debug('ObjQuote : : '+ObjQuote);
+        ObjQuote.Q_PrintShipping__c = String.isNotBlank(ObjQuote.Q_PrintShipping__c) ? ObjQuote.Q_PrintShipping__c.replace('CurrencyIsoCode', ObjQuote.CurrencyIsoCode) : ObjQuote.Q_PrintShipping__c; 
         if(objQuote.Status == 'RELEASED' || objquote.Status =='UNDER NEGOTIATION - COOL' || objquote.Status =='UNDER NEGOTIATION - HOT' ||
            objquote.Status =='WAITING FOR SC/DRG APPROVAL/CLARIFICATION' || objquote.Status =='CLOSE - REVISIED' || objquote.Status =='CLOSE - SC CREATED'){
                toshowSaveButton = true;

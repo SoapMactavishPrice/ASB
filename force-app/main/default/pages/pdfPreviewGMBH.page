@@ -124,6 +124,29 @@
             .recipient-left  { width: 55%; font-weight: bold; }
             .recipient-right { width: 45%; }
             .recipient-name  { font-weight: bold; }
+            .terms-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 14px;
+            }
+            .terms-table td {
+                padding: 2px 0;
+                vertical-align: top;
+                font-size: 8.3pt;
+                line-height: 1.55;
+            }
+            .terms-label {
+                width: 25%;
+                padding-right: 8px;
+                font-weight: bold;
+            }
+            .terms-separator {
+                width: 5%;
+            }
+            .terms-value {
+                width: 70%;
+                text-align: justify;
+            }
 
             /* ITEMS TABLE */
             .items-table {
@@ -353,7 +376,7 @@
 
         <!-- CONTENT -->
 
-        <!-- PAGE 1-2: LINE ITEMS -->
+        <!-- LINE ITEMS -->
         <table class="recipient-table">
             <tr>
                 <td class="recipient-left">
@@ -380,6 +403,18 @@
                 </td>
             </tr>
         </table>
+
+        <apex:outputPanel rendered="{!NOT(ISBLANK(terms))}">
+            <table class="terms-table">
+                <tbody>
+                    <apex:repeat value="{!terms}" var="qTerms">
+                        <tr>
+                            <td class="terms-value"><apex:outputField value="{!qTerms.Content_2__c}"/></td>
+                        </tr>
+                    </apex:repeat>
+                </tbody>
+            </table>
+        </apex:outputPanel>
 
         <table class="items-table">
             <thead>
@@ -453,7 +488,9 @@
         <table class="items-total-table">
             <tbody>
                 <tr class="total-hdr">
-                    <td colspan="4" class="total-label">(HC) Total FOB India &amp; Japan ({!ObjQuote.CurrencyIsoCode}) :</td>
+                    <td colspan="4" class="total-label">
+                        <apex:outputText value="{!ObjQuote.Q_PrintShipping__c}" escape="false"/>
+                    </td>
                     <td class="total-amt">{!getWithoutTaxGrandValueString}</td>
                 </tr>
             </tbody>
@@ -471,7 +508,7 @@
         </apex:outputPanel>
 
 
-        <!-- PAGE 3-4: GENERAL CONDITIONS -->
+        <!-- GENERAL CONDITIONS -->
         <apex:outputPanel rendered="{!NOT(ISBLANK(quoteTemplate.Id))}">
             <apex:outputPanel rendered="{!quoteTemplate.Section_4_Required__c}">
                 <div class="pgbreak">
@@ -491,7 +528,7 @@
                 </div>
             </apex:outputPanel>
 
-            <!-- PAGE 5-6: GENERAL PROVISIONS -->
+            <!-- GENERAL PROVISIONS -->
             <apex:outputPanel rendered="{!quoteTemplate.Section_5_Required__c}">
                 <div class="pgbreak">
                 <div class="provisions-heading">

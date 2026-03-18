@@ -139,7 +139,7 @@ public class AddProducts {
         List<Quote_Line_Item_Custom__c> lstQLI1 = new List<Quote_Line_Item_Custom__c>();
         
         List<Quote> lstQuote = [Select id, Opportunity.Class__c,Exchange_Rate__c, Opportunity.MFG_AT__c ,CurrencyIsoCode,Additinal_Margin__c,
-                                Opportunity.Zero_Cooling__c ,Discount__c,Subsidiary__c,Subsidiary__r.Rounding_Off_Digits__c,
+                                Opportunity.Zero_Cooling__c ,Discount__c,Subsidiary__c,Subsidiary__r.Rounding_Off_Digits__c, OwnerId,
                                 (SELECT Id, Product__c, Quantity__c FROM Quote_Line_Items__r)
                                 from Quote 
                                 where id =: RecId LIMIT 1];
@@ -154,7 +154,9 @@ public class AddProducts {
         system.debug('lstQuote ===>>>' + lstQuote[0].Opportunity.MFG_AT__c);
         User UsedDeatil = [select id,Name,Level__c 
                            from User 
-                           where id =: userInfo.getUserId()];
+                           where id =: lstQuote[0].OwnerId];
+
+        System.debug('UserDeatil Level ===>>>' + UsedDeatil.Level__c);
         
         String Level = UsedDeatil.Level__c;
         Integer i=0;

@@ -144,12 +144,12 @@ public class CreateQuoteManualOption {
     Public static void SelectedLead(List<PriceBookEntry> selectedRecordList, String idCampaign,string LineItemId,List<String> selectedRecordsDescList){ //List<String> selectedRecordsDescList
         System.debug('idCampaign===> '+idCampaign);
         Quote objquote = new Quote();
-        objquote = [Select id,name,discount__c,Exchange_Rate__c,Additinal_Margin__c,Subsidiary__c,Subsidiary__r.Rounding_Off_Digits__c,CurrencyIsoCode from quote where id=:idCampaign];
+        objquote = [Select id,name,discount__c,Exchange_Rate__c,Additinal_Margin__c,Subsidiary__c,Subsidiary__r.Rounding_Off_Digits__c,CurrencyIsoCode, OwnerId from quote where id=:idCampaign];
         
         System.debug('LineItemId===> '+LineItemId);
         system.debug('selectedRecordsDescList ===>>> ' + selectedRecordsDescList);
         User UsedDeatil = new User();
-        UsedDeatil = [select id,Name,Level__c from User where id =: userInfo.getUserId()];
+        UsedDeatil = [select id,Name,Level__c from User where id =: objquote.OwnerId];
         String Level = UsedDeatil.Level__c;
         system.debug('Level -->> ' + Level);
         //List < LeadListWrapper > listWrappers = ( List < LeadListWrapper > )JSON.deSerialize( selectedRecordList, List < LeadListWrapper >.class );

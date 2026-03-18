@@ -231,14 +231,27 @@ public with sharing class new_lwcProjectController {
             for(ProjectManageMent__c pm : pmList){
                 string  key = pm.Project_Unique_No__c;//+pm.Contract_Line_Item__r.Original_SQ_No__c;
                 if(exeMap.containsKey(key) && exeMap.get(key).Id != pm.Contract_Line_Item__c){
-                    pm.Contract_Line_Item__c = exeMap.get(key).Id;                    pm.Contract__c = contractid;
-                    pm.Phase__c = pm.Old_Phase__c;                    pm.Sq_No__c =  exeMap.get(key).Sr_No__c;
-                    pm.Quote_Name__c = Objcont.Quote__c;                  pmglist.add(pm);
+                    pm.Contract_Line_Item__c = exeMap.get(key).Id;                    
+                    pm.Contract__c = contractid;
+                    pm.Phase__c = pm.Old_Phase__c;                    
+                    pm.Sq_No__c =  exeMap.get(key).Sr_No__c;
+                    pm.Quote_Name__c = Objcont.Quote__c;          
+                    pm.Skip_Validation__c = true;        
+                    pmglist.add(pm);
                 }
             }
             
-            if(pmglist.size() > 0){                update pmglist;
-                                  }
+            if(pmglist.size() > 0){                
+                update pmglist;
+            }
+
+            for (ProjectManageMent__c pm: pmglist) {
+                pm.Skip_Validation__c = false;
+            }
+
+            if(pmglist.size() > 0){                
+                update pmglist;
+            }
             
             
             system.debug('Test Payment' +ObjCont.ADVANCE_PAYMENT__c);

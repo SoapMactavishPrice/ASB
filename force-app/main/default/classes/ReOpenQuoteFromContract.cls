@@ -50,18 +50,14 @@ public class ReOpenQuoteFromContract {
         
         system.debug('conId'+conId.size());
         system.debug('quoteIds-->'+quoteIds);
-        List<ProjectManageMent__c> pmList = [Select Id,Name, Contract__c,Sq_No__c,Contract_Line_Item__c,Contract_Line_Item__r.Product2Id__c,Project_Number__c,Phase__c,
+        List<ProjectManageMent__c> pmList = [SELECT Id,Name, Contract__c,Sq_No__c,Contract_Line_Item__c,Contract_Line_Item__r.Product2Id__c,Project_Number__c,Phase__c,
                                              Contract_Line_Item__r.Product2Id__r.ProductCode,PRODUCT__c,Total_Sales_Price__c,Project_Unique_No__c,
                                              PO_No_to_HQ_3rd_Party__c,PO_issued_date_to_HQ_3rd_Party__c,Expected_Sales_Month__c,
                                              Contract_Line_Item__r.Original_SQ_No__c,Contract__r.Original_Contract__c,HQ_Sales_Liaison_email_id__c,AI_Sales_Liaison_email_id__c,Owner.Email
-                                             from ProjectManageMent__c 
-                                             where
-                                             
-                                             Opportunity_Name__c =:contLst.Opportunity__c
-                                             //Quote_Name__c IN : quoteIds 
-                                             and Phase__c !='Cancelled' 
-                                             order by Contract_Line_Item__r.Original_SQ_No__c asc
-                                             /*or Contract__c =:contLst.Master_Contract__c*/]; 
+                                             FROM ProjectManageMent__c 
+                                             WHERE Opportunity_Name__c =:contLst.Opportunity__c
+                                             AND Phase__c !='Cancelled' 
+                                             ORDER BY Contract_Line_Item__r.Original_SQ_No__c ASC]; 
         system.debug('pmList-00->'+pmList.size());
         for(ProjectManageMent__c pm : pmList){
             string  key = pm.Project_Unique_No__c;//+'_'+pm.Contract_Line_Item__r.Original_SQ_No__c;
@@ -77,7 +73,7 @@ public class ReOpenQuoteFromContract {
         
         List<Contract_Line_Item__c> linelist = [SELECT Id, Name,Ceiling_Unit_Sales_Price_incl_Options__c,Product_Name__c,Project_Unique_No__c,ContractId__c,Project_Created__c,Product_Name_2__c,Product2Id__r.Name ,LineNumber__c,Quantity__c,CurrencyIsoCode,
                                                 Product2Id__r.ProductCode,Product2Id__c,Sr_No__c,Original_SQ_No__c
-                                                FROM Contract_Line_Item__c WHERE Quantity__c >: 0 and ContractId__c =:contLst.Id];
+                                                FROM Contract_Line_Item__c WHERE Quantity__c >: 0 and ContractId__c =:contLst.Id ORDER BY Original_SQ_No__c ASC];
         
         List<wrapProject> wrapList = new List<wrapProject>();
         system.debug('exiProjectMap1 size-->'+exiProjectMap1);

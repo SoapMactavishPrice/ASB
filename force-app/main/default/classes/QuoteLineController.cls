@@ -11,7 +11,7 @@ public with sharing class QuoteLineController {
         List<Quote_Line_Item_Custom__c> lineItems = [
             SELECT Id, Sr_No__c, Product_Name__c, Base_Price__c, Quantity__c, 
                    Total_Global_Price_Item__c, List_Price__c, Total_List_Price2__c,
-                   Discount_Allowed_New__c, Discount__c, Discount_in_Value__c,
+                   Discount_Allowed_New__c, P_D3__c, Discount__c, Discount_in_Value__c,
                    Desired_Price__c, Desired_Price_Subtotal__c, Discount_Value__c,
                    Average_Sales_Price__c, Sales_Price__c, Sales_Margin__c, 
                    Quote__r.Sales_Margin__c, Quote__r.Quote_Total_Base_Price__c, Quote__r.Quote_Total_List_Price__c,
@@ -24,7 +24,7 @@ public with sharing class QuoteLineController {
                    (SELECT Id, Option_No__c, Serial_Number__c, Manual_Product_Name__c, Quantity__c,
                            Base_price_Total__c, Manula_Option_List_Price__c, Manual_Option_Base_Price__c,
                            List_Price_Total2__c, Discount__c, Discount_in_Value__c,
-                           Desired_Price__c, Discount_Allowed_New__c, Discount_Value__c,
+                           Desired_Price__c, Discount_Allowed_New__c, P_D3__c, Discount_Value__c,
                            Average_Sales_Price__c, Sales_Price__c, Sales_Margin__c,
                            Total_List_Price__c, Discount_Amount__c, Total_Quantity__c, Unit_Sales_Price__c, Total_Sales_Price__c, Total_Transfer_Price__c,
                            P_M1__c, P_M2__c, P_M3__c, P_M4__c, Rounding_Off_Digits__c

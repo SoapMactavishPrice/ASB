@@ -31,6 +31,7 @@
                             <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Unit Sales Price">Unit Sales Price</th>
                             <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Total Sales Price">Total Sales Price</th>
                             <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Sales Margin">Sales Margin</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 100px; min-width: 100px;" title="Discount Allowed">Discount Allowed</th>
 
                             <th class="slds-text-align_center wrap-text" style="width: 4%;" title="Toggle Columns">
                                 <lightning-button-icon
@@ -41,9 +42,9 @@
                                     variant="border-filled">
                                 </lightning-button-icon>
                             </th>
-
+                            
                             <template if:true={showAdditionalColumns}>
-                                <th class="slds-text-align_center wrap-text" style="width: 100px; min-width: 100px;" title="Discount Allowed">Discount Allowed</th>
+                                <th class="slds-text-align_center wrap-text" style="width: 120px; min-width: 120px;" title="Max Allowed Discount">Max Allowed Discount</th>
                                 <th class="slds-text-align_center wrap-text" style="width: 80px; min-width: 80px;" title="M1">M1</th>
                                 <th class="slds-text-align_center wrap-text" style="width: 80px; min-width: 80px;" title="M2">M2</th>
                                 <th class="slds-text-align_center wrap-text" style="width: 80px; min-width: 80px;" title="M3">M3</th>
@@ -169,9 +170,11 @@
                                 <td class="slds-text-align_right" title={row.salesPrice}>{row.salesPriceFormatted}</td>
                                 <td class="slds-text-align_right" title={row.totalSalesPrice}>{row.totalSalesPriceFormatted}</td>
                                 <td class="slds-text-align_center" title={row.salesMargin}>{row.salesMargin} %</td>
+                                <td class="slds-text-align_center" title={row.discountAllowed}>{row.discountAllowed}</td>
                                 <td class="slds-text-align_center" title=""></td>
+                                
                                 <template if:true={showAdditionalColumns}>
-                                    <td class="slds-text-align_center" title={row.discountAllowed}>{row.discountAllowed}</td>
+                                    <td class="slds-text-align_center max-discount-allowed" title={row.maxDiscountAllowed}>{row.maxDiscountAllowed}</td>
                                     <td class="slds-text-align_center" title={row.m1}>{row.m1}</td>
                                     <td class="slds-text-align_center" title={row.m2}>{row.m2}</td>
                                     <td class="slds-text-align_center" title={row.m3}>{row.m3}</td>

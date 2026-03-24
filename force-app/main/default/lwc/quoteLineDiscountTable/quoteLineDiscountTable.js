@@ -247,6 +247,7 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                 desiredPrice: roundToTwoDecimals(item.Desired_Price__c),
                 desiredPriceSubtotal: roundToTwoDecimals(item.Desired_Price_Subtotal__c),
                 discountAllowed: roundToTwoDecimals(item.Discount_Allowed_New__c),
+                maxDiscountAllowed: roundToTwoDecimals(item.P_D3__c),
                 totalDiscountInValue: roundToTwoDecimals(item.Discount_Value__c),
                 totalDiscountInValueFormatted: roundToTwoDecimalsAndFormatInteger(item.Discount_Value__c),
                 salesPrice: roundToTwoDecimals(item.Average_Sales_Price__c),
@@ -309,6 +310,7 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                         desiredPrice: roundToTwoDecimals(option.Desired_Price__c),
                         desiredPriceSubtotal: null,
                         discountAllowed: roundToTwoDecimals(option.Discount_Allowed_New__c),
+                        maxDiscountAllowed: roundToTwoDecimals(option.P_D3__c),
                         totalDiscountInValue: roundToTwoDecimals(option.Discount_Amount__c),
                         totalDiscountInValueFormatted: roundToTwoDecimalsAndFormatInteger(option.Discount_Amount__c),
                         salesPrice: roundToTwoDecimals(option.Unit_Sales_Price__c),
@@ -381,6 +383,7 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                 desiredPrice: '',
                 desiredPriceSubtotal: roundToTwoDecimals(item.Desired_Price_Subtotal__c),
                 discountAllowed: '',
+                maxDiscountAllowed: '',
                 totalDiscountInValue: roundToTwoDecimals(subtotalDiscountInValue),
                 totalDiscountInValueFormatted: roundToTwoDecimalsAndFormatInteger(subtotalDiscountInValue),
                 salesPrice: '',
@@ -455,6 +458,7 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             desiredPrice: '',
             desiredPriceSubtotal: '',
             discountAllowed: '',
+            maxDiscountAllowed: '',
             totalDiscountInValue: roundToTwoDecimals(grandTotalDiscountInValue),
             totalDiscountInValueFormatted: roundToTwoDecimalsAndFormatInteger(grandTotalDiscountInValue),
             salesPrice: '',
@@ -945,8 +949,49 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             this.tableData[rowIndex][field] = value;
         }
     }
+
+    getExceededMaxDiscountMessage() {
+        const eligibleRows = this.tableData.filter(row => row.isLineItem || row.isOption);
+
+        for (const row of eligibleRows) {
+            const totalDiscountInValue = parseFormattedNumber(row.totalDiscountInValue) || 0;
+            const totalSalesPrice = parseFormattedNumber(row.totalSalesPrice) || 0;
+            const maxDiscountAllowed = parseFormattedNumber(row.maxDiscountAllowed);
+
+            if (maxDiscountAllowed === null || maxDiscountAllowed === undefined || totalSalesPrice <= 0) {
+                continue;
+            }
+
+            const totalDiscountPercentage = (totalDiscountInValue / totalSalesPrice) * 100;
+
+            if (totalDiscountPercentage > maxDiscountAllowed) {
+                return `You are not allowed to Provide More Discount than P-D3 = ${this.formatPercentValue(maxDiscountAllowed)}%`;
+            }
+        }
+
+        return null;
+    }
+
+    formatPercentValue(value) {
+        if (value === null || value === undefined || value === '') {
+            return '';
+        }
+
+        const numericValue = Number(value);
+        if (Number.isNaN(numericValue)) {
+            return '';
+        }
+
+        return Number.isInteger(numericValue) ? String(numericValue) : numericValue.toFixed(2).replace(/\.?0+$/, '');
+    }
     
     handleSave() {
+        const exceededMaxDiscountMessage = this.getExceededMaxDiscountMessage();
+        if (exceededMaxDiscountMessage) {
+            this.showToast('Error', exceededMaxDiscountMessage, 'error');
+            return;
+        }
+
         this.isLoading = true;
         
         const lineItemsToUpdate = [];

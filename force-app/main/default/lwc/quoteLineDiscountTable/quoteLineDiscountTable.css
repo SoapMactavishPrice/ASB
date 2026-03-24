@@ -126,3 +126,7 @@ lightning-card {
     top: 0;
     z-index: 20;
 }
+
+.max-discount-allowed {
+    color: #ba0517;
+}

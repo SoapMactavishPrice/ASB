@@ -121,7 +121,6 @@ public class QuoteDiscountController_test {
         Quote_Line_Item_Custom__c qli = new Quote_Line_Item_Custom__c();
         qli.Quote__c = qt.id;
         //qli.Discount__c = 1;
-        qli.Discount_Type__c = 'Value';
         qli.Discount_in_Value__c = 2000;
         //qli.Discount_Allowed__c = 10;
         qli.Quantity__c = 1;
@@ -141,7 +140,6 @@ public class QuoteDiscountController_test {
         qli = new Quote_Line_Item_Custom__c();
         qli.Quote__c = qt.id;
         //qli.Discount__c = 1;
-        qli.Discount_Type__c = 'Percent';
         qli.Discount__c  = 20;
         //qli.Discount_Allowed__c = 10;
         qli.Quantity__c = 1;
@@ -165,7 +163,6 @@ public class QuoteDiscountController_test {
         Quote_Line_Options__c qlo = new Quote_Line_Options__c();
         qlo.Quote__c = qt.id;
         qlo.Quote_Line_Item_Custom__c = qli.id;
-        qlo.Discount_Type__c = 'Value';
           qlo.Quantity__c = 1;
         qlo.Discount_in_Value__c = 2000;
         //qlo.Discount__c  = 20;

@@ -168,7 +168,7 @@ public class CreateQuoteManualOption {
                 // Group_Members__c pro = new Group_Members__c();
                 Quote_Line_Options__c pro = new Quote_Line_Options__c();
                 pro.CurrencyIsoCode=objquote.CurrencyIsoCode;
-                //pro.Discount_Type__c = 'Percent';
+                // deprecated discount type assignment removed
                 if(idCampaign != null){
                     pro.Quote__c = idCampaign;
                 }
@@ -218,7 +218,7 @@ public class CreateQuoteManualOption {
                     //pro.Manual_Option_Base_Price__c = Math.ceil( pro.Manual_Option_Base_Price__c/Integer.valueOf(objquote.Subsidiary__r.Rounding_Off_Digits__c))*Integer.valueOf(objquote.Subsidiary__r.Rounding_Off_Digits__c);
                 }
                 
-                //pro.Discount_Type__c = 'Percent';
+                // deprecated discount type assignment removed
                 pro.P_D1__c = wrp1.d1__c;
                 pro.P_D2__c = wrp1.d2__c;
                 pro.P_D3__c = wrp1.d3__c;
@@ -326,7 +326,7 @@ public class CreateQuoteManualOption {
         for(Quote_Line_Options__c lst:OptList){
             lst.discount__c = objquote.Discount__c;
             lst.CurrencyIsoCode=objquote.CurrencyIsoCode;
-            //lst.Discount_Type__c = 'Percent';
+            // deprecated discount type assignment removed
             //lst.Discount_in_Value
         }
         //  OptList.Quote__c = '0Q00w0000005YhnCAE';

@@ -207,7 +207,6 @@ public class QuoteLineControllerTest {
             Base_Price__c = 800,
             List_Price__c = 1000,
             Discount_Allowed_New__c = 15,
-            Discount_Type__c = 'Percent',
             Discount__c = 10,
             CurrencyIsoCode = 'INR'
         );
@@ -223,7 +222,6 @@ public class QuoteLineControllerTest {
             Base_Price__c = 1600,
             List_Price__c = 2000,
             Discount_Allowed_New__c = 20,
-            Discount_Type__c = 'Value',
             Discount_in_Value__c = 300,
             CurrencyIsoCode = 'INR'
         );
@@ -240,7 +238,6 @@ public class QuoteLineControllerTest {
             Quantity__c = 2,
             Manual_Option_Base_Price__c = 400,
             Manula_Option_List_Price__c = 500,
-            Discount_Type__c = 'Percent',
             Discount__c = 5,
             Discount_Allowed_New__c = 10,
             CurrencyIsoCode = 'INR'
@@ -257,7 +254,6 @@ public class QuoteLineControllerTest {
             Quantity__c = 1,
             Manual_Option_Base_Price__c = 400,
             Manula_Option_List_Price__c = 500,
-            Discount_Type__c = 'Value',
             Discount_in_Value__c = 50,
             Discount_Allowed_New__c = 10,
             CurrencyIsoCode = 'INR'

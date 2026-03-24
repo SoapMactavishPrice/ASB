@@ -51,10 +51,10 @@ trigger Trg_QLI on Quote_Line_Item_Custom__c (before insert,after insert,Before 
             
             for(Quote_Line_Item_Custom__c pt : Trigger.new){
                 system.debug('inside update List_Price__c'+pt.List_Price__c);
-                system.debug('inside update Discount__c'+pt.Discount__c +' type '+pt.Discount_Type__c);
+                system.debug('inside update Discount__c'+pt.Discount__c +' value '+pt.Discount_in_Value__c);
                 system.debug('inside update Discount_in_Value__c'+pt.Discount_in_Value__c);
                 system.debug('inside update 1'+pt.List_Price__c);
-                //if(Trigger.oldMap.get(pt.Id).Discount_Type__c != pt.Discount_Type__c){
+                // deprecated discount type comparison removed
                 
                 
                 //checkRecurssive = false;
@@ -65,23 +65,20 @@ trigger Trg_QLI on Quote_Line_Item_Custom__c (before insert,after insert,Before 
                         // pt.addError('fill only one from  Discount or Discount in Value');
                     }else if(pt.Discount__c != null && pt.Discount__c > 0.00){
                         system.debug('inside 2');
-                        pt.Discount_Type__c = 'Percent';
                         pt.Discount_in_Value__c = 0;
                     } else if(pt.Discount_in_Value__c != null && pt.Discount_in_Value__c !=0){
                         system.debug('inside 4');
-                        pt.Discount_Type__c = 'Value'; 
                         pt.Discount__c = 0; 
                     }
                     /*else if((pt.Discount_in_Value__c == null && pt.Discount__c == null) || ( pt.Discount_in_Value__c == 0 && pt.Discount__c == 0)){
 system.debug('inside 1 else');
-pt.Discount_Type__c = null; 
+// deprecated discount type reset removed
 pt.Discount__c = 0; 
 pt.Discount_in_Value__c = 0; 
 }*/
                     
                 }else{
                     system.debug('inside 1 else last'); 
-                    pt.Discount_Type__c = null; 
                     pt.Discount__c = 0; 
                     pt.Discount_in_Value__c = 0; 
                 }
@@ -93,7 +90,7 @@ pt.Discount_in_Value__c = 0;
     if(Trigger.isBefore && (Trigger.IsInsert || Trigger.IsUpdate)){
         for(Quote_Line_Item_Custom__c qli : Trigger.new){
             //system.debug(qli.P_D3__c  +' -- '+ (qli.Discount_in_Value__c / qli.List_Price__c)*100);
-            if(qli.Discount_Type__c =='Value' && qli.Discount_in_Value__c !=null && qli.P_D3__c !=null && qli.List_Price__c > 0 && qli.Quantity__c > 0){
+            if(qli.Discount_in_Value__c !=null && qli.Discount_in_Value__c > 0 && qli.P_D3__c !=null && qli.List_Price__c > 0 && qli.Quantity__c > 0){
                 if(qli.P_D3__c  < (qli.Discount_in_Value__c / qli.List_Price__c)*100){
                     system.debug('inside '+qli.Discount_in_Value__c / qli.List_Price__c);
                     qli.Discount_in_Value__c.addError('Discount Value '+ ((qli.Discount_in_Value__c / qli.List_Price__c)*100).SetScale(2) +'% Should not be greater than '+qli.P_D3__c+'%');
@@ -382,10 +379,10 @@ varQLO.Product_Description__c = varQLO.Product_Name__c;
         map<Id,Id> subWithQuoMap =  new map<Id,Id>();
         List<Quote_Line_Item_Custom__c> qtlineCustom = new List<Quote_Line_Item_Custom__c>();
         for(Quote_Line_Item_Custom__c qt : Trigger.new){
-            if(qt.Discount_Type__c == 'Percent' && qt.Discount__c != trigger.oldMap.get(qt.Id).Discount__c){
+            if(qt.Discount__c != null && qt.Discount__c != 0 && qt.Discount__c != trigger.oldMap.get(qt.Id).Discount__c){
                 //ownerId.add(qt.OwnerId);
                 subWithQuoMap.put(qt.Quote__c,qt.Id);
-            } else if(qt.Discount_Type__c == 'Value' && qt.discount_in_Value__c != trigger.oldMap.get(qt.Id).discount_in_Value__c){
+            } else if(qt.discount_in_Value__c != null && qt.discount_in_Value__c != 0 && qt.discount_in_Value__c != trigger.oldMap.get(qt.Id).discount_in_Value__c){
                 //ownerId.add(qt.OwnerId);
                 subWithQuoMap.put(qt.Quote__c,qt.Id);
                 
@@ -398,7 +395,7 @@ varQLO.Product_Description__c = varQLO.Product_Name__c;
         if(subWithQuoMap.size() > 0){
             List<Quote> quoteList = [select Id, Name, discount__c,OwnerId, Owner_Level__c, Approval_Status__c,Subsidiary__r.Quote_Approval__c, Subsidiary__c, Subsidiary__r.Discount_Level_1__c,
                                      Subsidiary__r.Discount_Level_2__c, Approver_User__c ,Quote_Locked_for_Approval__c, Subsidiary__r.Discount_Level_3__c 
-                                     ,(SELECT Id, Discount__c, Quote__r.Owner_Level__c,Discount_in_Value__c,List_Price__c,Discount_Type__c,
+                                     ,(SELECT Id, Discount__c, Quote__r.Owner_Level__c,Discount_in_Value__c,List_Price__c,
                                        P_D1__c,P_D2__c,P_D3__c,Discount_Allowed__c FROM Quote_Line_Items__r) from Quote where Id In : subWithQuoMap.keyset()];
             
             for(Quote quo: quoteList ){
@@ -437,7 +434,7 @@ varQLO.Product_Description__c = varQLO.Product_Name__c;
                                 
                                 when 'L1'{
                                     system.debug('else inside switch'+qt.Owner_Level__c);
-                                    if(qtc.Discount_Type__c == 'Percent'){
+                                    if(qtc.Discount__c != null && qtc.Discount__c != 0){
                                         if(qtc.Discount__c > qtc.P_D1__c  &&
                                            qtc.Discount__c <= qtc.P_D2__c
                                            && string.isNOTBlank(ApproverMap.get(qt.OwnerId).ManagerId)){
@@ -459,7 +456,7 @@ varQLO.Product_Description__c = varQLO.Product_Name__c;
                                                     }
                                     } 
                                     else{
-                                        if(qtc.Discount_Type__c == 'Value' && qtc.Discount_in_Value__c > 0){
+                                        if(qtc.Discount_in_Value__c != null && qtc.Discount_in_Value__c > 0){
                                             if(qtc.Discount_Allowed__c < ((qtc.Discount_in_Value__c /qtc.List_Price__c)*100)){
                                                 qt.Approver_User__c = (Id)ApproverMap.get(qt.OwnerId).Manager.ManagerId;
                                                 qtc.Goes_for_Approval__c = true;
@@ -470,7 +467,7 @@ varQLO.Product_Description__c = varQLO.Product_Name__c;
                                     }
                                 }
                                 when 'L2'{
-                                    if(qtc.Discount_Type__c == 'Percent'){
+                                    if(qtc.Discount__c != null && qtc.Discount__c != 0){
                                         if(qtc.Discount__c > qtc.P_D2__c 
                                            && qtc.Discount__c <= qtc.P_D3__c
                                            && string.isNOTBlank(ApproverMap.get(qt.OwnerId).ManagerId)){
@@ -484,7 +481,7 @@ varQLO.Product_Description__c = varQLO.Product_Name__c;
                                            }
                                         
                                     }else
-                                        if(qtc.Discount_Type__c == 'Value' && qtc.Discount_in_Value__c > 0){
+                                        if(qtc.Discount_in_Value__c != null && qtc.Discount_in_Value__c > 0){
                                             if(qtc.Discount_Allowed__c < ((qtc.Discount_in_Value__c /qtc.List_Price__c)*100)){
                                                 qt.Approver_User__c = (Id)ApproverMap.get(qt.OwnerId).ManagerId;
                                                 qtc.Goes_for_Approval__c = true;

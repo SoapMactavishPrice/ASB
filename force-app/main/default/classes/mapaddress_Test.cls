@@ -193,7 +193,6 @@ public class mapaddress_Test {
             qli.List_Price__c = 12;
             qli.Discount_Allowed_New__c = 10;
             qli.Discount__c = 11;
-            qli.Discount_Type__c = 'Percent';
             qli.Discount_Allowed_New__c = 10;
             qli.Discount__c = 11;
             qli.P_D1__c = 10;
@@ -217,7 +216,6 @@ public class mapaddress_Test {
             qlo.Quantity__c = 1;
             qlo.Manula_Option_List_Price__c=12;
             qlo.Discount__c = 2;
-            qlo.Discount_Type__c = 'Percent';
             insert qlo;
             
             }
@@ -410,7 +408,6 @@ public class mapaddress_Test {
             qli.List_Price__c = 12;
             qli.Discount_Allowed_New__c = 10;
             qli.Discount__c = 11;
-            qli.Discount_Type__c = 'Percent';
             qli.Discount_Allowed_New__c = 10;
             qli.Discount__c = 11;
             qli.P_D1__c = 10;
@@ -436,7 +433,6 @@ public class mapaddress_Test {
             qlo.Quantity__c = 1;
             qlo.Manula_Option_List_Price__c=12;
             qlo.Discount__c = 2;
-            qlo.Discount_Type__c = 'Percent';
             insert qlo;
             
             Contract cont = new Contract();

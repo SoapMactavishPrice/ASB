@@ -381,14 +381,14 @@ public class ReOpenQuoteFromContract {
                     List<Quote_Line_Item_Custom__c> ObjQuoteLineItem = [Select id,Product_Description__c,Approval_Status__c,Class__c,Division__c,Discount_Allowed_New__c,Drawing_No__c,Expected_Customer_PO__c,Base_Price__c,BP_Ratio_Line_Item__c,Cavity__c,Total_Sales_Price__c,Level_Of_Ceiling__c,
                                                                         Expected_Delivery__c,Expected_Delivery_date__c,Expected_Drawing_Final__c,Advance_Percentage__c,Ceiling_Total_Sales_Price__c,CurrencyIsoCode,Product_Type__c,
                                                                         Mach_Mold_No__c,Product__c,Quantity__c,Quote__c,Discount_Allowed__c,Discount_Approval_Note__c,Is_Manual__c,Payment_Terms__c,Scope_of_mould__c,Product_Name__c,
-                                                                        Total_Base_Price_Options__c, List_Price__c,Discount__c,Sr_No__c,Is_Tax__c,Discount_Type__c,Discount_in_Value__c,
+                                                                        Total_Base_Price_Options__c, List_Price__c,Discount__c,Sr_No__c,Is_Tax__c,Discount_in_Value__c,
                                                                         Product__r.id,Quote__r.Exchange_Rate__c,P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Manual_Product_Code__c,
                                                                         Quote__r.Additinal_Margin__c,Product__r.ProductCode,Project_Unique_No__c, Desired_Price__c, Desired_Price_Subtotal__c,
                                                                         (Select id,Discount__c,Final_Price__c,Discount_in_Value__c,Discount_Allowed_New__c,Manual_Option__c,
                                                                          Quote__r.Additinal_Margin__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,Product_Type__c,
                                                                          P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Quote__r.Exchange_Rate__c,Manual_Product_Code__c,
                                                                          Other_Charges_Base_Price__c,Other_Charges_Function__c,Product__c,Quote__c,Select_Option__c,Mould_Cavity__c,Price_Type__c,Discount_Description__c, Desired_Price__c, Name_Hide__c, Pdf_Checked__c
-                                                                         ,Product__r.id,Serial_Number__c,Discount_Type__c from Quote_Line_Options__r order by Serial_Number__c asc)
+                                                                         ,Product__r.id,Serial_Number__c from Quote_Line_Options__r order by Serial_Number__c asc)
                                                                         from Quote_Line_Item_Custom__c Where Quote__c = : oldQuote order by Sr_No__c asc];
                     Set<id>IdOfOpQuoteItem=new Set<id>();
                     Set<id>proIds=new Set<id>();
@@ -410,7 +410,7 @@ public class ReOpenQuoteFromContract {
                     }
                     List<Quote_Line_Options__c> lstQuoteOption = new List<Quote_Line_Options__c>();
                     if(IdOfOpQuoteItem != null && IdOfOpQuoteItem.size() > 0){
-                        lstQuoteOption = [Select id,Discount_in_Value__c,Discount_Allowed_New__c,Discount_Type__c,Quote__r.Exchange_Rate__c,Product_Type__c,CurrencyIsoCode,Discount__c,Option_Number__c,quantity__c,description__c,Manual_Product_Name__c, Final_Price__c,Manual_Option__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,
+                        lstQuoteOption = [Select id,Discount_in_Value__c,Discount_Allowed_New__c,Quote__r.Exchange_Rate__c,Product_Type__c,CurrencyIsoCode,Discount__c,Option_Number__c,quantity__c,description__c,Manual_Product_Name__c, Final_Price__c,Manual_Option__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,
                                           P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Serial_Number__c, Other_Charges_Base_Price__c,Manual_Product_Code__c,Quote__r.Additinal_Margin__c,Other_Charges_Function__c,Product__c,Quote__c,Select_Option__c,Manula_Option_List_Price__c,Mould_Cavity__c,Price_Type__c,Quote_Line_Item_Custom__c,Discount_Description__c, Desired_Price__c, Name_Hide__c, Pdf_Checked__c
                                           from Quote_Line_Options__c where Quote_Line_Item_Custom__c IN : IdOfOpQuoteItem];
                     }
@@ -444,9 +444,6 @@ public class ReOpenQuoteFromContract {
                             cli.Sr_No__c = pro1.Sr_No__c;
                         
                         
-                        
-                        if(pro1.Discount_Type__c!=null)
-                            cli.Discount_Type__c = pro1.Discount_Type__c;
                         
                         if(pro1.Discount__c!=null)
                             cli.Discount__c = pro1.Discount__c;
@@ -558,7 +555,7 @@ cli.Discount__c = pro1.Discount__c;
                             if(projSizeMap.containsKey(key)){
                                 Integer i = Integer.valueOf(pro1.Quantity__c) - projSizeMap.get(key); cli.Quantity__c = i; 
                                 
-                                if(i == 0 ){cli.Discount_in_Value__c =0;cli.Discount_Type__c = null; cli.Discount__c = 0;
+                                if(i == 0 ){cli.Discount_in_Value__c =0; cli.Discount__c = 0;
                                     
                                 }
                                
@@ -652,9 +649,6 @@ cli.Discount__c = pro1.Discount__c;
                         
                         if(pro2.Discount__c!=null)
                             ContLO.Discount__c = pro2.Discount__c;
-                        
-                        if(pro2.Discount_Type__c != null && pro2.Discount_Type__c != ''){ ContLO.Discount_Type__c = pro2.Discount_Type__c;
-                        }
                         
                         if(pro2.Product_Type__c !=null){ ContLO.Product_Type__c = pro2.Product_Type__c; 
                         }

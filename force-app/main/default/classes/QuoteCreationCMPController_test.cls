@@ -218,7 +218,6 @@ public class QuoteCreationCMPController_test {
             Manual_Option_Base_Price__c = 5465767.87, 
             Manual_Option__c = 'False',
             Option_Number__c = 'Test-3',
-            Discount_Type__c = 'Value',
             Mould_Cavity__c = 21, 
             Price_Type__c = 1, 
             Manual_Option_Function__c = 'Add',
@@ -242,7 +241,6 @@ public class QuoteCreationCMPController_test {
             Manual_Option_Base_Price__c = 5465767.87, 
             Manual_Option__c = 'False',
             Option_Number__c = 'Test-3',
-            Discount_Type__c = 'Value',
             Mould_Cavity__c = 21, 
             Price_Type__c = 1, 
             Manual_Option_Function__c = 'Add',
@@ -478,7 +476,6 @@ public class QuoteCreationCMPController_test {
             Base_Price__c = 800,
             List_Price__c = 1000,
             Discount__c = 10, // 10% discount
-            Discount_Type__c = 'Percent',
             Discount_Allowed_New__c = 15,
             Sr_No__c = 1
         );
@@ -492,7 +489,6 @@ public class QuoteCreationCMPController_test {
             Base_Price__c = 800,
             List_Price__c = 1000,
             Discount_in_Value__c = 500, // $500 discount
-            Discount_Type__c = 'Value',
             Discount_Allowed_New__c = 10,
             Sr_No__c = 2
         );
@@ -506,7 +502,6 @@ public class QuoteCreationCMPController_test {
             Select_Option__c = false,
             quantity__c = 1,
             Discount__c = 5,
-            Discount_Type__c = 'Percent',
             Manual_Option__c = 'False'
         );
         insert sourceOption;
@@ -537,7 +532,7 @@ public class QuoteCreationCMPController_test {
         
         // Verify that line items have null discount values
         List<Quote_Line_Item_Custom__c> clonedLineItems = [
-            SELECT Id, Discount__c, Discount_in_Value__c, Discount_Type__c 
+            SELECT Id, Discount__c, Discount_in_Value__c 
             FROM Quote_Line_Item_Custom__c 
             WHERE Quote__c = :clonedQuoteId
         ];
@@ -565,7 +560,7 @@ public class QuoteCreationCMPController_test {
         
         String clonedQuoteId2 = (String)cloneResult2.get('Id');
         List<Quote_Line_Item_Custom__c> clonedLineItems2 = [
-            SELECT Id, Discount__c, Discount_in_Value__c, Discount_Type__c 
+            SELECT Id, Discount__c, Discount_in_Value__c 
             FROM Quote_Line_Item_Custom__c 
             WHERE Quote__c = :clonedQuoteId2
         ];

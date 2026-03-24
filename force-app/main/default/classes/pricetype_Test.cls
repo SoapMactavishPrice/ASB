@@ -139,7 +139,6 @@ public class pricetype_Test {
         qli.List_Price__c = 12;
         qli.Product__c = pro.id;
         qli.Is_Manual__c = false;
-        qli.Discount_Type__c = 'Value';
         qli.P_D3__c = 23; 
         qli.P_D1__c = 10; 
         qli.P_D2__c = 15; 

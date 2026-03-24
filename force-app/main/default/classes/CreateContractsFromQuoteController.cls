@@ -494,7 +494,7 @@ cont.ExpirationDate__c = ObjQuote.ExpirationDate ;
                                 Expected_Delivery__c,Expected_Delivery_date__c,Expected_Drawing_Final__c,Zero_Cooling_2__c,Product_Name__c,Payment_Terms__c,Product__r.Scope_of_Mold__c,
                                 Mach_Mold_No__c,MFG_AT__c,Quantity__c,Discount__c,Base_Price__c,Product__r.Model__c,Product__r.Number_Of_Cavity_Mould__c,Application__c,
                                 List_Price__c,Product__c,Quote__c,UOM__c,Product__r.UOM__c,Product__r.Product_Type__c,Product_Type__c,Product_Description__c,Level_Of_Ceiling__c,
-                                Advance_Percentage__c,Disable_Discoint_Percent__c,Disable_Discoint_Value__c,Product_Code__c,Manual_Product_Code__c,Discount_Type__c,
+                                Advance_Percentage__c,Disable_Discoint_Percent__c,Disable_Discoint_Value__c,Product_Code__c,Manual_Product_Code__c,
                                 Is_Manual__c,Is_Tax__c,Discount_Allowed_New__c,Original_SQ_No__c,
                                 P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Rounding_Off_Digits__c,Scope_of_mould__c,Sr_No__c,Discount_in_Value__c,
                                 Sales_Margin__c,Project_Unique_No__c, Desired_Price__c,
@@ -515,7 +515,7 @@ cont.ExpirationDate__c = ObjQuote.ExpirationDate ;
             if(IdOfOpQuoteItem != null && IdOfOpQuoteItem.size() > 0){
                 lstQuoteOption = [Select id,CurrencyIsoCode,Discount__c,Option_Number__c,Final_Price__c,Quantity__c,Manual_Option__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,Description__c,Quote_Line_Item_Custom__c,Product__r.UOM__c,Sales_price_Total__c,
                                   Other_Charges_Base_Price__c,Other_Charges_Function__c,Product_Type__c,Product__c,Quote__c,Manula_Option_List_Price__c,Quote_Line_Item__c,Select_Option__c,Manual_Product_Name__c,Mould_Cavity__c, Price_Type__c, Discount_Description__c
-                                  ,Discount_Type__c,Discount_Allowed_New__c,P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Serial_Number__c,
+                                  ,Discount_Allowed_New__c,P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Serial_Number__c,
                                   Discount_in_Value__c,Manual_Product_Code__c,Sales_Margin__c, Desired_Price__c,Rounding_Off_Digits__c, Name_Hide__c, Pdf_Checked__c
                                   
                                   from Quote_Line_Options__c where Quote_Line_Item_Custom__c IN : IdOfOpQuoteItem];
@@ -534,7 +534,6 @@ cont.ExpirationDate__c = ObjQuote.ExpirationDate ;
                 cli.RecordTypeId = Schema.SObjectType.Contract_Line_Item__c.getRecordTypeInfosByName().get('Before Released').getRecordTypeId();
                 cli.Disable_Discoint_Percent__c = pro1.Disable_Discoint_Percent__c;
                 cli.Disable_Discoint_Value__c = pro1.Disable_Discoint_Value__c;
-                cli.Discount_Type__c = pro1.Discount_Type__c;
                 cli.Project_Unique_No__c = pro1.Project_Unique_No__c;
                 cli.Is_Manual__c = pro1.Is_Manual__c;
                 cli.Is_Tax__c = pro1.Is_Tax__c;
@@ -691,7 +690,6 @@ cli.Unit_Price_Clone__c =pro1.UnitPrice;
                  contLO.Product_Type__c = pro2.Product_Type__c;
                 //add by rishikesh 21 march
                  ContLO.RecordTypeId = Schema.SObjectType.Contract_Line_Option__c.getRecordTypeInfosByName().get('Before Released').getRecordTypeId();
-                 ContLO.Discount_Type__c = pro2.Discount_Type__c;
                  //ContLO.Select_Option__c = pro2.Select_Option__c;
                  ContLO.Discount_Allowed_New__c = pro2.Discount_Allowed_New__c;
                 

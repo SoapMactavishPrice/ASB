@@ -137,7 +137,6 @@ public class Trg_QLO_Test {
         qli.List_Price__c = 12;
         qli.Product__c = pro.id;
         qli.Is_Manual__c = false;
-        qli.Discount_Type__c = 'Value';
         qli.P_D3__c = 23; 
         qli.P_D1__c = 10; 
         qli.P_D2__c = 15; 
@@ -147,23 +146,22 @@ public class Trg_QLO_Test {
         qli.Sr_No__c = null;
         update qli;
         
-        qli.Discount_Type__c = 'Percent';
         qli.Discount__c = 17;
         qli.Discount_in_Value__c = null;
         update qli;
         
-        /*qli.Discount_Type__c = 'Percent';
+        /* deprecated discount-type test data
 qli.Discount__c = 12;
 qli.Discount_in_Value__c = null;
 update qli;
 
-qli.Discount_Type__c = 'Percent';
+qli.Discount__c = 0;
 qli.Discount__c = 16;
 qli.Discount_in_Value__c = null;
 update qli;
 
 
-qli.Discount_Type__c = 'Value';
+qli.Discount_in_Value__c = 0;
 qli.discount_in_Value__c = 2;
 qli.Discount__c = null;
 update qli;
@@ -180,7 +178,7 @@ qli.Scope_of_mould__c = 'ML';
 qli.List_Price__c = 12;
 qli.Product__c = pro.id;
 qli.Is_Manual__c = false;
-qli.Discount_Type__c = 'Value';
+qli.Discount_in_Value__c = 0;
 qli.P_D3__c = 23; 
 qli.Discount__c = null;
 qli.Discount_Approval_Note__c = 'Null';
@@ -211,7 +209,6 @@ Update qt;
             P_D2__c = 15,
             P_D1__c = 10,
             Discount__c = null,
-            Discount_Type__c = 'Value',
             Serial_Number__c = 10,
             Discount_in_Value__c = 1);
         insert qlo;
@@ -232,7 +229,6 @@ Update qt;
             P_D2__c = 15,
             P_D1__c = 10,
             Discount__c = null,
-            Discount_Type__c = 'Value',
             Serial_Number__c = null,
             Discount_in_Value__c = 1);
         insert qlo1;

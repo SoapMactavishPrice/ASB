@@ -38,7 +38,7 @@ trigger TrgQuote on Quote (After insert , After Update,Before Update )
             if(orgMtd.Active__c==true){  
                 System.debug('Inside the trigger*** 1');
                 // to check for quote line items by discount allowed
-                quoteWQuoteLineItems =new Map<Id, Quote>( [SELECT Id, (SELECT Id,Discount__c,Discount_Allowed__c,Discount_Allowed_New__c,Discount_in_Value__c,List_Price__c,Discount_Type__c,Approved_Discount__c,P_D3__c ,P_D2__c   FROM Quote_Line_Items__r),(SELECT Id,Discount__c,Discount_Type__c,Approved_Discount__c,Discount_in_Value__c,Manula_Option_List_Price__c, Discount_Allowed_New__c,Discount_Allowed__c FROM Quote_Line_Options__r) FROM Quote WHERE Id = :Trigger.newMap.values()]);
+                quoteWQuoteLineItems =new Map<Id, Quote>( [SELECT Id, (SELECT Id,Discount__c,Discount_Allowed__c,Discount_Allowed_New__c,Discount_in_Value__c,List_Price__c,Approved_Discount__c,P_D3__c ,P_D2__c   FROM Quote_Line_Items__r),(SELECT Id,Discount__c,Approved_Discount__c,Discount_in_Value__c,Manula_Option_List_Price__c, Discount_Allowed_New__c,Discount_Allowed__c FROM Quote_Line_Options__r) FROM Quote WHERE Id = :Trigger.newMap.values()]);
                 system.debug('quoteWQuoteLineItems--->' + quoteWQuoteLineItems);
                 for(Quote ObjQuote: Trigger.new)
                 {
@@ -132,24 +132,24 @@ trigger TrgQuote on Quote (After insert , After Update,Before Update )
                                 
                                 switch on qt.Owner_Level__c {
                                     when 'L1'{
-                                        system.debug('inside Discount_Type__c'+qli.Discount_Type__c);
+                                        system.debug('inside discount values '+qli.Discount__c+' / '+qli.Discount_in_Value__c);
                                         system.debug('inside Discount__c'+qli.Discount__c);
                                         system.debug('inside Approved_Discount__c'+qli.Approved_Discount__c);
                                         system.debug('inside Discount_Allowed_New__c'+qli.Discount_Allowed_New__c);
                                         system.debug('inside P_D2__c'+qli.P_D2__c);
                                         
-                                        if (qli.Discount_Type__c == 'Percent' && qli.Discount__c != NULL && qli.Discount__c > qli.Discount_Allowed_New__c && qli.Discount__c !=qli.Approved_Discount__c && !(qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D2__c)) {
+                                        if (qli.Discount__c != NULL && qli.Discount__c > qli.Discount_Allowed_New__c && qli.Discount__c !=qli.Approved_Discount__c && !(qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D2__c)) {
                                             qt.Quote_Locked_for_Approval__c = true;
                                             break;
                                         }
                                         
-                                        if (qli.Discount_Type__c == 'Percent' && qli.Discount__c != NULL && qli.Discount__c > qli.Discount_Allowed_New__c && qli.Discount__c !=qli.Approved_Discount__c && qli.Approved_Discount__c != null&&  !(qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D3__c)) {
+                                        if (qli.Discount__c != NULL && qli.Discount__c > qli.Discount_Allowed_New__c && qli.Discount__c !=qli.Approved_Discount__c && qli.Approved_Discount__c != null&&  !(qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D3__c)) {
                                             qt.Quote_Locked_for_Approval__c = true;
                                             break;
                                         }
                                         
                                         
-                                        if(qli.Discount_Type__c == 'Value' && qli.Discount_in_Value__c > 0){
+                                        if(qli.Discount_in_Value__c > 0){
                                             if(qli.Discount_Allowed_New__c < ((qli.Discount_in_Value__c /qli.List_Price__c)*100) && qli.Approved_Discount__c != null && !(qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D2__c)){
                                                 qt.Quote_Locked_for_Approval__c = true;
                                                 break;
@@ -158,7 +158,7 @@ trigger TrgQuote on Quote (After insert , After Update,Before Update )
                                         }
                                         
                                         
-                                        if(qli.Discount_Type__c == 'Value' && qli.Discount_in_Value__c > 0){
+                                        if(qli.Discount_in_Value__c > 0){
                                             if(qli.Discount_Allowed_New__c < ((qli.Discount_in_Value__c /qli.List_Price__c)*100) &&  qli.Approved_Discount__c != null && !(qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D3__c)){
                                                 qt.Quote_Locked_for_Approval__c = true;
                                                 break;
@@ -168,20 +168,20 @@ trigger TrgQuote on Quote (After insert , After Update,Before Update )
                                     }
                                     
                                     when 'L2'{
-                                        system.debug('inside Discount_Type__c'+qli.Discount_Type__c);
+                                        system.debug('inside discount values '+qli.Discount__c+' / '+qli.Discount_in_Value__c);
                                         system.debug('inside Discount__c'+qli.Discount__c);
                                         system.debug('inside Approved_Discount__c'+qli.Approved_Discount__c);
                                         system.debug('inside Discount_Allowed_New__c'+qli.Discount_Allowed_New__c);
                                         system.debug('inside P_D2__c'+qli.P_D2__c);
                                         
                                         
-                                        if (qli.Discount_Type__c == 'Percent' && qli.Discount__c != NULL && qli.Discount__c > qli.Discount_Allowed_New__c && qli.Discount__c!=qli.Approved_Discount__c &&  qli.Approved_Discount__c != null && !(qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D3__c)){
+                                        if (qli.Discount__c != NULL && qli.Discount__c > qli.Discount_Allowed_New__c && qli.Discount__c!=qli.Approved_Discount__c &&  qli.Approved_Discount__c != null && !(qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D3__c)){
                                             system.debug('Inside level 2'+qt.Quote_Locked_for_Approval__c);
                                             qt.Quote_Locked_for_Approval__c = true;
                                             break;
                                         }
                                         
-                                        if(qli.Discount_Type__c == 'Value' && qli.Discount_in_Value__c > 0){
+                                        if(qli.Discount_in_Value__c > 0){
                                             if(qli.Discount_Allowed_New__c < ((qli.Discount_in_Value__c /qli.List_Price__c)*100) &&  qli.Approved_Discount__c != null && !(qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D3__c)){
                                                 qt.Quote_Locked_for_Approval__c = true;
                                                 break;
@@ -201,17 +201,17 @@ trigger TrgQuote on Quote (After insert , After Update,Before Update )
                                 
                                 switch on qt.Owner_Level__c {
                                     when 'L1'{
-                                        if (qli.Discount_Type__c == 'Percent' && qli.Discount__c != NULL && qli.Discount__c > qli.Discount_Allowed_New__c && qli.Discount__c !=qli.Approved_Discount__c && !(qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D2__c)) {
+                                        if (qli.Discount__c != NULL && qli.Discount__c > qli.Discount_Allowed_New__c && qli.Discount__c !=qli.Approved_Discount__c && !(qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D2__c)) {
                                             qt.Quote_Locked_for_Approval__c = true;
                                             break;
                                         }
                                         
-                                        if (qli.Discount_Type__c == 'Percent' && qli.Discount__c != NULL && qli.Discount__c > qli.Discount_Allowed_New__c && qli.Discount__c !=qli.Approved_Discount__c && qli.Approved_Discount__c != null&&  !(qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D3__c)) {
+                                        if (qli.Discount__c != NULL && qli.Discount__c > qli.Discount_Allowed_New__c && qli.Discount__c !=qli.Approved_Discount__c && qli.Approved_Discount__c != null&&  !(qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D3__c)) {
                                             qt.Quote_Locked_for_Approval__c = true;
                                             break;
                                         }
                                         
-                                        if(qli.Discount_Type__c == 'Value' && qli.Discount_in_Value__c > 0){
+                                        if(qli.Discount_in_Value__c > 0){
                                             if(qli.Discount_Allowed_New__c < ((qli.Discount_in_Value__c /qli.Manula_Option_List_Price__c)*100) && qli.Approved_Discount__c != null && !(qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D2__c)){
                                                 qt.Quote_Locked_for_Approval__c = true;
                                                 break;
@@ -219,7 +219,7 @@ trigger TrgQuote on Quote (After insert , After Update,Before Update )
                                             
                                         }
                                         
-                                        if(qli.Discount_Type__c == 'Value' && qli.Discount_in_Value__c > 0){
+                                        if(qli.Discount_in_Value__c > 0){
                                             if(qli.Discount_Allowed_New__c < ((qli.Discount_in_Value__c /qli.Manula_Option_List_Price__c)*100) &&  qli.Approved_Discount__c != null && !(qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D3__c)){
                                                 qt.Quote_Locked_for_Approval__c = true;
                                                 break;
@@ -232,12 +232,12 @@ trigger TrgQuote on Quote (After insert , After Update,Before Update )
                                     
                                     when 'L2'{
                                         
-                                        if (qli.Discount_Type__c == 'Percent' && qli.Discount__c != NULL && qli.Discount__c > qli.Discount_Allowed_New__c && qli.Discount__c!=qli.Approved_Discount__c &&  qli.Approved_Discount__c != null &&!( qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D3__c)){
+                                        if (qli.Discount__c != NULL && qli.Discount__c > qli.Discount_Allowed_New__c && qli.Discount__c!=qli.Approved_Discount__c &&  qli.Approved_Discount__c != null &&!( qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D3__c)){
                                             qt.Quote_Locked_for_Approval__c = true;
                                             break;
                                         }
                                         
-                                        if(qli.Discount_Type__c == 'Value' && qli.Discount_in_Value__c > 0){
+                                        if(qli.Discount_in_Value__c > 0){
                                             if(qli.Discount_Allowed_New__c < ((qli.Discount_in_Value__c /qli.Manula_Option_List_Price__c)*100) &&  qli.Approved_Discount__c != null && !(qli.Approved_Discount__c > qli.Discount_Allowed_New__c && qli.Approved_Discount__c < qli.P_D3__c)){
                                                 qt.Quote_Locked_for_Approval__c = true;
                                                 break;
@@ -531,7 +531,7 @@ trigger TrgQuote on Quote (After insert , After Update,Before Update )
         if(subWithQuoMap.size() > 0){
             List<Quote> quoteList = [select Id, Name, discount__c,OwnerId, Owner_Level__c, Approval_Status__c,Subsidiary__r.Quote_Approval__c, Subsidiary__c, Subsidiary__r.Discount_Level_1__c,
                                      Subsidiary__r.Discount_Level_2__c, Approver_User__c ,Quote_Locked_for_Approval__c, Subsidiary__r.Discount_Level_3__c 
-                                     ,(SELECT Id, Discount__c, Quote__r.Owner_Level__c,Discount_in_Value__c,Discount_Type__c FROM Quote_Line_Items__r) from Quote where Id In : subWithQuoMap.values()];
+                                     ,(SELECT Id, Discount__c, Quote__r.Owner_Level__c,Discount_in_Value__c FROM Quote_Line_Items__r) from Quote where Id In : subWithQuoMap.values()];
             
             List<Quote> UpdateQuoteRecords = new List<Quote>();
             system.debug('inside for if'+quoteList.size());
@@ -645,16 +645,16 @@ trigger TrgQuote on Quote (After insert , After Update,Before Update )
         }
         List<Quote_Line_Item_Custom__c> qliList = new List<Quote_Line_Item_Custom__c>();
         if(Ids.size() > 0){
-            List< Quote >quoteItems = new List<Quote>([SELECT Id,Approval_Status__c, (SELECT Id,Discount__c,Goes_for_Approval__c,Discount_Allowed__c,Discount_Allowed_New__c,Discount_in_Value__c,List_Price__c,Discount_Type__c,Approved_Discount__c,P_D3__c ,P_D2__c   FROM Quote_Line_Items__r where  Goes_for_Approval__c =:true),(SELECT Id,Discount__c,Approved_Discount__c, Discount_Allowed_New__c,Discount_Allowed__c FROM Quote_Line_Options__r) FROM Quote WHERE Id IN :Ids]);
+            List< Quote >quoteItems = new List<Quote>([SELECT Id,Approval_Status__c, (SELECT Id,Discount__c,Goes_for_Approval__c,Discount_Allowed__c,Discount_Allowed_New__c,Discount_in_Value__c,List_Price__c,Approved_Discount__c,P_D3__c ,P_D2__c   FROM Quote_Line_Items__r where  Goes_for_Approval__c =:true),(SELECT Id,Discount__c,Approved_Discount__c, Discount_Allowed_New__c,Discount_Allowed__c FROM Quote_Line_Options__r) FROM Quote WHERE Id IN :Ids]);
             for(Quote qt : quoteItems){
                 for(Quote_Line_Item_Custom__c qtc :qt.Quote_Line_Items__r){
                     
                     if(qtc.Goes_for_Approval__c){
-                        if(qtc.Discount_Type__c == 'Percent'){
+                        if(qtc.Discount__c != null && qtc.Discount__c != 0){
                             qtc.Approved_Discount__c = qtc.Discount__c;
                             qtc.Goes_for_Approval__c = false;
                             qliList.add(qtc);
-                        }else  if(qtc.Discount_Type__c == 'Value'){
+                        }else  if(qtc.Discount_in_Value__c != null && qtc.Discount_in_Value__c != 0){
                             qtc.Approved_Discount__c = ((qtc.Discount_in_Value__c /qtc.List_Price__c)*100);
                             qtc.Goes_for_Approval__c = false;
                             qliList.add(qtc);

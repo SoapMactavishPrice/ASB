@@ -1,30 +1,4 @@
 trigger Trg_QLO on Quote_Line_Options__c (before insert, After insert ,before  delete, After Update, before Update) {
-
-    if(Trigger.isBefore && Trigger.isUpdate){
-        for(Quote_Line_Options__c pt : Trigger.new){
-            if((pt.Manula_Option_List_Price__c != null && pt.Manula_Option_List_Price__c != 0)){
-                if(pt.Discount__c != null && pt.Discount_in_Value__c !=null && pt.Discount__c != 0 && pt.Discount_in_Value__c != 0){
-                    // pt.addError('fill only one from  Discount or Discount in Value');
-                }else if(pt.Discount__c != null && pt.Discount__c != 0.00){
-                    pt.Discount_Type__c = 'Percent';
-                    pt.Discount_in_Value__c = 0;
-                } else if(pt.Discount_in_Value__c != null && pt.Discount_in_Value__c != 0.00){
-                    pt.Discount_Type__c = 'Value'; 
-                    pt.Discount__c = 0; 
-                }
-                else if((pt.Discount_in_Value__c == null || pt.Discount_in_Value__c == 0) && (pt.Discount__c == null || pt.Discount__c == 0)){
-                    pt.Discount_Type__c = null; 
-                    pt.Discount__c = 0; 
-                    pt.Discount_in_Value__c = 0; 
-                }
-            }else{
-                pt.Discount_Type__c = null; 
-                pt.Discount__c = 0; 
-                pt.Discount_in_Value__c = 0; 
-            }
-            
-        }
-     }
     //serial number
     if(Trigger.isBefore && (Trigger.isInsert)){
         set<Id> qId = new set<Id>(); 
@@ -56,18 +30,6 @@ trigger Trg_QLO on Quote_Line_Options__c (before insert, After insert ,before  d
         }
         //update quoteList.values();
         
-    }
-    
-    if(Trigger.isBefore && (Trigger.IsInsert || Trigger.IsUpdate)){
-        for(Quote_Line_Options__c qli : Trigger.new){
-            if(qli.Discount_Type__c =='Value' && qli.Discount_in_Value__c !=null && qli.P_D3__c !=null && qli.Manula_Option_List_Price__c > 0){
-                if(qli.P_D3__c  < (qli.Discount_in_Value__c / qli.Manula_Option_List_Price__c)*100){
-                    system.debug('inside '+qli.Discount_in_Value__c / qli.Manula_Option_List_Price__c);
-                    qli.Discount_in_Value__c.addError('Discount Value '+ ((qli.Discount_in_Value__c / qli.Manula_Option_List_Price__c)*100).SetScale(2) +'% Should not be greater than '+qli.P_D3__c+'%');
-                }
-                
-            }
-        }
     }
     
     if(Trigger.isBefore && Trigger.isUpdate){

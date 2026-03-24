@@ -34,10 +34,10 @@ public class copyLineItem_Controller {
         String ValSelected = strSelected;
         System.debug('ValSelected'+ValSelected);
         List<Quote_Line_Item_Custom__c> lstQLI = new List<Quote_Line_Item_Custom__c>();
-        lstQLi = [Select id,CurrencyIsoCode,Quote__c, Model__c, Product__c, Name, Quantity__c,Discount_Allowed_New__c,P_D1__c,P_D2__c,P_M4__c,P_M3__c,P_M2__c,P_D3__c,P_M1__c,Discount_Type__c,Discount_in_Value__c, Approved_Discount__c,Division__c,UOM__c, Product_Type__c, Discount__c,Scope_of_mould__c,Product_Name__c,Base_Price__c,Product_Description__c,
+        lstQLi = [Select id,CurrencyIsoCode,Quote__c, Model__c, Product__c, Name, Quantity__c,Discount_Allowed_New__c,P_D1__c,P_D2__c,P_M4__c,P_M3__c,P_M2__c,P_D3__c,P_M1__c,Discount_in_Value__c, Approved_Discount__c,Division__c,UOM__c, Product_Type__c, Discount__c,Scope_of_mould__c,Product_Name__c,Base_Price__c,Product_Description__c,
                   Advance_Percentage__c, Cavity__c ,Drawing_No__c, List_Price__c, Mach_Mold_No__c, Expected_Delivery__c,Expected_Delivery_date__c,Total_List_Price_options__c,MFG_AT__c,Level_Of_Ceiling__c,
                   Expected_Customer_PO__c, Expected_Drawing_Final__c, MFG__c,Approval_Status__c, Class__c, Discount_Approval_Note__c, Zero_Cooling__c,Is_Manual__c,Class_2__c,Zero_Cooling_2__c,
-                  (Select Quote__c, Quote_Line_Item__c, Name, Manual_Option_Base_Price__c,Product_Type__c, Manula_Option_List_Price__c,Manual_Product_Name__c, Option_Product_Code__c ,Discount_Description__c,P_D1__c,P_D2__c,P_M4__c,P_M3__c,P_M2__c,P_D3__c,P_M1__c,Discount_Type__c,Discount_in_Value__c, Approved_Discount__c,
+                  (Select Quote__c, Quote_Line_Item__c, Name, Manual_Option_Base_Price__c,Product_Type__c, Manula_Option_List_Price__c,Manual_Product_Name__c, Option_Product_Code__c ,Discount_Description__c,P_D1__c,P_D2__c,P_M4__c,P_M3__c,P_M2__c,P_D3__c,P_M1__c,Discount_in_Value__c, Approved_Discount__c,
                    Discount_Allowed_New__c,Final_Price__c,Quantity__c, Price_Type__c, Mould_Cavity__c, Discount__c, Select_Option__c, Product__c, Description__c from Quote_Line_Options__r)
                   from Quote_Line_Item_Custom__c where id =: ValSelected];
         
@@ -66,14 +66,13 @@ public class copyLineItem_Controller {
                         Quote_Line_Item_Custom__c objQLI = new Quote_Line_Item_Custom__c();
                         objQLI.CurrencyIsoCode=QLI.CurrencyIsoCode;
                         
-                        objQLI.Discount_Type__c = QLI.Discount_Type__c;
-                        if(QLI.Discount_Type__c =='Percent'){
+                        if(QLI.Discount__c != null && QLI.Discount__c != 0){
                             objQLI.Discount__c = QLI.Discount__c;
                         }else{
                             objQLI.Discount__c = null;
                         }
                         
-                        if(QLI.Discount_Type__c =='Value'){
+                        if(QLI.Discount_in_Value__c != null && QLI.Discount_in_Value__c != 0){
                             objQLI.Discount_in_Value__c = QLI.Discount_in_Value__c;
                         }else{
                             objQLI.Discount_in_Value__c = null;
@@ -83,7 +82,7 @@ public class copyLineItem_Controller {
                         
                         //objQLI.Discount__c = QLI.Discount__c;
                         //objQLI.Discount_in_Value__c =  QLI.Discount_in_Value__c;
-                        //objQLI.Discount_Type__c = QLI.Discount_Type__c;
+                        // deprecated discount type copy removed
                         objQLI.P_D1__c = QLI.P_D1__c;
                         objQLI.P_D2__c = QLI.P_D2__c;
                         objQLI.P_D3__c = QLI.P_D3__c;
@@ -174,19 +173,18 @@ system.debug('pbe ===>>> ' + pbe); */
                         objQLI.Expected_Drawing_Final__c = QLI.Expected_Drawing_Final__c;
                         objQLI.Approval_Status__c = QLI.Approval_Status__c;
                         objQLI.Approved_Discount__c = QLI.Approved_Discount__c;
-                        objQLI.Discount_Type__c = QLI.Discount_Type__c;
-                        if(QLI.Discount_Type__c =='Percent'){
+                        if(QLI.Discount__c != null && QLI.Discount__c != 0){
                             objQLI.Discount__c = QLI.Discount__c;
                         }else{
                             //objQLI.Discount__c = null;
                         }
                         
-                        if(QLI.Discount_Type__c =='Value'){
+                        if(QLI.Discount_in_Value__c != null && QLI.Discount_in_Value__c != 0){
                             objQLI.Discount_in_Value__c = QLI.Discount_in_Value__c;
                         }else{
                             ///objQLI.Discount_in_Value__c = null;
                         }
-                        system.debug('Discount_Type__c' + QLI.Discount_Type__c + ' Discount_in_Value__c  '+ QLI.Discount_in_Value__c +' Discount__c '+ QLI.Discount__c);
+                        system.debug('Discount_in_Value__c  '+ QLI.Discount_in_Value__c +' Discount__c '+ QLI.Discount__c);
                         objQLI.P_D1__c = QLI.P_D1__c;
                         objQLI.P_D2__c = QLI.P_D2__c;
                         objQLI.P_D3__c = QLI.P_D3__c;
@@ -241,16 +239,15 @@ system.debug('pbe ===>>> ' + pbe); */
                             objQLO.Select_Option__c = QLO.Select_Option__c;
                             //objQLO.Discount__c = QLI.Discount__c;
                             //objQLO.Discount_in_Value__c =  QLO.Discount_in_Value__c;
-                            //objQLO.Discount_Type__c = QLO.Discount_Type__c;
+                            // deprecated discount type copy removed
                             
-                            objQLO.Discount_Type__c =QLO.Discount_Type__c;
-                            if(QLO.Discount_Type__c =='Percent'){
+                            if(QLO.Discount__c != null && QLO.Discount__c != 0){
                                 objQLO.Discount__c = QLO.Discount__c;
                             }else{
                                 objQLO.Discount__c = null;
                             }
                             
-                            if(QLO.Discount_Type__c =='Value'){
+                            if(QLO.Discount_in_Value__c != null && QLO.Discount_in_Value__c != 0){
                                 objQLO.Discount_in_Value__c = QLO.Discount_in_Value__c;
                             }else{
                                 objQLO.Discount_in_Value__c = null;
@@ -288,7 +285,6 @@ AND Product2.IsACTIVE = true AND Product2.Family = 'Options' AND Product2.Id =: 
 System.debug('pbeEntry'+pbeEntry); */
                             Quote_Line_Options__c objQLO = new Quote_Line_Options__c();
                             objQLO.CurrencyIsoCode=QLI.CurrencyIsoCode;
-                            objQLO.Discount_Type__c =QLO.Discount_Type__c;
                             objQLO.Product_Type__c = QLO.Product_Type__c;
                             objQLO.Quote__c = QLO.Quote__c;
                             objQLO.Quote_Line_Item_Custom__c = lstItem[0].Id;
@@ -310,13 +306,13 @@ System.debug('pbeEntry'+pbeEntry); */
                             }
                             objQLO.Select_Option__c = QLO.Select_Option__c;
                             
-                            if(QLO.Discount_Type__c =='Percent'){
+                            if(QLO.Discount__c != null && QLO.Discount__c != 0){
                                 objQLO.Discount__c = QLO.Discount__c;
                             }else{
                                 objQLO.Discount__c = null;
                             }
                             
-                            if(QLO.Discount_Type__c =='Value'){
+                            if(QLO.Discount_in_Value__c != null && QLO.Discount_in_Value__c != 0){
                                 objQLO.Discount_in_Value__c = QLO.Discount_in_Value__c;
                             }else{
                                 objQLO.Discount_in_Value__c = null;

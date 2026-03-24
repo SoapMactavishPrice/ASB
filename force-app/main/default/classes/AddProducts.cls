@@ -176,7 +176,7 @@ public class AddProducts {
                 objQLI.Quantity__c = pw.quantity;
                 //objQLI.Sr_No__c = pw.serial_no;
            //objQLI.Discount__c = lstQuote[0].discount__c;
-           //objQLI.Discount_Type__c = 'Percent';
+           // deprecated discount type assignment removed
            objQLI.P_D1__c = pbe.d1__c;
            objQLI.P_D2__c = pbe.d2__c;
            objQLI.P_D3__c = pbe.d3__c;
@@ -386,7 +386,6 @@ public class AddProducts {
                     system.debug('qli ===>>>' + qli);
                     Quote_Line_Item_Custom__c objQLI = new Quote_Line_Item_Custom__c();
                     ObjQLI.CurrencyIsoCode=objQuote.CurrencyIsoCode;
-                    ObjQLI.Discount_Type__c = 'Percent';
                     ObjQLI.Is_Tax__c = qli.Is_Tax__c;
                     ObjQLI.Product_Type__c = qli.Product_Type__c;
                     if(RecId != null && RecId != ''){

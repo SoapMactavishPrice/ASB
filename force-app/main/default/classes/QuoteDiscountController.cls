@@ -46,7 +46,7 @@ public class QuoteDiscountController {
         List<Quote_Line_Item_Custom__c> lstItemToUpdate = new List<Quote_Line_Item_Custom__c>();
         System.debug('QlineItm = == '+QlineItm);
         for(Quote_Line_Item_Custom__c lst:QlineItm){
-            system.debug('lst.Discount_Type__c'+lst.Discount_in_Value__c);
+            system.debug('lst.Discount_in_Value__c'+lst.Discount_in_Value__c);
                 //if(lst.Discount_in_Value__c < 0 || lst.Discount__c <0){
                   //   Isdiscountless = true; 
                 //}else{ if(lst.List_Price__c > 0.00 && lst.List_Price__c != null){
@@ -135,7 +135,6 @@ public class QuoteDiscountController {
             for(Integer lstdata = 0; lstdata < QlineItm[lst].Quote_Line_Options__r.size(); lstdata++){
                 system.debug('qLSTOption---->' + QlineItm[lst].Quote_Line_Options__r[lstdata]);
                 QlineItm[lst].Quote_Line_Options__r[lstdata].Discount__c = QlineItm[lst].Discount__c;
-                QlineItm[lst].Quote_Line_Options__r[lstdata].Discount_Type__c = QlineItm[lst].Discount_Type__c;
                 QlineItm[lst].Quote_Line_Options__r[lstdata].Discount_in_Value__c = QlineItm[lst].Discount_in_Value__c;
                 lstToUpdate.add(QlineItm[lst].Quote_Line_Options__r[lstdata]);
             }
@@ -211,10 +210,10 @@ public class QuoteDiscountController {
         QlineItm = [select Product__c, Discount_Value__c,Product__r.Name,List_Price__c,Name,Quantity__c,Division__c,Total_List_Price__c,Sales_Price__c,Total_Sales_Price__c,Average_Sales_Price__c,
                     UOM__c,Ceiling_Total_Sales_Price__c,Quote__r.Approval_Status_From_HOD__c,Quote__r.Status, Is_Manual__c,Approved_Discount__c,Average_Discount_Value__c,
                     Product_Name__c,Line_Item_Id__c,Sales_price_Options__c,Discount__c,Discount_Allowed__c,Discount_Allowed_New__c,Discount_Approval_Note__c,Product_Description__c,
-                    Discount_Type__c, Discount_in_Value__c,Disable_Discoint_Percent__c,Disable_Discoint_Value__c,Sr_No__c,Base_Price__c,
+                    Discount_in_Value__c,Disable_Discoint_Percent__c,Disable_Discoint_Value__c,Sr_No__c,Base_Price__c,
                     (select Name,Product_Name__c,Serial_Number__c,Discount_Value__c,Manual_Product_Name__c,Manula_Option_List_Price__c,List_Price_Quantity__c,Sales_Price__c,Discount__c,Average_Sales_Price__c,
                      Final_Price__c,Manual_Option_Base_Price__c,Description__c,Discount_Allowed__c,Discount_Allowed_New__c,Discount_Description__c,Sales_price_Total__c,Quantity__c,
-                     Select_Option__c,Approved_Discount__c ,Discount_Type__c,Discount_in_Value__c,Dis_Disocunt_Percent__c,Disable_Discoint_Value__c,Average_Discount_Value__c
+                     Select_Option__c,Approved_Discount__c ,Discount_in_Value__c,Dis_Disocunt_Percent__c,Disable_Discoint_Value__c,Average_Discount_Value__c
                      from Quote_Line_Options__r order by Serial_Number__c) 
                     from Quote_Line_Item_Custom__c where Quote__c = :RecordId and Quantity__c >: 0 order by Sr_No__c
                    ];  //AND Quote__r.Quote_Locked_for_Approval__c !=TRUE AND Quote__r.Status = 'CREATED'

@@ -171,7 +171,6 @@ public class CreateQuotetriggerHandler_Test {
         //qlo.Product__c = pro.id;
         qlo.Description__c = 'sfsd';
         qlo.Discount__c = 12;
-        qlo.Discount_Type__c = 'Percent';
         qlo.quantity__c = 2;
         qlo.Discount_Description__c = 'adas';
         qlo.Mould_Cavity__c = 2;
@@ -359,7 +358,6 @@ qt.PROBABILITY__c = 'A';        insert qt;
         //qlo.Product__c = pro.id;
         qlo.Description__c = 'sfsd';
         qlo.Discount__c = 12;
-        qlo.Discount_Type__c = 'Percent';
         qlo.quantity__c = 2;
         qlo.Discount_Description__c = 'adas';
         qlo.Mould_Cavity__c = 2;

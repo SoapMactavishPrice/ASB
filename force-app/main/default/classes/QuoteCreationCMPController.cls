@@ -336,12 +336,12 @@ public class QuoteCreationCMPController {
             String CloneId =  QuoteClone.id; 
             String opptyId = parentQuote.OpportunityId;
             
-            List<Quote_Line_Item_Custom__c> ObjQuoteLineItem = [Select id,Sr_No__c,Is_Tax__c,P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Level_Of_Ceiling__c,Original_SQ_No__c,CurrencyIsoCode,Discount_Approval_Note__c,Discount_in_Value__c,Discount_Allowed_New__c,Discount_Type__c,Advance_Percentage__c, Approval_Status__c,Class__c,Division__c,Drawing_No__c,Expected_Customer_PO__c,Product__r.Model__c,
+            List<Quote_Line_Item_Custom__c> ObjQuoteLineItem = [Select id,Sr_No__c,Is_Tax__c,P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Level_Of_Ceiling__c,Original_SQ_No__c,CurrencyIsoCode,Discount_Approval_Note__c,Discount_in_Value__c,Discount_Allowed_New__c,Advance_Percentage__c, Approval_Status__c,Class__c,Division__c,Drawing_No__c,Expected_Customer_PO__c,Product__r.Model__c,
                                                                 Expected_Delivery__c,Expected_Delivery_date__c,Expected_Drawing_Final__c,Product_Type__c,Scope_of_mould__c,Cavity__c,Product__r.Division__c,
                                                                 Name,Mach_Mold_No__c,MFG__c,Quantity__c,Discount__c,Product_Name__c,MFG_AT__c,Class_2__c,Model__c,Is_Manual__c,Product__r.UOM__c,
                                                                 List_Price__c,Product__c,Product__r.ProductCode,Quote__c,Base_Price__c,Zero_Cooling_2__c,UOM__c,Application__c,Product_Description__c,
                                                                 (Select id,Discount__c,Final_Price__c,Manual_Option__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,Discount_Description__c,
-                                                                Serial_Number__c,Other_Charges_Base_Price__c,Product_Type__c,Discount_in_Value__c,Discount_Type__c,Discount_Allowed_New__c,Other_Charges_Function__c,Product__c,Quote__c,Quote_Line_Item_Custom__c,Select_Option__c,Mould_Cavity__c,Price_Type__c
+                                                                Serial_Number__c,Other_Charges_Base_Price__c,Product_Type__c,Discount_in_Value__c,Discount_Allowed_New__c,Other_Charges_Function__c,Product__c,Quote__c,Quote_Line_Item_Custom__c,Select_Option__c,Mould_Cavity__c,Price_Type__c
                                                                 from Quote_Line_Options__r order by Serial_Number__c asc)
                                                                 from Quote_Line_Item_Custom__c Where Quote__c =: parentQuoteId order by sr_No__c asc];
             
@@ -354,7 +354,7 @@ public class QuoteCreationCMPController {
             List<Quote_Line_Options__c> lstQuoteOption = new List<Quote_Line_Options__c>();
             if(IdOfOpQuoteItem != null && IdOfOpQuoteItem.size() > 0){
                 lstQuoteOption = [Select id,CurrencyIsoCode,Discount__c,Option_Number__c,Product_Type__c,P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,quantity__c,Manual_Product_Name__c, Final_Price__c,Manual_Option__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,Product__r.UOM__c,Description__c,
-                                Other_Charges_Base_Price__c,Other_Charges_Function__c,Product__c,Quote__c,Discount_in_Value__c,Discount_Type__c,Discount_Allowed_New__c,Quote_Line_Item_Custom__c,Select_Option__c,Manula_Option_List_Price__c,Mould_Cavity__c,Price_Type__c,Discount_Description__c
+                                Other_Charges_Base_Price__c,Other_Charges_Function__c,Product__c,Quote__c,Discount_in_Value__c,Discount_Allowed_New__c,Quote_Line_Item_Custom__c,Select_Option__c,Manula_Option_List_Price__c,Mould_Cavity__c,Price_Type__c,Discount_Description__c
                                 ,Serial_Number__c from Quote_Line_Options__c where Quote_Line_Item_Custom__c IN : IdOfOpQuoteItem order by Serial_Number__c asc];
             }
             
@@ -453,12 +453,11 @@ public class QuoteCreationCMPController {
                         cli.Base_Price__c  = mapProductWisePriceEntry.get(pro1.Product__c).Base_Price__c;
                     }
                     
-                    system.debug('dis'+pro1.Discount_Type__c+'  '+ pro1.Discount_in_Value__c+'  '+pro1.Discount__c+'  '+pro1.Discount_Allowed_New__c);
+                    system.debug('dis '+ pro1.Discount_in_Value__c+'  '+pro1.Discount__c+'  '+pro1.Discount_Allowed_New__c);
                     cli.Discount_Allowed_New__c = pro1.Discount_Allowed_New__c;
-                    cli.Discount_Type__c = pro1.Discount_Type__c;
                     cli.Discount__c = pro1.Discount__c;
                     cli.Discount_in_Value__c = pro1.Discount_in_Value__c;
-                    system.debug('dis after'+cli.Discount_Type__c+'  '+ cli.Discount_in_Value__c+'  '+cli.Discount__c+''+cli.Discount_Allowed_New__c);
+                    system.debug('dis after '+ cli.Discount_in_Value__c+'  '+cli.Discount__c+''+cli.Discount_Allowed_New__c);
                     
                     if(pro1.Discount_Approval_Note__c != null){
                         cli.Discount_Approval_Note__c = pro1.Discount_Approval_Note__c;
@@ -475,7 +474,6 @@ public class QuoteCreationCMPController {
                     cli.Is_Tax__c = pro1.Is_Tax__c;
                     cli.Original_SQ_No__c = pro1.Original_SQ_No__c;
                     cli.Sr_No__c = pro1.Sr_No__c;
-                    cli.Discount_Type__c = pro1.Discount_Type__c;
                     cli.Discount_in_Value__c = pro1.Discount_in_Value__c;
                     cli.Discount__c = pro1.Discount__c;
                     cli.Level_Of_Ceiling__c = pro1.Level_Of_Ceiling__c;
@@ -496,16 +494,15 @@ public class QuoteCreationCMPController {
                     cli.Product_Description__c = pro1.Product_Description__c; 
                     }
                     
-                    system.debug('dis'+pro1.Discount_Type__c+'  '+ pro1.Discount_in_Value__c+'  '+pro1.Discount__c+'  '+pro1.Discount_Allowed_New__c);
+                    system.debug('dis '+ pro1.Discount_in_Value__c+'  '+pro1.Discount__c+'  '+pro1.Discount_Allowed_New__c);
                     if(pro1.Discount_Allowed_New__c !=null) cli.Discount_Allowed_New__c = pro1.Discount_Allowed_New__c;
 
-                    cli.Discount_Type__c = pro1.Discount_Type__c;
-                    if(pro1.Discount_Type__c =='Percent'){
+                    if(pro1.Discount__c != null && pro1.Discount__c != 0){
                     cli.Discount__c = pro1.Discount__c;
                     }else
                         cli.Discount__c = null;
                     
-                    if(pro1.Discount_Type__c =='Value'){
+                    if(pro1.Discount_in_Value__c != null && pro1.Discount_in_Value__c != 0){
                     cli.Discount_in_Value__c = pro1.Discount_in_Value__c;
                     }else{
                         cli.Discount_in_Value__c = null;
@@ -619,7 +616,6 @@ public class QuoteCreationCMPController {
                         ContLO.quantity__c = pro2.quantity__c;
                     }
                     
-                    ContLO.Discount_Type__c = pro2.Discount_Type__c;
                     ContLO.Discount_in_Value__c = pro2.Discount_in_Value__c;
                     ContLO.Discount__c = pro2.Discount__c;
                     
@@ -750,7 +746,6 @@ public class QuoteCreationCMPController {
                         ContLO.Select_Option__c = pro2.Select_Option__c;
                     }
                     
-                    ContLO.Discount_Type__c = pro2.Discount_Type__c;
                     ContLO.Discount_in_Value__c = pro2.Discount_in_Value__c;
                     ContLO.Discount__c = pro2.Discount__c;
                     
@@ -912,12 +907,12 @@ public class QuoteCreationCMPController {
             String CloneId =  QuoteClone.id; 
             String opptyId = parentQuote.OpportunityId;
             
-            List<Quote_Line_Item_Custom__c> ObjQuoteLineItem = [Select id,Sr_No__c,Is_Tax__c,P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Level_Of_Ceiling__c,Original_SQ_No__c,CurrencyIsoCode,Discount_Approval_Note__c,Discount_in_Value__c,Discount_Allowed_New__c,Discount_Type__c,Advance_Percentage__c, Approval_Status__c,Class__c,Division__c,Drawing_No__c,Expected_Customer_PO__c,Product__r.Model__c,
+            List<Quote_Line_Item_Custom__c> ObjQuoteLineItem = [Select id,Sr_No__c,Is_Tax__c,P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Level_Of_Ceiling__c,Original_SQ_No__c,CurrencyIsoCode,Discount_Approval_Note__c,Discount_in_Value__c,Discount_Allowed_New__c,Advance_Percentage__c, Approval_Status__c,Class__c,Division__c,Drawing_No__c,Expected_Customer_PO__c,Product__r.Model__c,
                                                                 Expected_Delivery__c,Expected_Delivery_date__c,Expected_Drawing_Final__c,Product_Type__c,Scope_of_mould__c,Cavity__c,Product__r.Division__c,
                                                                 Name,Mach_Mold_No__c,MFG__c,Quantity__c,Discount__c,Product_Name__c,MFG_AT__c,Class_2__c,Model__c,Is_Manual__c,Product__r.UOM__c,
                                                                 List_Price__c,Product__c,Product__r.ProductCode,Quote__c,Base_Price__c,Zero_Cooling_2__c,UOM__c,Application__c,Product_Description__c,
                                                                 (Select id,Discount__c,Final_Price__c,Manual_Option__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,Discount_Description__c,
-                                                                Serial_Number__c,Other_Charges_Base_Price__c,Product_Type__c,Discount_in_Value__c,Discount_Type__c,Discount_Allowed_New__c,Other_Charges_Function__c,Product__c,Quote__c,Quote_Line_Item_Custom__c,Select_Option__c,Mould_Cavity__c,Price_Type__c
+                                                                Serial_Number__c,Other_Charges_Base_Price__c,Product_Type__c,Discount_in_Value__c,Discount_Allowed_New__c,Other_Charges_Function__c,Product__c,Quote__c,Quote_Line_Item_Custom__c,Select_Option__c,Mould_Cavity__c,Price_Type__c
                                                                 from Quote_Line_Options__r order by Serial_Number__c asc)
                                                                 from Quote_Line_Item_Custom__c Where Quote__c =: parentQuoteId order by sr_No__c asc];
             
@@ -930,7 +925,7 @@ public class QuoteCreationCMPController {
             List<Quote_Line_Options__c> lstQuoteOption = new List<Quote_Line_Options__c>();
             if(IdOfOpQuoteItem != null && IdOfOpQuoteItem.size() > 0){
                 lstQuoteOption = [Select id,CurrencyIsoCode,Discount__c,Option_Number__c,Product_Type__c,P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,quantity__c,Manual_Product_Name__c, Final_Price__c,Manual_Option__c,Manual_Option_Base_Price__c,Manual_Option_Function__c,Other_Charges__c,Product__r.UOM__c,Description__c,
-                                Other_Charges_Base_Price__c,Other_Charges_Function__c,Product__c,Quote__c,Discount_in_Value__c,Discount_Type__c,Discount_Allowed_New__c,Quote_Line_Item_Custom__c,Select_Option__c,Manula_Option_List_Price__c,Mould_Cavity__c,Price_Type__c,Discount_Description__c
+                                Other_Charges_Base_Price__c,Other_Charges_Function__c,Product__c,Quote__c,Discount_in_Value__c,Discount_Allowed_New__c,Quote_Line_Item_Custom__c,Select_Option__c,Manula_Option_List_Price__c,Mould_Cavity__c,Price_Type__c,Discount_Description__c
                                 ,Serial_Number__c from Quote_Line_Options__c where Quote_Line_Item_Custom__c IN : IdOfOpQuoteItem order by Serial_Number__c asc];
             }
             
@@ -1031,11 +1026,10 @@ public class QuoteCreationCMPController {
                         cli.Base_Price__c  = mapProductWisePriceEntry.get(pro1.Product__c).Base_Price__c;
                     }
                     
-                    system.debug('dis'+pro1.Discount_Type__c+'  '+ pro1.Discount_in_Value__c+'  '+pro1.Discount__c+'  '+pro1.Discount_Allowed_New__c);
+                    system.debug('dis '+ pro1.Discount_in_Value__c+'  '+pro1.Discount__c+'  '+pro1.Discount_Allowed_New__c);
                     cli.Discount_Allowed_New__c = pro1.Discount_Allowed_New__c;
-                    cli.Discount_Type__c = pro1.Discount_Type__c;
                     
-                    system.debug('dis after'+cli.Discount_Type__c+'  '+ cli.Discount_in_Value__c+'  '+cli.Discount__c+''+cli.Discount_Allowed_New__c);
+                    system.debug('dis after '+ cli.Discount_in_Value__c+'  '+cli.Discount__c+''+cli.Discount_Allowed_New__c);
                     
                     if(pro1.Discount_Approval_Note__c != null){
                         cli.Discount_Approval_Note__c = pro1.Discount_Approval_Note__c;
@@ -1057,7 +1051,6 @@ public class QuoteCreationCMPController {
                     cli.Is_Tax__c = pro1.Is_Tax__c;
                     cli.Original_SQ_No__c = pro1.Original_SQ_No__c;
                     cli.Sr_No__c = pro1.Sr_No__c;
-                    cli.Discount_Type__c = pro1.Discount_Type__c;
                     cli.Level_Of_Ceiling__c = pro1.Level_Of_Ceiling__c;
                     cli.Discount_Allowed_New__c = pro1.Discount_Allowed_New__c;
                     cli.Application__c = Oppty.APPLICATION__c;
@@ -1076,16 +1069,15 @@ public class QuoteCreationCMPController {
                     cli.Product_Description__c = pro1.Product_Description__c; 
                     }
                     
-                    system.debug('dis'+pro1.Discount_Type__c+'  '+ pro1.Discount_in_Value__c+'  '+pro1.Discount__c+'  '+pro1.Discount_Allowed_New__c);
+                    system.debug('dis '+ pro1.Discount_in_Value__c+'  '+pro1.Discount__c+'  '+pro1.Discount_Allowed_New__c);
                     if(pro1.Discount_Allowed_New__c !=null) cli.Discount_Allowed_New__c = pro1.Discount_Allowed_New__c;
 
-                    cli.Discount_Type__c = pro1.Discount_Type__c;
-                    if(pro1.Discount_Type__c =='Percent'){
+                    if(pro1.Discount__c != null && pro1.Discount__c != 0){
                     cli.Discount__c = pro1.Discount__c;
                     }else
                         cli.Discount__c = null;
                     
-                    if(pro1.Discount_Type__c =='Value'){
+                    if(pro1.Discount_in_Value__c != null && pro1.Discount_in_Value__c != 0){
                     cli.Discount_in_Value__c = pro1.Discount_in_Value__c;
                     }else{
                         cli.Discount_in_Value__c = null;
@@ -1204,7 +1196,6 @@ public class QuoteCreationCMPController {
                         ContLO.quantity__c = pro2.quantity__c;
                     }
                     
-                    ContLO.Discount_Type__c = pro2.Discount_Type__c;
                     
                     contLo.Discount_Description__c = pro2.Discount_Description__c;
                     contLo.Discount_Allowed_New__c = pro2.Discount_Allowed_New__c;
@@ -1338,7 +1329,6 @@ public class QuoteCreationCMPController {
                         ContLO.Select_Option__c = pro2.Select_Option__c;
                     }
                     
-                    ContLO.Discount_Type__c = pro2.Discount_Type__c;
                     
                     contLo.Discount_Description__c = pro2.Discount_Description__c;
                     contLo.Discount_Allowed_New__c = pro2.Discount_Allowed_New__c;

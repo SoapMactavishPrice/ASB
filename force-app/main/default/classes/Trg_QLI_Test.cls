@@ -162,6 +162,7 @@ public class Trg_QLI_Test {
         qli1.List_Price__c = 12000;
         qli1.Product__c = pro.id;
         qli1.Is_Manual__c = false;
+        qli1.Discount_Type__c = 'Value';
         qli1.Discount_in_Value__c = 1000;
         qli1.P_D1__c = 10;
         qli1.P_D2__c = 15;
@@ -169,6 +170,7 @@ public class Trg_QLI_Test {
         insert qli1;
         
         System.assert(qli1.Id != null, 'Quote Line Item should be created');
+        System.assertEquals('Value', qli1.Discount_Type__c);
         
         Test.stopTest();
     }
@@ -186,6 +188,7 @@ public class Trg_QLI_Test {
         qli.List_Price__c = 12000;
         qli.Product__c = pro.id;
         qli.Is_Manual__c = false;
+        qli.Discount_Type__c = 'Value';
         qli.Discount_in_Value__c = 1000;
         qli.P_D1__c = 10;
         qli.P_D2__c = 15;
@@ -195,13 +198,15 @@ public class Trg_QLI_Test {
         Test.startTest();
         
         // Test Update - Change to Percent Discount
+        qli.Discount_Type__c = 'Percent';
         qli.Discount__c = 15;
         qli.Discount_in_Value__c = null;
         update qli;
         
         // Verify update
-        Quote_Line_Item_Custom__c updatedQLI = [SELECT Id, Discount__c, Sr_No__c 
+        Quote_Line_Item_Custom__c updatedQLI = [SELECT Id, Discount_Type__c, Discount__c, Sr_No__c 
                                                 FROM Quote_Line_Item_Custom__c WHERE Id = :qli.Id];
+        System.assertEquals('Percent', updatedQLI.Discount_Type__c);
         System.assertEquals(15, updatedQLI.Discount__c);
         System.assert(updatedQLI.Sr_No__c != null, 'Serial number should be set');
         
@@ -220,6 +225,7 @@ public class Trg_QLI_Test {
         qli.List_Price__c = 12000;
         qli.Product__c = pro.id;
         qli.Is_Manual__c = false;
+        qli.Discount_Type__c = 'Percent';
         qli.Discount__c = 10;
         insert qli;
         
@@ -289,6 +295,7 @@ public class Trg_QLI_Test {
             qliL1.List_Price__c = 10000;
             qliL1.Product__c = pro.id;
             qliL1.Is_Manual__c = false;
+            qliL1.Discount_Type__c = 'Percent';
             qliL1.Discount__c = 25;
             qliL1.P_D1__c = 10;
             qliL1.P_D2__c = 20;
@@ -309,6 +316,7 @@ public class Trg_QLI_Test {
             qliL2.List_Price__c = 10000;
             qliL2.Product__c = pro.id;
             qliL2.Is_Manual__c = false;
+            qliL2.Discount_Type__c = 'Percent';
             qliL2.Discount__c = 25;
             qliL2.P_D1__c = 10;
             qliL2.P_D2__c = 20;
@@ -341,6 +349,7 @@ public class Trg_QLI_Test {
             qli.List_Price__c = 10000 + (i * 1000);
             qli.Product__c = pro.id;
             qli.Is_Manual__c = false;
+            qli.Discount_Type__c = 'Percent';
             qli.Discount__c = 10 + i;
             qliList.add(qli);
         }
@@ -381,6 +390,7 @@ public class Trg_QLI_Test {
         qli1.List_Price__c = 10000;
         qli1.Product__c = pro.id;
         qli1.Is_Manual__c = false;
+        qli1.Discount_Type__c = 'Percent';
         qli1.Discount__c = 10;
         qli1.Discount_in_Value__c = 1000; // Both set
         insert qli1;
@@ -396,6 +406,7 @@ public class Trg_QLI_Test {
         qli2.List_Price__c = 10000;
         qli2.Product__c = pro.id;
         qli2.Is_Manual__c = false;
+        qli2.Discount_Type__c = 'Value';
         qli2.Discount_in_Value__c = 5000; // 50% discount
         qli2.P_D3__c = 30; // Max allowed 30%
         
@@ -425,6 +436,7 @@ public class Trg_QLI_Test {
         qli.List_Price__c = 10000;
         qli.Product__c = pro.id;
         qli.Is_Manual__c = false;
+        qli.Discount_Type__c = 'Percent';
         qli.Discount__c = 10;
         insert qli;
         

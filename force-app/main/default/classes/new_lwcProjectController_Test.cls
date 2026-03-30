@@ -1,575 +1,567 @@
-@isTest
-public class new_lwcProjectController_Test {
-    
-    @testSetup
-    static void setupTestData() {
-        Fiscal_Year_Master__c fym = new Fiscal_Year_Master__c();
-        fym.Active__c = true;
-        fym.Name = '44';
-        fym.Fiscal_Year_Start_Date__c = System.today();
-        fym.Fiscal_Year_End_Date__c = System.today() + 10;
-        insert fym;
-        
-        Subsidiari_Master__c sub = new Subsidiari_Master__c();
-        sub.Name = 'ASI';
-        sub.Name__c = 'xyg';
-        sub.Active__c = true;
-        sub.Office__c = 'Airforce';
-        sub.Rounding_Off_Digits__c = '10000';
-        sub.Permitted_Currency__c = 'INR';
-        sub.Permitted_Language__c = 'EN';
-        sub.Discount_Level_1__c = 5;
-        sub.Discount_Level_2__c = 10;
-        sub.Discount_Level_3__c = 15;
-        sub.CurrencyIsoCode = 'INR';
-        sub.Quote_Approval__c = 'Line Item level';
-        sub.AI_Sales_Liaison__c = 'Test Liaison';
-        sub.AI_Sales_Liaison_email_id__c = 'test@test.com';
-        sub.HQ_Sales_Liaison__c = 'HQ Liaison';
-        sub.HQ_Sales_Liaison_email_id__c = 'hq@test.com';
+@IsTest
+private class new_lwcProjectController_Test {
+
+    @TestSetup
+    static void setupData() {
+        // Create Fiscal Year that covers today's date
+        Fiscal_Year_Master__c fy = new Fiscal_Year_Master__c(
+            Name = 'FY',
+            Active__c = true,
+            Fiscal_Year_Start_Date__c = Date.newInstance(Date.today().year(), 1, 1),
+            Fiscal_Year_End_Date__c = Date.newInstance(Date.today().year(), 12, 31)
+        );
+        insert fy;
+
+        Subsidiari_Master__c sub = new Subsidiari_Master__c(
+            Name = 'ABC',
+            Permitted_Currency__c = 'USD',
+            Permitted_Language__c = 'EN',
+            Office__c = 'Mumbai',
+            Discount_Level_1__c = 5,
+            Discount_Level_2__c = 10,
+            Discount_Level_3__c = 15
+        );
         insert sub;
         
-        Country_List__c c1 = new Country_List__c();
-        c1.Name = 'test';
-        c1.Subsidiary__c = sub.id;
-        insert c1;
-        
-        Region__c r = new Region__c();
-        r.Name = 'test';
-        r.Name__c = 'test';
-        r.Country__c = c1.id;
-        insert r;
-        
-        State_List__c s1 = new State_List__c();
-        s1.Name = 'test1';
-        s1.Country__c = c1.id;
-        s1.Region__c = r.id;
-        insert s1;
-        
-        City_List__c o = new City_List__c();
-        o.Name = 'test';
-        o.State__c = s1.id;
-        o.Subsidiary_Master__c = sub.Id;
-        insert o;
-        
-        Unique_No__c un = new Unique_No__c();
-        un.Object_Name__c = 'Project Management';
-        un.Fiscal_Year__c = fym.Id;
-        un.Subsidiary__c = sub.Id;
-        un.Serial_No__c = 1;
-        insert un;
-        
-        User_Setup__c us = new User_Setup__c();
-        us.User__c = UserInfo.getUserId();
-        us.Country__c = c1.Id;
-        us.Subsidiari__c = sub.Id;
-        insert us;
-        
-        Account acc = new Account();
-        acc.Name = 'acc anem';
-        acc.ADDRESS_LINE_1__c = 'add 1';
-        acc.ADDRESS_LINE_2__c = 'add 2';
-        acc.ADDRESS_LINE_3__c = 'add 3';
-        acc.Pin_Code__c = '250001';
-        acc.Type = 'Press';
-        acc.CurrencyIsoCode = 'INR';
+        Global_Region__c greg = new Global_Region__c(Name='Asia');
+        insert greg;
+
+        Global_SubRegion__c reg = new Global_SubRegion__c(
+            Name='Southern Asia',
+            Region__c=greg.Id
+        );
+        insert reg;
+
+        Country_List__c country = new Country_List__c(
+            Name='India',
+            Sub_Region__c=reg.Id,
+            Region_Master__c=greg.Id
+        );
+        insert country;
+
+        State_List__c state = new State_List__c(
+            Name='Maharashtra',
+            Country__c=country.Id
+        );
+        insert state;
+
+        City_List__c city = new City_List__c(
+            Name='Mumbai',
+            State__c=state.Id
+        );
+        insert city;
+
+        PIN_Code_Master__c pin = new PIN_Code_Master__c(
+            Name='400001',
+            City__c=city.Id
+        );
+        insert pin;
+
+        // Create User_Setup__c for the current user (required by trigger)
+        User_Setup__c userSetup = new User_Setup__c(
+            User__c = UserInfo.getUserId(),
+            Subsidiari__c = sub.Id,
+            Country__c = country.id,
+            Signature_Image__c = 'test'
+        );
+        insert userSetup;
+
+        Account acc = new Account(
+            Name = 'Test Account',
+            CurrencyIsoCode = 'USD',
+            Subsidiary__c = sub.Id,
+            Legal_Name__c = 'Test Account',
+            Is_Converted__c = true,
+            BillingCountry = 'United States',
+            BillingStreet = 'Test Street',
+            BillingCity = 'Test City',
+            BillingState = 'Test State',
+            BillingPostalCode = '12345',
+            ADDRESS_LINE_1__c = 'Test',
+            Customer_Category__c = 'Medium'
+          //  Global_Customer_ID__c = '013 MARS'
+        );
         insert acc;
-        
-        Contact con = new Contact();
-        con.LastName = 'lname';
-        con.AccountId = acc.id;
-        con.Title = 'dev';
-        con.Email = 'vd@gmail.com';
+
+        Contact con = new Contact(
+            FirstName = 'Test',
+            LastName = 'Contact',
+            Email = 'test@test.com',
+            AccountId = acc.Id
+        );
         insert con;
-        
-        Pricebook2 pb = new Pricebook2();
-        pb.Name = 'Standard Price Book';
-        pb.IsActive = true;
-        insert pb;
-        
-        Opportunity op = new Opportunity();
-        op.Name = 'test opp';
-        op.StageName = 'New';
-        op.CloseDate = system.today() + 10;
-        op.AccountId = acc.id;
-        op.Pricebook2Id = pb.id;
-        op.Subsidiary__c = sub.id;
-        op.CurrencyIsoCode = 'INR';
-        op.Source__c = 'DIRECT';
-        insert op;
-        
-        Quote qt = new Quote();
-        qt.Status = 'CREATED';
-        qt.Name = 'qt test';
-        qt.OpportunityId = op.id;
-        qt.Exchange_Rate__c = 1;
-        qt.Discount__c = 12;
-        qt.SUBSIDARY__c = sub.id;
-        qt.Subsidiary__c = sub.id;
-        qt.Additinal_Margin__c = 10;
-        qt.CurrencyIsoCode = 'INR';
+
+        Opportunity opp = new Opportunity(
+            Name = 'Test Opportunity',
+            AccountId = acc.Id,
+            StageName = 'Prospecting',
+            CloseDate = Date.today(),
+            CurrencyIsoCode = 'USD',
+            Source__c = 'DIRECT'
+        );
+        insert opp;
+
+        Quote qt = new Quote(
+            Name = 'Test Quote',
+            OpportunityId = opp.Id,
+            Status = 'Draft',
+            CurrencyIsoCode = 'USD'
+        );
         insert qt;
+
+        Product2 prod = new Product2(
+            Name = 'Test Product',
+            ProductCode = 'TP01',
+            Description = 'Test Description',
+            IsActive = true
+        );
+        insert prod;
+
+        Quote_Line_Item_Custom__c qli = new Quote_Line_Item_Custom__c(
+            Quote__c = qt.Id,
+            Product__c = prod.Id,
+            Product_Name__c = 'Test Product',
+            Quantity__c = 2,
+            Sr_No__c = 1
+        );
+        insert qli;
+
+        Contract contract = new Contract(
+            Name = 'Test Contract',
+            AccountId = acc.Id,
+            Status = 'CREATED',
+            StartDate = Date.today(),
+            ContractTerm = 12,
+            Subsidiary__c = sub.Id,
+            SUBSIDARY__c = sub.Id,
+            Opportunity__c = opp.Id,
+            Quote__c = qt.Id,
+            Project_Management_Quote_Id__c = qt.Id,
+            CurrencyIsoCode = 'USD',
+            Expiration_Date__c = Date.today().addDays(30),
+            ExpirationDate__c = Date.today().addDays(30),
+            Revision_Number__c = '001',
+            Contact__c = con.Id,
+            DATE__c = Date.today(),
+            SOLD_TO__c = acc.Id,
+            SHIP_TO__c = acc.Id,
+            INCO_TERMS__c = 'FOB',
+            MFG_AT__c = 'Test MFG',
+            TYPE__c = 'Test Type',
+            END_CUSTOMER_NAME__c = 'Test End Customer',
+            ADVANCE_PAYMENT__c = '10',
+            PO_Number__c = 'PO123',
+            PO_Date__c = Date.today(),
+            Signed_SC_PO_receipt_date__c = Date.today(),
+            PO_No_from_customer__c = 'CustPO123',
+            Global_Region__c = greg.Id,
+            Global_SubRegion__c = reg.Id,
+            Country_Text__c = 'India',
+            FY__c = 'FY',
+            FY1__c = fy.Id
+        );
+        insert contract;
+
+        Contract_Line_Item__c cli = new Contract_Line_Item__c(
+            ContractId__c = contract.Id,
+            Product2Id__c = prod.Id,
+            Product_Name_2__c = 'Test Product 2',
+            Quantity__c = 2,
+            QTY__c = 2,
+            Sr_No__c = 1,
+            Quote_Line_Item_Name__c = qli.Id,
+            CurrencyIsoCode = 'USD',
+            Original_SQ_No__c = 001,  // Number field - no quotes
+            Division__c = 'MOLD',
+            Drawing_No__c = 'DRG001',
+            MFG_Location__c = 'Test Location',
+            L_C__c = 'Yes',
+            APPLICATION__c = 'BIB - Bag in box',
+            CLASS__c = 'Test Class',
+            Description__c = 'Test Description',
+            Scope__c = 'Test Scope',
+            Cavity__c = 2
+        );
+        insert cli;
+    }
+
+    @IsTest
+    static void testGetExistingProjectDetails() {
+        Contract con = [SELECT Id FROM Contract LIMIT 1];
+        Test.startTest();
+        Map<String, Object> result = new_lwcProjectController.getExistingProjectDetails(con.Id);
+        Test.stopTest();
+    }
+
+   @IsTest
+static void testGetExistingProjectDetailsWithExpiredContract() {
+    Contract con = [SELECT Id FROM Contract LIMIT 1];
+    
+    // Instead of updating the contract to expired (which fails validation),
+    // we'll create a new expired contract specifically for this test
+    
+    // Get the necessary related records
+    Account acc = [SELECT Id FROM Account LIMIT 1];
+    Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
+    Quote qt = [SELECT Id FROM Quote LIMIT 1];
+    Subsidiari_Master__c sub = [SELECT Id FROM Subsidiari_Master__c WHERE Name = 'ABC' LIMIT 1];
+    Contact contact = [SELECT Id FROM Contact LIMIT 1];
+    Global_Region__c greg = [SELECT Id FROM Global_Region__c LIMIT 1];
+    Global_SubRegion__c reg = [SELECT Id FROM Global_SubRegion__c LIMIT 1];
+    Fiscal_Year_Master__c fy = [SELECT Id FROM Fiscal_Year_Master__c WHERE Active__c = true LIMIT 1];
+    
+    Contract expiredContract = new Contract(
+        Name = 'Expired Test Contract',
+        AccountId = acc.Id,
+        Status = 'CREATED',
+        StartDate = Date.today().addMonths(-3),
+        ContractTerm = 12,
+        Subsidiary__c = sub.Id,
+        SUBSIDARY__c = sub.Id,
+        Opportunity__c = opp.Id,
+        Quote__c = qt.Id,
+        Project_Management_Quote_Id__c = qt.Id,
+        CurrencyIsoCode = 'USD',
+        Expiration_Date__c = Date.today().addDays(-30),  // Expired
+        ExpirationDate__c = Date.today().addDays(-30),
+        Revision_Number__c = '001',
+        Contact__c = contact.Id,
+        DATE__c = Date.today(),
+        SOLD_TO__c = acc.Id,
+        SHIP_TO__c = acc.Id,
+        INCO_TERMS__c = 'FOB',
+        MFG_AT__c = 'Test MFG',
+        TYPE__c = 'Test Type',
+        END_CUSTOMER_NAME__c = 'Test End Customer',
+        ADVANCE_PAYMENT__c = '10',
+        PO_Number__c = 'PO456',
+        PO_Date__c = Date.today().addMonths(-3),
+        Signed_SC_PO_receipt_date__c = Date.today().addMonths(-3),
+        PO_No_from_customer__c = 'CustPO456',
+        Global_Region__c = greg.Id,
+        Global_SubRegion__c = reg.Id,
+        Country_Text__c = 'India',
+        FY__c = 'FY',
+        FY1__c = fy.Id
+    );
+    
+    Test.startTest();
+    insert expiredContract;  // Insert a new expired contract directly
+    Map<String, Object> result = new_lwcProjectController.getExistingProjectDetails(expiredContract.Id);
+    Test.stopTest();
+}
+
+    @IsTest
+    static void testGetExistingProjectDetailsWithNoCLI() {
+        Contract con = [SELECT Id FROM Contract LIMIT 1];
+        List<Contract_Line_Item__c> cliList = [SELECT Id FROM Contract_Line_Item__c WHERE ContractId__c = :con.Id];
+        delete cliList;
         
-        Product2 pro = new Product2();
-        pro.Name = 'prod namen';
-        pro.ProductCode = 'TEST123';
-        pro.Description = 'Test Description';
-        insert pro;
+        Test.startTest();
+        Map<String, Object> result = new_lwcProjectController.getExistingProjectDetails(con.Id);
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void testGetExistingProjectDetailsWithOriginalContract() {
+        Contract con = [SELECT Id FROM Contract LIMIT 1];
+        Test.startTest();
+        Map<String, Object> result = new_lwcProjectController.getExistingProjectDetails(con.Id);
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void testSaveProjectDetails() {
+        Contract con = [SELECT Id, Quote__c, Opportunity__c, AccountId, Subsidiary__c, SUBSIDARY__c, 
+                               Global_Region__c, Global_SubRegion__c, Country_Text__c,
+                               FY__c, FY1__c, Revision_Number__c, Contact__c, DATE__c, ContractNumber,
+                               SOLD_TO__c, SHIP_TO__c, INCO_TERMS__c, MFG_AT__c, TYPE__c, 
+                               END_CUSTOMER_NAME__c, PO_No_from_customer__c, Signed_SC_PO_receipt_date__c,
+                               CurrencyIsoCode, Expiration_Date__c
+                        FROM Contract LIMIT 1];
         
-        PricebookEntry pbe = new PricebookEntry();
-        pbe.Product2Id = pro.Id;
-        pbe.Pricebook2Id = Test.getStandardPricebookId();
-        pbe.UnitPrice = 100;
-        pbe.UseStandardPrice = false;
-        pbe.IsActive = true;
-        pbe.D1__c = 0.1;
-        pbe.D3__c = 0.2;
-        pbe.D2__c = 0.3;
-        pbe.M1__c = 0.1;
-        pbe.M2__c = 0.2;
-        pbe.M3__c = 0.3;
-        pbe.M4__c = 0.4;
-        pbe.Rounding_Off_Digits__c = '10';
-        pbe.Base_Price__c = 100;
-        pbe.Discount_Level_3__c = 12;
-        pbe.Pricing_Type__c = 1;
-        pbe.Quantity__c = 1;
-        insert pbe;
+        Contract_Line_Item__c cli = [SELECT Id, Product2Id__c, Product2Id__r.Name, Sr_No__c, 
+                                            Quote_Line_Item_Name__c, Project_Unique_No__c,
+                                            Zero_Cooling__c, Drawing_No__c,
+                                            MFG_Location__c, L_C__c, APPLICATION__c, CLASS__c,
+                                            Description__c, Division__c, Scope__c, Cavity__c,
+                                            QTY__c, Quantity__c, Product_Name_2__c
+                                     FROM Contract_Line_Item__c 
+                                     WHERE ContractId__c = :con.Id LIMIT 1];
         
-        Quote_Line_Item_Custom__c qli = new Quote_Line_Item_Custom__c();
-        qli.Quote__c = qt.id;
-        qli.Discount__c = 12;
-        qli.Quantity__c = 1;
-        qli.Discount_Approval_Note__c = 'sfasf';
-        qli.Scope_of_mould__c = 'ML';
-        qli.List_Price__c = 12;
-        qli.Product_Name__c = 'prod namen';
-        qli.Product__c = pro.id;
-        qli.Is_Manual__c = true;
-        qli.Manual_Product_Code__c = 'MAN001';
+        List<new_lwcProjectController.wrapper> wrapList = new List<new_lwcProjectController.wrapper>();
+        
+        new_lwcProjectController.wrapper wrap1 = new new_lwcProjectController.wrapper();
+        wrap1.isSelect = true;
+        wrap1.key = cli.Project_Unique_No__c != null ? cli.Project_Unique_No__c : 'UNIQUE001';
+        wrap1.LineNumberId = cli.Id;
+        wrap1.LineNumberIdClone = cli.Id + '_0';
+        wrap1.proName = 'Test Product';
+        wrap1.proLineId = null;
+        wrap1.proNumber = null;
+        wrap1.ExpectedSalesMonth = Date.today();
+        wrap1.YourPONumber = 'PO123';
+        wrap1.YourPOIssueDate = Date.today();
+        wrap1.isDisabled = false;
+        wrap1.qty = 1;
+        wrapList.add(wrap1);
+        
+        String jsonData = JSON.serialize(wrapList);
+        Integer totalProgram = 1;
+        
+        Test.startTest();
+        Map<String, Object> result = new_lwcProjectController.SaveProjectDeatils(con.Id, jsonData, totalProgram);
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void testSaveProjectDetailsWithMultipleProjects() {
+        Contract con = [SELECT Id FROM Contract LIMIT 1];
+        Contract_Line_Item__c cli = [SELECT Id, Project_Unique_No__c, Quantity__c 
+                                     FROM Contract_Line_Item__c 
+                                     WHERE ContractId__c = :con.Id LIMIT 1];
+        
+        List<new_lwcProjectController.wrapper> wrapList = new List<new_lwcProjectController.wrapper>();
+        
+        for (Integer i = 0; i < 2; i++) {
+            new_lwcProjectController.wrapper wrap = new new_lwcProjectController.wrapper();
+            wrap.isSelect = true;
+            wrap.key = cli.Project_Unique_No__c != null ? cli.Project_Unique_No__c : 'UNIQUE001';
+            wrap.LineNumberId = cli.Id;
+            wrap.LineNumberIdClone = cli.Id + '_' + i;
+            wrap.proName = 'Test Product';
+            wrap.proLineId = null;
+            wrap.proNumber = null;
+            wrap.ExpectedSalesMonth = Date.today();
+            wrap.YourPONumber = 'PO' + i;
+            wrap.YourPOIssueDate = Date.today();
+            wrap.isDisabled = false;
+            wrap.qty = 1;
+            wrapList.add(wrap);
+        }
+        
+        String jsonData = JSON.serialize(wrapList);
+        Integer totalProgram = 2;
+        
+        Test.startTest();
+        Map<String, Object> result = new_lwcProjectController.SaveProjectDeatils(con.Id, jsonData, totalProgram);
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void testSaveProjectDetailsWithCompleteConversion() {
+        Contract con = [SELECT Id FROM Contract LIMIT 1];
+        con.Total_Quantity_Of_Products__c = 2;
+        update con;
+        
+        Contract_Line_Item__c cli = [SELECT Id, Project_Unique_No__c, Quantity__c 
+                                     FROM Contract_Line_Item__c 
+                                     WHERE ContractId__c = :con.Id LIMIT 1];
+        
+        List<new_lwcProjectController.wrapper> wrapList = new List<new_lwcProjectController.wrapper>();
+        
+        for (Integer i = 0; i < 2; i++) {
+            new_lwcProjectController.wrapper wrap = new new_lwcProjectController.wrapper();
+            wrap.isSelect = true;
+            wrap.key = cli.Project_Unique_No__c != null ? cli.Project_Unique_No__c : 'UNIQUE001';
+            wrap.LineNumberId = cli.Id;
+            wrap.LineNumberIdClone = cli.Id + '_' + i;
+            wrap.proName = 'Test Product';
+            wrap.proLineId = null;
+            wrap.proNumber = null;
+            wrap.ExpectedSalesMonth = Date.today();
+            wrap.YourPONumber = 'PO' + i;
+            wrap.YourPOIssueDate = Date.today();
+            wrap.isDisabled = false;
+            wrap.qty = 1;
+            wrapList.add(wrap);
+        }
+        
+        String jsonData = JSON.serialize(wrapList);
+        Integer totalProgram = 2;
+        
+        Test.startTest();
+        Map<String, Object> result = new_lwcProjectController.SaveProjectDeatils(con.Id, jsonData, totalProgram);
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void testSaveProjectDetailsWithException() {
+        Test.startTest();
+        Map<String, Object> result = new_lwcProjectController.SaveProjectDeatils(null, 'invalid json', 0);
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void testCreateUniqueNo() {
+        Contract con = [SELECT Id, Quote__c FROM Contract LIMIT 1];
+        
+        Quote_Line_Item_Custom__c qli = new Quote_Line_Item_Custom__c(
+            Quote__c = con.Quote__c,
+            Product_Name__c = 'New Test Product',
+            Quantity__c = 1,
+            Sr_No__c = 2
+        );
         insert qli;
         
-        Quote_Line_Options__c qlo = new Quote_Line_Options__c();
-        qlo.Quote__c = qt.id;
-        qlo.Quote_Line_Item_Custom__c = qli.id;
-        insert qlo;
-    }
-    
-    public static testMethod void unitTest1() {
-        Subsidiari_Master__c sub = [SELECT Id, Name FROM Subsidiari_Master__c LIMIT 1];
-        Account acc = [SELECT Id FROM Account LIMIT 1];
-        Opportunity op = [SELECT Id FROM Opportunity LIMIT 1];
-        Quote qt = [SELECT Id FROM Quote LIMIT 1];
-        Product2 pro = [SELECT Id FROM Product2 LIMIT 1];
-        Quote_Line_Item_Custom__c qli = [SELECT Id FROM Quote_Line_Item_Custom__c LIMIT 1];
-        Contact con = [SELECT Id FROM Contact LIMIT 1];
-        Fiscal_Year_Master__c fym = [SELECT Id FROM Fiscal_Year_Master__c LIMIT 1];
-        
-        // Create ALL test data BEFORE Test.startTest()
-        Contract cont = new Contract();
-        cont.Opportunity__c = op.id;
-        cont.AccountId = acc.id;
-        cont.Quote__c = qt.id;
-        cont.Subsidiary__c = sub.id;
-        cont.FY1__c = fym.id;
-        cont.Country_Text__c = 'IN';
-        cont.date__C = date.today().addDays(-1);
-        cont.Expiration_Date__c = System.today().addDays(30);
-        cont.Status = 'CREATED';
-        cont.Revision_Number__c = '1';
-        cont.FY__c = '26';
-        cont.SUBSIDARY__c = sub.Id;
-        cont.Contact__c = con.Id;
-        cont.SHIP_TO__c = acc.Id;
-        cont.SOLD_TO__c = acc.Id;
-        cont.INCO_TERMS__c = 'FOB';
-        cont.TYPE__c = 'Standard';
-        cont.END_CUSTOMER_NAME__c = 'Test Customer';
-        cont.PO_No_from_customer__c = 'PO-001';
-        cont.Signed_SC_PO_receipt_date__c = System.today();
-        insert cont;
-        
-        Contract_Line_Item__c conLI = new Contract_Line_Item__c();
-        conLI.ContractId__c = cont.Id;
-        conLI.Discount__c = 16.0;
-        conLI.Quantity__c = 3.0;
-        conLI.Discount_Allowed__c = 20.0;
-        conLI.Approval_Note__c = 'Null';
-        conLI.Cancelled__c = false;
-        conLI.Project_Unique_No__c = null;
-        conLI.Level_Of_Ceiling__c = '1000';
-        conLI.Quote_Line_Item_Name__c = qli.Id;
-        conLI.CurrencyIsoCode = 'INR';
-        conLI.Sr_No__c = 1;
-        conLI.Zero_Cooling__c = 'Yes';
-        conLI.Drawing_No__c = 'DRG-001';
-        conLI.MFG_Location__c = 'Location A';
-        conLI.L_C__c = 'Yes';
-        conLI.APPLICATION__c = 'DTR - Detergent';
-        conLI.Class__c = 'Class A';
-        conLI.Description__c = 'Test Description';
-        conLI.Division__c = 'Division 1';
-        conLI.Scope__c = 'Test Scope';
-        conLI.QTY__c = 3;
-        conLI.Product2Id__c = pro.Id;
-        conLI.Product_Name_2__c = 'Product Name 2';
-        insert conLI;
-        
-        // Now start the test - this resets governor limits and isolates the test
         Test.startTest();
-        
-        try {
-            // Create projects within the test context
-            ProjectManagement__c pr = new ProjectManagement__c();
-            pr.Account__c = acc.id;
-            pr.Contract__c = cont.id;
-            pr.Quote_Name__c = qt.id;
-            pr.Opportunity_Name__c = op.Id;
-            pr.Contract_Line_Item__c = conLI.id;
-            pr.Phase__c = 'Under Manufacturing';
-            pr.Subsidiary__c = sub.Id;
-            pr.Project_Unique_No__c = '1';
-            insert pr;
-            
-            pr.Hold__c = true;
-            pr.Hold_Date__c = System.today() + 10;
-            pr.Hold_Reason__c = 'Test';
-            update pr;
-            
-            ProjectManagement__c pr1 = new ProjectManagement__c();
-            pr1.Account__c = acc.id;
-            pr1.Contract__c = cont.id;
-            pr1.Quote_Name__c = qt.id;
-            pr1.Opportunity_Name__c = op.Id;
-            pr1.Contract_Line_Item__c = conLI.id;
-            pr1.Phase__c = 'Under Manufacturing';
-            pr1.Subsidiary__c = sub.Id;
-            pr1.Project_Unique_No__c = '2';
-            insert pr1;
-            
-            cont.Project_Management_Quote_Id__c = pr.Id + ',' + pr1.Id;
-            update cont;
-            
-            new_lwcProjectController.createUniqueNo(cont.Id);
-            
-            String js = '[{"salesPrice":null,"qty":1,"proNumber":null,"proName":"ASB-50MB v3 STD(00004090)","proLineId":null,"p_currency":null,"LineNumberIdClone":"' + conLI.Id + '","LineNumberId":"' + conLI.Id + '","LineNumber":"SLI - 000004089","key":"' + pr.Project_Unique_No__c + '","isSelect":true,"isDisabled":false,"ExpectedSalesMonth":"2025-01-01","YourPONumber":"PO123","YourPOIssueDate":"2025-01-01"}]';
-            
-            new_lwcProjectController.getExistingProjectDetails(cont.Id);
-            new_lwcProjectController.SaveProjectDeatils(cont.Id, js, 2);
-            
-        } catch (Exception e) {
-            System.debug('Exception in test: ' + e.getMessage() + ' at line ' + e.getLineNumber());
-        }
-        
+        Map<String, Object> result = new_lwcProjectController.createUniqueNo(con.Id);
         Test.stopTest();
     }
-    
-    public static testMethod void unitTest10() {
-        Subsidiari_Master__c sub = [SELECT Id FROM Subsidiari_Master__c LIMIT 1];
-        Account acc = [SELECT Id FROM Account LIMIT 1];
-        Opportunity op = [SELECT Id FROM Opportunity LIMIT 1];
-        Quote qt = [SELECT Id FROM Quote LIMIT 1];
-        Product2 pro = [SELECT Id FROM Product2 LIMIT 1];
-        Quote_Line_Item_Custom__c qli = [SELECT Id FROM Quote_Line_Item_Custom__c LIMIT 1];
-        Fiscal_Year_Master__c fym = [SELECT Id FROM Fiscal_Year_Master__c LIMIT 1];
+
+    @IsTest
+    static void testCreateUniqueNoWithExistingUniqueNo() {
+        Contract con = [SELECT Id, Quote__c FROM Contract LIMIT 1];
         
-        // Create ALL test data BEFORE Test.startTest()
-        Contract cont = new Contract();
-        cont.Opportunity__c = op.id;
-        cont.AccountId = acc.id;
-        cont.Quote__c = qt.id;
-        cont.Subsidiary__c = sub.id;
-        cont.FY1__c = fym.id;
-        cont.Country_Text__c = 'IN';
-        cont.date__C = date.today().addDays(-1);
-        cont.Expiration_Date__c = System.today().addDays(30);
-        cont.Status = 'CREATED';
-        insert cont;
+        Quote_Line_Item_Custom__c qli = new Quote_Line_Item_Custom__c(
+            Quote__c = con.Quote__c,
+            Product_Name__c = 'New Test Product',
+            Project_Unique_No__c = 'EXISTING001',
+            Quantity__c = 1,
+            Sr_No__c = 2
+        );
+        insert qli;
         
-        Contract_Line_Item__c conLI = new Contract_Line_Item__c();
-        conLI.ContractId__c = cont.Id;
-        conLI.Discount__c = 16.0;
-        conLI.Quantity__c = 3.0;
-        conLI.Discount_Allowed__c = 20.0;
-        conLI.Approval_Note__c = 'Null';
-        conLI.Cancelled__c = false;
-        conLI.Project_Unique_No__c = null;
-        conLI.Level_Of_Ceiling__c = '1000';
-        conLI.Quote_Line_Item_Name__c = qli.Id;
-        conLI.CurrencyIsoCode = 'INR';
-        conLI.Sr_No__c = 1;
-        conLI.Product_Name_2__c = 'Test Product 2';
-        conLI.Product2Id__c = pro.Id;
-        insert conLI;
+        Contract_Line_Item__c cli = new Contract_Line_Item__c(
+            ContractId__c = con.Id,
+            Quote_Line_Item_Name__c = qli.Id,
+            Quantity__c = 1,
+            Sr_No__c = 3
+        );
+        insert cli;
         
         Test.startTest();
-        
-        try {
-            // Create projects within the test context
-            ProjectManagement__c pr = new ProjectManagement__c();
-            pr.Account__c = acc.id;
-            pr.Contract__c = cont.id;
-            pr.Contract_Line_Item__c = conLI.id;
-            pr.Phase__c = 'Under Manufacturing';
-            pr.Subsidiary__c = sub.Id;
-            pr.Project_Unique_No__c = 'prod namen';
-            pr.Opportunity_Name__c = op.Id;
-            pr.PRODUCT__c = 'Test Product';
-            pr.Project_Number__c = 'PRJ001';
-            pr.Expected_Sales_Month__c = System.today();
-            pr.PO_No_to_HQ_3rd_Party__c = 'PO-HQ-001';
-            pr.PO_issued_date_to_HQ_3rd_Party__c = System.today();
-            insert pr;
-            
-            pr.Hold__c = true;
-            pr.Hold_Date__c = System.today() + 10;
-            pr.Hold_Reason__c = 'Test';
-            update pr;
-            
-            ProjectManagement__c pr1 = new ProjectManagement__c();
-            pr1.Account__c = acc.id;
-            pr1.Contract__c = cont.id;
-            pr1.Quote_Name__c = qt.id;
-            pr1.Contract_Line_Item__c = conLI.id;
-            pr1.Phase__c = 'Under Manufacturing';
-            pr1.Subsidiary__c = sub.Id;
-            pr1.Project_Unique_No__c = 'prod namen 2';
-            pr1.Opportunity_Name__c = op.Id;
-            insert pr1;
-            
-            cont.Project_Management_Quote_Id__c = pr.Id + ',' + pr1.Id;
-            update cont;
-            
-            String js = '[{"salesPrice":null,"qty":1,"proNumber":null,"proName":"ASB-50MB v3 STD(00004090)","proLineId":null,"p_currency":null,"LineNumberIdClone":"' + conLI.Id + '","LineNumberId":"' + conLI.Id + '","LineNumber":"SLI - 000004089","key":"' + pr.Project_Unique_No__c + '","isSelect":true,"isDisabled":false}]';
-            
-            new_lwcProjectController.getExistingProjectDetails(cont.Id);
-            new_lwcProjectController.SaveProjectDeatils(cont.Id, js, 2);
-            new_lwcProjectController.createUniqueNo(cont.Id);
-            new_lwcProjectController.isUserAuthorized(cont.Id);
-            
-        } catch (Exception e) {
-            System.debug('Exception in test: ' + e.getMessage() + ' at line ' + e.getLineNumber());
-        }
-        
+        Map<String, Object> result = new_lwcProjectController.createUniqueNo(con.Id);
         Test.stopTest();
     }
-    
-    public static testMethod void testGetExistingProjectDetailsWithExistingProjects() {
-        Subsidiari_Master__c sub = [SELECT Id FROM Subsidiari_Master__c LIMIT 1];
-        Account acc = [SELECT Id FROM Account LIMIT 1];
-        Opportunity op = [SELECT Id FROM Opportunity LIMIT 1];
-        Quote qt = [SELECT Id FROM Quote LIMIT 1];
-        Fiscal_Year_Master__c fym = [SELECT Id FROM Fiscal_Year_Master__c LIMIT 1];
-        Product2 pro = [SELECT Id FROM Product2 LIMIT 1];
-        Quote_Line_Item_Custom__c qli = [SELECT Id FROM Quote_Line_Item_Custom__c LIMIT 1];
-        
-        // Create ALL test data BEFORE Test.startTest()
-        Contract cont = new Contract();
-        cont.Opportunity__c = op.id;
-        cont.AccountId = acc.id;
-        cont.Quote__c = qt.id;
-        cont.Subsidiary__c = sub.id;
-        cont.FY1__c = fym.id;
-        cont.Country_Text__c = 'IN';
-        cont.date__C = date.today().addDays(-1);
-        cont.Expiration_Date__c = System.today().addDays(30);
-        cont.Status = 'CREATED';
-        insert cont;
-        
-        Contract_Line_Item__c conLI = new Contract_Line_Item__c();
-        conLI.ContractId__c = cont.Id;
-        conLI.Discount__c = 16.0;
-        conLI.Quantity__c = 3.0;
-        conLI.Discount_Allowed__c = 20.0;
-        conLI.Approval_Note__c = 'Null';
-        conLI.Cancelled__c = false;
-        conLI.Project_Unique_No__c = 'UNIQUE001';
-        conLI.Level_Of_Ceiling__c = '1000';
-        conLI.Quote_Line_Item_Name__c = qli.Id;
-        conLI.CurrencyIsoCode = 'INR';
-        conLI.Product2Id__c = pro.Id;
-        conLI.Product_Name_2__c = 'Product Name 2';
-        insert conLI;
-        
-        ProjectManagement__c pr = new ProjectManagement__c();
-        pr.Account__c = acc.id;
-        pr.Contract__c = cont.id;
-        pr.Quote_Name__c = qt.id;
-        pr.Opportunity_Name__c = op.Id;
-        pr.Contract_Line_Item__c = conLI.id;
-        pr.Phase__c = 'Under Manufacturing';
-        pr.Subsidiary__c = sub.Id;
-        pr.Project_Unique_No__c = 'UNIQUE001';
-        pr.PRODUCT__c = 'Test Product';
-        insert pr;
-        
+
+    @IsTest
+    static void testCreateUniqueNoWithException() {
         Test.startTest();
-        
-        try {
-            new_lwcProjectController.getExistingProjectDetails(cont.Id);
-        } catch (Exception e) {
-            System.debug('Exception in test: ' + e.getMessage());
-        }
-        
+        Map<String, Object> result = new_lwcProjectController.createUniqueNo(null);
         Test.stopTest();
     }
-    
-    // Helper method for tests that don't need complex setup
-    private static Contract createMinimalContract() {
-        Subsidiari_Master__c sub = [SELECT Id FROM Subsidiari_Master__c LIMIT 1];
-        Account acc = [SELECT Id FROM Account LIMIT 1];
-        Opportunity op = [SELECT Id FROM Opportunity LIMIT 1];
-        Quote qt = [SELECT Id FROM Quote LIMIT 1];
-        Fiscal_Year_Master__c fym = [SELECT Id FROM Fiscal_Year_Master__c LIMIT 1];
-        
-        Contract cont = new Contract();
-        cont.Opportunity__c = op.id;
-        cont.AccountId = acc.id;
-        cont.Quote__c = qt.id;
-        cont.Subsidiary__c = sub.id;
-        cont.FY1__c = fym.id;
-        cont.Country_Text__c = 'IN';
-        cont.date__C = date.today().addDays(-1);
-        cont.Expiration_Date__c = System.today().addDays(30);
-        cont.Status = 'CREATED';
-        return cont;
-    }
-    
-    public static testMethod void testWithFlowBypass() {
-        Contract cont = createMinimalContract();
-        insert cont;
-        
-        Quote_Line_Item_Custom__c qli = [SELECT Id FROM Quote_Line_Item_Custom__c LIMIT 1];
-        
-        Contract_Line_Item__c conLI = new Contract_Line_Item__c();
-        conLI.ContractId__c = cont.Id;
-        conLI.Discount__c = 16.0;
-        conLI.Quantity__c = 3.0;
-        conLI.Discount_Allowed__c = 20.0;
-        conLI.Approval_Note__c = 'Null';
-        conLI.Cancelled__c = false;
-        conLI.Project_Unique_No__c = null;
-        conLI.Level_Of_Ceiling__c = '1000';
-        conLI.Quote_Line_Item_Name__c = qli.Id;
-        conLI.CurrencyIsoCode = 'INR';
-        insert conLI;
-        
+
+    @IsTest
+    static void testGetQuoteNumber() {
         Test.startTest();
-        
-        try {
-            Map<String, Object> result = new_lwcProjectController.createUniqueNo(cont.Id);
-            System.debug('createUniqueNo result: ' + result);
-            
-            new_lwcProjectController.AuthModel auth = new_lwcProjectController.isUserAuthorized(cont.Id);
-            System.debug('Auth result: ' + auth);
-            
-        } catch (Exception e) {
-            System.debug('Exception in test: ' + e.getMessage());
-        }
-        
+        new_lwcProjectController.UserSetup us = new_lwcProjectController.getQuoteNumber();
         Test.stopTest();
     }
-    
-    public static testMethod void testGetExistingProjectDetailsWithExpiredContract() {
-        Contract cont = createMinimalContract();
-        cont.Expiration_Date__c = System.today().addDays(-1);
-        insert cont;
+
+    @IsTest
+    static void testGetQuoteNumberWithExistingUniqueNo() {
+        Subsidiari_Master__c sub = [SELECT Id FROM Subsidiari_Master__c WHERE Name = 'ABC' LIMIT 1];
+        Fiscal_Year_Master__c fy = [SELECT Id FROM Fiscal_Year_Master__c WHERE Active__c = true LIMIT 1];
+        
+        Unique_No__c uniqueNo = new Unique_No__c(
+            Object_Name__c = 'Project Management',
+            Subsidiary__c = sub.Id,
+            Fiscal_Year__c = fy.Id,
+            Serial_No__c = 5
+        );
+        upsert uniqueNo;
         
         Test.startTest();
-        
-        try {
-            new_lwcProjectController.getExistingProjectDetails(cont.Id);
-        } catch (Exception e) {
-            System.debug('Exception in test: ' + e.getMessage());
-        }
-        
+        new_lwcProjectController.UserSetup us = new_lwcProjectController.getQuoteNumber();
         Test.stopTest();
     }
-    
-    public static testMethod void testSaveProjectDetailsWithExceptions() {
+
+    @IsTest
+    static void testIsUserAuthorized() {
+        Contract con = [SELECT Id FROM Contract LIMIT 1];
+        
         Test.startTest();
-        
-        try {
-            new_lwcProjectController.SaveProjectDeatils(null, null, 0);
-        } catch (Exception e) {
-            System.debug('Exception in test: ' + e.getMessage());
-        }
-        
+        new_lwcProjectController.AuthModel result = new_lwcProjectController.isUserAuthorized(con.Id);
         Test.stopTest();
     }
-    
-    public static testMethod void testWrapperClass() {
-        Test.startTest();
+
+    @IsTest
+    static void testIsUserAuthorizedWithDifferentSubsidiary() {
+        Subsidiari_Master__c sub = new Subsidiari_Master__c(
+            Name = 'ASI',
+            Permitted_Currency__c = 'USD',
+            Permitted_Language__c = 'EN',
+            Office__c = 'Mumbai',
+            Discount_Level_1__c = 5,
+            Discount_Level_2__c = 10,
+            Discount_Level_3__c = 15
+        );
+        insert sub;
         
-        try {
-            new_lwcProjectController.wrapper wrp = new new_lwcProjectController.wrapper();
-            wrp.LineNumberId = 'test';
-            wrp.key = 'key';
-            wrp.LineNumberIdClone = 'clone';
-            wrp.isSelect = true;
-            wrp.qty = 1;
-            wrp.p_currency = 'INR';
-            wrp.proName = 'Product';
-            wrp.proLineId = 'line';
-            wrp.proNumber = 'num';
-            wrp.ExpectedSalesMonth = System.today();
-            wrp.YourPONumber = 'PO';
-            wrp.YourPOIssueDate = System.today();
-            wrp.LineNumber = 'line num';
-            wrp.isDisabled = false;
-            wrp.salesPrice = 100;
-            
-            String jsonString = JSON.serialize(wrp);
-            new_lwcProjectController.parse('[' + jsonString + ']');
-            
-        } catch (Exception e) {
-            System.debug('Exception in test: ' + e.getMessage());
+        Global_Region__c greg = new Global_Region__c(Name='Asia');
+        insert greg;
+        
+        Global_SubRegion__c reg = new Global_SubRegion__c(
+            Name='Southern Asia',
+            Region__c=greg.Id
+        );
+        insert reg;
+        
+        Country_List__c country = new Country_List__c(
+            Name='Sri Lanka',
+            Sub_Region__c=reg.Id,
+            Region_Master__c=greg.Id
+        );
+        insert country;
+        
+        State_List__c state = new State_List__c(
+            Name='Maharashtra',
+            Country__c=country.Id
+        );
+        insert state;
+        
+        City_List__c city = new City_List__c(
+            Name='Pune',
+            State__c=state.Id
+        );
+        insert city;
+        
+        PIN_Code_Master__c pin = new PIN_Code_Master__c(
+            Name='400002',
+            City__c=city.Id
+        );
+        insert pin;
+        
+        // Check if User_Setup__c already exists for this user
+        List<User_Setup__c> existingUserSetup = [SELECT Id FROM User_Setup__c WHERE User__c = :UserInfo.getUserId() LIMIT 1];
+        
+        if (existingUserSetup.isEmpty()) {
+            // Create new User_Setup__c if none exists
+            User_Setup__c userSetup = new User_Setup__c(
+                User__c = UserInfo.getUserId(),
+                Subsidiari__c = sub.Id,
+                Country__c = country.id
+            );
+            insert userSetup;
+        } else {
+            // Update existing User_Setup__c
+            User_Setup__c userSetup = existingUserSetup[0];
+            userSetup.Subsidiari__c = sub.Id;
+            userSetup.Country__c = country.id;
+            update userSetup;
         }
         
+        Contract con = [SELECT Id FROM Contract LIMIT 1];
+        
+        Test.startTest();
+        new_lwcProjectController.AuthModel result = new_lwcProjectController.isUserAuthorized(con.Id);
         Test.stopTest();
     }
-    
-    public static testMethod void testUserSetupClass() {
-        Test.startTest();
+
+    @IsTest
+    static void testParse() {
+        List<new_lwcProjectController.wrapper> wrapList = new List<new_lwcProjectController.wrapper>();
+        new_lwcProjectController.wrapper wrap = new new_lwcProjectController.wrapper();
+        wrap.isSelect = true;
+        wrap.key = 'TEST001';
+        wrap.proName = 'Test Product';
+        wrapList.add(wrap);
         
-        try {
-            new_lwcProjectController.getQuoteNumber();
-        } catch (Exception e) {
-            System.debug('Exception in test: ' + e.getMessage());
-        }
-        
-        Test.stopTest();
-    }
-    
-    public static testMethod void testCreateUniqueNoWithExistingValues() {
-        Contract cont = createMinimalContract();
-        insert cont;
-        
-        Quote_Line_Item_Custom__c qli = [SELECT Id FROM Quote_Line_Item_Custom__c LIMIT 1];
-        qli.Project_Unique_No__c = 'EXISTING001';
-        update qli;
-        
-        Contract_Line_Item__c conLI = new Contract_Line_Item__c();
-        conLI.ContractId__c = cont.Id;
-        conLI.Discount__c = 16.0;
-        conLI.Quantity__c = 3.0;
-        conLI.Discount_Allowed__c = 20.0;
-        conLI.Approval_Note__c = 'Null';
-        conLI.Cancelled__c = false;
-        conLI.Project_Unique_No__c = null;
-        conLI.Level_Of_Ceiling__c = '1000';
-        conLI.Quote_Line_Item_Name__c = qli.Id;
-        conLI.CurrencyIsoCode = 'INR';
-        insert conLI;
+        String jsonData = JSON.serialize(wrapList);
         
         Test.startTest();
-        
-        try {
-            new_lwcProjectController.createUniqueNo(cont.Id);
-        } catch (Exception e) {
-            System.debug('Exception in test: ' + e.getMessage());
-        }
-        
+        List<new_lwcProjectController.wrapper> result = new_lwcProjectController.parse(jsonData);
         Test.stopTest();
     }
 }

@@ -108,7 +108,7 @@ alert('********The field value is ********');// unable to get the value
                                     <!--<apex:outputlabel value="{!e1.List_Price__c}"></apex:outputlabel>-->
                                 </td>
                                 <td class="lineItemAlign">
-                                    <!-- deprecated discount type field removed -->
+                                    <apex:inputfield value="{!e1.Discount_Type__c}" onchange="foo"/>&nbsp;
                                 </td>
                                 
                                 <td class="lineItemAlign"><apex:inputfield style="width:70%" value="{!e1.Discount__c}"/> %</td>
@@ -117,13 +117,13 @@ alert('********The field value is ********');// unable to get the value
                                     <apex:outputText value="{0, Number, ###,###,###,##0.00}">
                                         <apex:param value="{!e1.Average_Discount_Value__c}"></apex:param>
                                     </apex:outputText>
-                                    <!--<apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                    <!--<apex:outputText value="{0, Number, ###,###,###,##0.00}" style="display:{!if(e1.Discount_Type__c=='Percent','block','none')}">
                                         <apex:param value="{!(e1.List_Price__c) - ((e1.List_Price__c) * (e1.Discount__c)/100)}"></apex:param>
                                     </apex:outputText>
-                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}" style="display:{!if(e1.Discount_Type__c=='Value','block','none')}">
                                         <apex:param value="{!(e1.List_Price__c) - (e1.Discount_in_Value__c)}"></apex:param>
                                     </apex:outputText>
-                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}" style="display:{!if(e1.Discount_Type__c=='','block','none')}">
                                         <apex:param value="">0</apex:param>
                                     </apex:outputText>-->
                                 </td>
@@ -155,19 +155,19 @@ alert('********The field value is ********');// unable to get the value
                                         </apex:outputText>
                                         <!--<apex:outputlabel value="{!QLOpt.Manula_Option_List_Price__c}"></apex:outputlabel>-->
                                     </td>
-                                    <td class="lineItemAlign"><!-- deprecated discount type field removed --></td>
+                                    <td class="lineItemAlign"><apex:inputfield value="{!QLOpt.Discount_Type__c}"/></td>
                                     <td class="lineItemAlign"><apex:inputfield style="width:70%" value="{!QLOpt.Discount__c}"/> %</td>
                                     <td class="lineItemAlign"><apex:inputfield style="width:70%" value="{!QLOpt.Discount_in_Value__c}"/></td>
                                     <td class="lineItemAlign"><apex:outputText value="{0, Number, ###,###,###,##0.00}">
                                         <apex:param value="{!QLOpt.Average_Discount_Value__c}"></apex:param>
                                     </apex:outputText>
-                                       <!-- <apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                       <!-- <apex:outputText value="{0, Number, ###,###,###,##0.00}" style="display:{!if(QLOpt.Discount_Type__c=='Percent','block','none')}">
                                         <apex:param value="{!(QLOpt.Manula_Option_List_Price__c) - ((QLOpt.Manula_Option_List_Price__c) * (QLOpt.Discount__c)/100)}"></apex:param>
                                     </apex:outputText>
-                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}" style="display:{!if(QLOpt.Discount_Type__c=='Value','block','none')}">
                                         <apex:param value="{!(QLOpt.Manula_Option_List_Price__c) - (QLOpt.Discount_in_Value__c)}"></apex:param>
                                     </apex:outputText>
-                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0.00}" style="display:{!if(QLOpt.Discount_Type__c=='','block','none')}">
                                         <apex:param value="">0</apex:param>
                                     </apex:outputText>-->
                                     </td>

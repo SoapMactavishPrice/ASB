@@ -150,6 +150,7 @@ public class TrgQuote_test {
             qli.List_Price__c = 12;
             qli.Discount_Allowed_New__c = 10;
             qli.Discount__c = 11;
+            qli.Discount_Type__c = 'Percent';
             qli.Discount_Allowed_New__c = 10;
             qli.Discount__c = 11;
             qli.P_D1__c = 10;
@@ -173,6 +174,7 @@ public class TrgQuote_test {
             qlo.Quantity__c = 1;
             qlo.Manula_Option_List_Price__c=12;
             qlo.Discount__c = 2;
+            qlo.Discount_Type__c = 'Percent';
             insert qlo;
             
             qt.Approval_Status__c = 'Approved';
@@ -369,12 +371,14 @@ public class TrgQuote_test {
             qli.P_D1__c = 10;
             qli.P_D2__c = 20;
             qli.P_D3__c = 30;
+            qli.Discount_Type__c = 'Percent';
             insert qli;
             qt.Discount__c = 2;
             update qt;
             
             
             qli.Discount__c = 23;
+            qli.Discount_Type__c = 'Percent';
             update qli;
             
             qt.Discount__c = 13;
@@ -387,6 +391,7 @@ public class TrgQuote_test {
             qlo.Quantity__c = 1;
             qlo.Manula_Option_List_Price__c=12;
             qlo.Discount__c = 12;
+            qlo.Discount_Type__c = 'Percent';
             insert qlo;
             System.debug('Discount_Allowed__c==>'+qlo.Discount_Allowed__c);
             QuoteRecursionCheck.isfirsttime=true;
@@ -558,12 +563,14 @@ public class TrgQuote_test {
             qli.P_D1__c = 10;
             qli.P_D2__c = 20;
             qli.P_D3__c = 30;
+            qli.Discount_Type__c = 'Percent';
             insert qli;
             qt.Discount__c = 2;
             update qt;
             
             
             qli.Discount__c = 23;
+            qli.Discount_Type__c = 'Percent';
             update qli;
             
             qt.Discount__c = 13;
@@ -576,6 +583,7 @@ public class TrgQuote_test {
             qlo.Quantity__c = 1;
             qlo.Manula_Option_List_Price__c=12;
             qlo.Discount__c = 12;
+            qlo.Discount_Type__c = 'Percent';
             insert qlo;
             System.debug('Discount_Allowed__c==>'+qlo.Discount_Allowed__c);
             QuoteRecursionCheck.isfirsttime=true;
@@ -737,6 +745,7 @@ insert acc;
         Quantity__c=1,
         List_Price__c=100,
         Discount__c=15,
+        Discount_Type__c='Percent',
         Discount_Allowed_New__c=5
     );
     insert qli;
@@ -747,6 +756,7 @@ insert acc;
         Quantity__c=1,
         Manula_Option_List_Price__c=50,
         Discount__c=20,
+        Discount_Type__c='Percent'
     );
     insert qlo;
 
@@ -904,6 +914,7 @@ PricebookEntry pbe = new PricebookEntry();
         Quantity__c=1,
         List_Price__c=100,
         Discount__c=25,
+        Discount_Type__c='Percent',
         Discount_Allowed_New__c=5,
         Approved_Discount__c=1,
         P_D2__c=20,
@@ -917,6 +928,7 @@ PricebookEntry pbe = new PricebookEntry();
         Quantity__c=1,
         Manula_Option_List_Price__c=50,
         Discount__c=10,
+        Discount_Type__c='Percent'
     );
     insert qlo;
 
@@ -926,6 +938,7 @@ PricebookEntry pbe = new PricebookEntry();
     update qt;
 
     // L1 Value branch
+    qli.Discount_Type__c='Value';
     qli.Discount_in_Value__c=30;
     update qli;
     update qt;
@@ -934,16 +947,19 @@ PricebookEntry pbe = new PricebookEntry();
   //  qt.Owner_Level__c='L2';
     update qt;
 
+    qli.Discount_Type__c='Percent';
     qli.Discount__c=30;
     update qli;
     update qt;
 
     // L2 Value branch
+    qli.Discount_Type__c='Value';
     qli.Discount_in_Value__c=20;
     update qli;
     update qt;
 
     // Quote line option value branch
+    qlo.Discount_Type__c='Value';
     qlo.Discount_in_Value__c=20;
     update qlo;
 

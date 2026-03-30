@@ -156,6 +156,7 @@ private class RelcalculateQuotePriceControllerTest {
             Quantity__c=1,
             Serial_Number__c=1,
             Discount__c=1,
+            Discount_Type__c='Percent',
             Description__c='Test Option',
             Manual_Option_Base_Price__c=50,
             Manula_Option_List_Price__c=60,

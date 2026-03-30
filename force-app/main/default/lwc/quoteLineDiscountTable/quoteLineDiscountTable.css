@@ -130,3 +130,12 @@ lightning-card {
 .max-discount-allowed {
     color: #ba0517;
 }
+
+.subtotal-discount-cell {
+    text-align: center;
+}
+
+.subtotal-discount-text {
+    color: #001f5b;
+    font-weight: 700;
+}

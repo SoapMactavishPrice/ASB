@@ -279,13 +279,11 @@
                                 <td></td>
                                 <td>
                                     <div class="opt-item">
-                                        <apex:outputPanel
-                                            rendered="{!NOT(ISBLANK(cOpt.Description))}">
+                                        <apex:outputPanel rendered="{!NOT(ISBLANK(cOpt.Description))}">
                                             <apex:outputText escape="false"
                                                             value="{!cOpt.Description}"/>
                                         </apex:outputPanel>
-                                        <apex:outputPanel
-                                            rendered="{!ISBLANK(cOpt.Description)}">
+                                        <apex:outputPanel rendered="{!ISBLANK(cOpt.Description)}">
                                             {!cOpt.Manual_Product_Name}
                                         </apex:outputPanel>
                                     </div>
@@ -362,8 +360,7 @@
         <apex:outputPanel rendered="{!contractTemplate.Section_4_Required__c}">
             <div class="pgbreak">
                 <div class="conditions-heading">
-                    <apex:outputPanel
-                        rendered="{!NOT(ISBLANK(contractTemplate.S4_Title__c))}">
+                    <apex:outputPanel rendered="{!NOT(ISBLANK(contractTemplate.S4_Title__c))}">
                         <apex:outputText escape="false"
                                          value="{!contractTemplate.S4_Title__c}"/>
                     </apex:outputPanel>
@@ -385,8 +382,7 @@
         <apex:outputPanel rendered="{!contractTemplate.Section_5_Required__c}">
             <div class="pgbreak">
                 <div class="provisions-heading">
-                    <apex:outputPanel
-                        rendered="{!NOT(ISBLANK(contractTemplate.S5_Title__c))}">
+                    <apex:outputPanel rendered="{!NOT(ISBLANK(contractTemplate.S5_Title__c))}">
                         <apex:outputText escape="false"
                                          value="{!contractTemplate.S5_Title__c}"/>
                     </apex:outputPanel>
@@ -410,12 +406,10 @@
                             <div class="signature-role">Seller</div>
                             <!-- Subsidiary name from template; fallback to static -->
                             <div class="signature-name">
-                                <apex:outputPanel
-                                    rendered="{!NOT(ISBLANK(contractTemplate.Subsidiary__r.Name__c))}">
+                                <apex:outputPanel rendered="{!NOT(ISBLANK(contractTemplate.Subsidiary__r.Name__c))}">
                                     {!contractTemplate.Subsidiary__r.Name__c}
                                 </apex:outputPanel>
-                                <apex:outputPanel
-                                    rendered="{!ISBLANK(contractTemplate.Subsidiary__r.Name__c)}">
+                                <apex:outputPanel rendered="{!ISBLANK(contractTemplate.Subsidiary__r.Name__c)}">
                                     Nissei ASB GmbH
                                 </apex:outputPanel>
                             </div>
@@ -426,12 +420,10 @@
                             <div class="signature-line"></div>
                             <div class="signature-role">Buyer</div>
                             <div class="signature-name">
-                                <apex:outputPanel
-                                    rendered="{!NOT(ISBLANK(ObjAccount.Legal_Name__c))}">
+                                <apex:outputPanel rendered="{!NOT(ISBLANK(ObjAccount.Legal_Name__c))}">
                                     {!ObjAccount.Legal_Name__c}
                                 </apex:outputPanel>
-                                <apex:outputPanel
-                                    rendered="{!ISBLANK(ObjAccount.Legal_Name__c)}">
+                                <apex:outputPanel rendered="{!ISBLANK(ObjAccount.Legal_Name__c)}">
                                     {!ObjAccount.Name}
                                 </apex:outputPanel>
                             </div>

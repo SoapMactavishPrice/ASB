@@ -103,53 +103,60 @@
                                         </lightning-button-icon>
                                     </template>
                                 </td>
-                                <td class="slds-text-align_center" title={row.discountPercent}>
-                                    <template if:true={row.showDiscountInputs}>
-                                        <lightning-input
-                                            type="number"
-                                            step="0.01"
-                                            value={row.discountPercent}
-                                            data-id={row.id}
-                                            data-field="discountPercent"
-                                            onchange={handleInputChange}
-                                            variant="label-hidden"
-                                            class="input-field"
-                                            disabled={row.disableDiscounts}
-                                            title={row.discountPercent}>
-                                        </lightning-input>
-                                    </template>
-                                </td>
-                                <td class="slds-text-align_right" title={row.discountValue}>
-                                    <template if:true={row.showDiscountInputs}>
-                                        <lightning-input
-                                            type="number"
-                                            value={row.discountValue}
-                                            data-id={row.id}
-                                            data-field="discountValue"
-                                            onchange={handleInputChange}
-                                            variant="label-hidden"
-                                            class="input-field"
-                                            disabled={row.disableDiscounts}
-                                            title={row.discountValue}>
-                                        </lightning-input>
-                                    </template>
-                                </td>
-                                <td class="slds-text-align_right" title={row.desiredPrice}>
-                                    <template if:true={row.showDiscountInputs}>
-                                        <lightning-input
-                                            type="number"
-                                            step="0.01"
-                                            value={row.desiredPrice}
-                                            data-id={row.id}
-                                            data-field="desiredPrice"
-                                            onchange={handleInputChange}
-                                            variant="label-hidden"
-                                            class="input-field"
-                                            disabled={row.disableDesiredPrice}
-                                            title={row.desiredPrice}>
-                                        </lightning-input>
-                                    </template>
-                                </td>
+                                <template if:true={row.isSubtotal}>
+                                    <td colspan="3" class="slds-text-align_center subtotal-discount-cell" title={row.subtotalDiscountText}>
+                                        <span class="subtotal-discount-text">{row.subtotalDiscountText}</span>
+                                    </td>
+                                </template>
+                                <template if:false={row.isSubtotal}>
+                                    <td class="slds-text-align_center" title={row.discountPercent}>
+                                        <template if:true={row.showDiscountInputs}>
+                                            <lightning-input
+                                                type="number"
+                                                step="0.01"
+                                                value={row.discountPercent}
+                                                data-id={row.id}
+                                                data-field="discountPercent"
+                                                onchange={handleInputChange}
+                                                variant="label-hidden"
+                                                class="input-field"
+                                                disabled={row.disableDiscounts}
+                                                title={row.discountPercent}>
+                                            </lightning-input>
+                                        </template>
+                                    </td>
+                                    <td class="slds-text-align_right" title={row.discountValue}>
+                                        <template if:true={row.showDiscountInputs}>
+                                            <lightning-input
+                                                type="number"
+                                                value={row.discountValue}
+                                                data-id={row.id}
+                                                data-field="discountValue"
+                                                onchange={handleInputChange}
+                                                variant="label-hidden"
+                                                class="input-field"
+                                                disabled={row.disableDiscounts}
+                                                title={row.discountValue}>
+                                            </lightning-input>
+                                        </template>
+                                    </td>
+                                    <td class="slds-text-align_right" title={row.desiredPrice}>
+                                        <template if:true={row.showDiscountInputs}>
+                                            <lightning-input
+                                                type="number"
+                                                step="0.01"
+                                                value={row.desiredPrice}
+                                                data-id={row.id}
+                                                data-field="desiredPrice"
+                                                onchange={handleInputChange}
+                                                variant="label-hidden"
+                                                class="input-field"
+                                                disabled={row.disableDesiredPrice}
+                                                title={row.desiredPrice}>
+                                            </lightning-input>
+                                        </template>
+                                    </td>
+                                </template>
                                 <td class="slds-text-align_right" title={row.desiredPriceSubtotal}>
                                     <template if:true={row.showDesiredPriceSubtotal}>
                                         <lightning-input

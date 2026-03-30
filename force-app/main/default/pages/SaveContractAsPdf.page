@@ -128,14 +128,12 @@ vf Page for attachPdf to the Quote
             <apex:outputPanel rendered="{!ObjContract.Is_DTA_Contract__c}" >
                 <apex:iframe src="/apex/PdfPreviewContractDTA?Id={!ObjContract.id}" scrolling="false" height="760"/>                
             </apex:outputPanel>
-            <apex:outputPanel rendered="{!NOT(ObjContract.Is_DTA_Contract__c)}" style="overflow-y: auto;">
+            <apex:outputPanel rendered="{!NOT(ObjContract.Is_DTA_Contract__c) && !ObjContract.Is_GMBH_Contract__c}" >
+                <apex:iframe src="/apex/PdfPreviewContractDTA?Id={!ObjContract.id}" scrolling="false" height="760"/>                
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!NOT(ObjContract.Is_DTA_Contract__c) && !NOT(ObjContract.Is_GMBH_Contract__c)}" style="overflow-y: auto;">
                 <apex:iframe src="/apex/PdfPreviewContractV2?Id={!ObjContract.id}#toolbar=0" scrolling="false" height="760"/>                
             </apex:outputPanel>
-                    
-                
-                
-               
-              
                 <br/>
                 <!-- =============================================Call Another vf page which create pdf============================================================= -->
                 

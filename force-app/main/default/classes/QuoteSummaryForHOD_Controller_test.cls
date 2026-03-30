@@ -137,6 +137,7 @@ public class QuoteSummaryForHOD_Controller_test {
         qli.List_Price__c = 12;
         qli.Product__c = pro.id;
         qli.Is_Manual__c = true;
+        qli.Discount_Type__c = 'Percent';
         insert qli;
         
         qt.Status = 'RELEASED';
@@ -144,6 +145,7 @@ public class QuoteSummaryForHOD_Controller_test {
         
         /*Quote_Line_Options__c qlo = new Quote_Line_Options__c();
         qlo.Quote__c = qt.id;
+        qli.Discount_Type__c = 'Percent';
         qlo.Quote_Line_Item_Custom__c = qli.id;
         qlo.Discount_Earlier__c = 1;
         qlo.Discount__c = 2;

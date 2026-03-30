@@ -12,7 +12,7 @@ public with sharing class QuoteLineController {
             SELECT Id, Sr_No__c, Product_Name__c, Base_Price__c, Quantity__c, 
                    Total_Global_Price_Item__c, List_Price__c, Total_List_Price2__c,
                    Discount_Allowed_New__c, P_D3__c, Discount__c, Discount_in_Value__c,
-                   Desired_Price__c, Desired_Price_Subtotal__c, Discount_Value__c,
+                   Desired_Price__c, Desired_Price_Subtotal__c, Discount_In_Percentage_Sub_Total__c, Discount_Value__c,
                    Average_Sales_Price__c, Sales_Price__c, Sales_Margin__c, 
                    Quote__r.Sales_Margin__c, Quote__r.Quote_Total_Base_Price__c, Quote__r.Quote_Total_List_Price__c,
                    Quote__r.Quote_Total_Discount_Value__c, Quote__r.Quote_Totoal__c, Quote__r.Quote_Number__c, Quote__r.CurrencyIsoCode,

@@ -185,7 +185,7 @@ public class ReOpenQuoteFromContract {
         
         
         User us = [Select Id,Name from User where Id=:UserInfo.getUserId()];
-        Contract conData = [Select Id,Contract_No_Rev_No__c,Quote__c,Status from Contract where Id=:contractId];
+        Contract conData = [Select Id,Contract_No_Rev_No__c,Quote__c,Status, Advance_Percentage__c, Machine_Delivery_Months__c, Mold_Delivery_Months__c, Payment_Terms__c, INCO_TERMS__c, Shipping_And_Handling__c, Insurance_Amount__c, Freight_Amount1__c from Contract where Id=:contractId];
         
         
         
@@ -308,7 +308,8 @@ public class ReOpenQuoteFromContract {
                             pricebook = objQuote.Pricebook2Id;
                             currencyIsoCode = objQuote.CurrencyIsoCode;
                             Quote QuoteClone  = objQuote.clone(false, false, false, false);
-                            QuoteClone.SHIP_To_Contact_Name__c = objQuote.SHIP_To_Contact_Name__c;  
+                            QuoteClone.SHIP_To_Contact_Name__c = objQuote.SHIP_To_Contact_Name__c; 
+                            QuoteClone.ExpirationDate = null;
                             //QuoteClone.RecordTypeId = stQuote; 
                             QuoteClone.Status = 'CREATED';  
                             QuoteClone.Exchange_Rate__c = exeRate;  
@@ -323,18 +324,20 @@ public class ReOpenQuoteFromContract {
                             //QuoteClone.Commission_Payable_to_Agent__c = objQuote.Commission_Payable_to_Agent__c;
                             QuoteClone.Fiscal_Year_Master__c = objQuote.Fiscal_Year_Master__c;
                             
-                            QuoteClone.ADVANCE_PAYMENT__c = objQuote.ADVANCE_PAYMENT__c;
-                            QuoteClone.Advance_Percentage__c = objQuote.Advance_Percentage__c;
-                            QuoteClone.INCO_TERMS__c = objQuote.INCO_TERMS__c;
-                            QuoteClone.Shipping_And_Handling__c = objQuote.Shipping_And_Handling__c;
-                            QuoteClone.Insurance__c = objQuote.Insurance__c;
-                            QuoteClone.Insurance_Amount__c = objQuote.Insurance_Amount__c;
-                            QuoteClone.Freight__c = objQuote.Freight__c;
-                            QuoteClone.Freight_Amount__c = objQuote.Freight_Amount__c;
-                            QuoteClone.Machine_Delivery__c = objQuote.Machine_Delivery__c;
-                            QuoteClone.Mould_Delivery__c = objQuote.Mould_Delivery__c;
-                            QuoteClone.Payment_Terms__c = objQuote.Payment_Terms__c;
+                            /* ---------------------Copied from Contract---------------------*/
+                            QuoteClone.Advance_Percentage__c = conData.Advance_Percentage__c;
+                            QuoteClone.Machine_Delivery__c = conData.Machine_Delivery_Months__c;
+                            QuoteClone.Mould_Delivery__c = conData.Mold_Delivery_Months__c;
+                            QuoteClone.Payment_Terms__c = conData.Payment_Terms__c;
+                            QuoteClone.INCO_TERMS__c = conData.INCO_TERMS__c;
+                            QuoteClone.Shipping_And_Handling__c = conData.Shipping_And_Handling__c;
+                            QuoteClone.Insurance_Amount__c = conData.Insurance_Amount__c;
+                            QuoteClone.Freight_Amount__c = conData.Freight_Amount1__c;
+                            /* --------------------------------------------------------------*/
                             
+                            QuoteClone.ADVANCE_PAYMENT__c = objQuote.ADVANCE_PAYMENT__c;
+                            QuoteClone.Insurance__c = objQuote.Insurance__c;
+                            QuoteClone.Freight__c = objQuote.Freight__c;
                             
                             insert QuoteClone;
                           

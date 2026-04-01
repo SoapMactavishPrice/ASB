@@ -75,7 +75,7 @@ public class ReviseQuoteController {
             )
         && todaysDate <= QuoteValidDate && objQuote.Use_Current_Price__c == false){
             system.debug('inside if in revise quote -------- curewnt price false');
-            try{
+            // try{
                 //QuoteClone.RecordTypeId = stQuote;
                 QuoteClone.Exchange_Rate__c = exeRate;
                 QuoteClone.Status = 'CREATED';
@@ -146,9 +146,9 @@ public class ReviseQuoteController {
                 //Update the Status of Parent Quote to 'CLOSE - REVISIED'.
                 objQuote.Status = 'CLOSE - REVISED';
                 update objQuote;
-            }
-            catch(Exception e){  ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error,'There is issue in Revision, Please contact to your System Administrator. Error: '+e.getMessage()));   return null;
-            }
+            // }
+            // catch(Exception e){  ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error,'There is issue in Revision, Please contact to your System Administrator. Error: '+e.getMessage()));   return null;
+            // }
             
             //System.debug('QuoteClone.Id: : :Kb'+QuoteClone.Id);
             String QuoteCloneId = QuoteClone.Id;
@@ -462,11 +462,11 @@ public class ReviseQuoteController {
                     MapofQuoteContract.put(pro1.Id,cli);
                 }
             }
-            try{
+            // try{
                 insert MapofQuoteContract.values();
-            }
-            catch(Exception e){  ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error,'There is issue in Revision, Please contact to your System Administrator. Error: '+e.getMessage()));return null;
-            }
+            // }
+            // catch(Exception e){  ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error,'There is issue in Revision, Please contact to your System Administrator. Error: '+e.getMessage()));return null;
+            // }
             
             
             Map<Id, PriceBookEntry> mapProductWisePriceOptionEntry = new Map<Id, PricebookEntry>();
@@ -689,16 +689,16 @@ public class ReviseQuoteController {
                 ListQLo.add(ContLO);
                 
             }
-            try
-            {
+            // try
+            // {
                 insert ListQLo;
                 system.debug('List of Option Inserted Successfully ** '+ListQLo.size());
-            }
-            catch(Exception e)
-            {
-                ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error,'There is issue in Revision, Please contact to your System Administrator.'));
-                return null;
-            }
+            // }
+            // catch(Exception e)
+            // {
+            //     ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error,'There is issue in Revision, Please contact to your System Administrator.'));
+            //     return null;
+            // }
             
             List<Attachment> lstAtt = new List<Attachment>();
             lstAtt = [select id, name, body, LastModifiedDate, Createddate , createdby.name,ParentId from Attachment where ParentId=:QuoteCloneId ];
@@ -839,14 +839,14 @@ public class ReviseQuoteController {
                 lstContractItem.add(cli);
                 MapofQuoteContract.put(pro1.Id,cli);
             }
-            try{
+            // try{
                 
                 insert MapofQuoteContract.values();
-            }
-            catch(Exception e){
-                System.debug('Error*** '+e.getMessage());
-                ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error,'There is issue in Revision, Please contact to your System Administrator.'));   return null;
-            }
+            // }
+            // catch(Exception e){
+            //     System.debug('Error*** '+e.getMessage());
+            //     ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error,'There is issue in Revision, Please contact to your System Administrator.'));   return null;
+            // }
             
             
             for(Quote_Line_Options__c pro2 :lstQuoteOption){
@@ -951,16 +951,16 @@ public class ReviseQuoteController {
             }
             
             
-            try
-            {
+            // try
+            // {
                 
                 insert ListQLo;
-            }
-            catch(Exception e)
-            {
-                ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error,'There is issue in Revision, Please contact to your System Administrator.'));
-                return null;
-            }
+            // }
+            // catch(Exception e)
+            // {
+            //     ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error,'There is issue in Revision, Please contact to your System Administrator.'));
+            //     return null;
+            // }
             
             List<Attachment> lstAtt = new List<Attachment>();
             lstAtt = [select id, name, body, LastModifiedDate, Createddate , createdby.name,ParentId from Attachment where ParentId=:QuoteCloneId ];

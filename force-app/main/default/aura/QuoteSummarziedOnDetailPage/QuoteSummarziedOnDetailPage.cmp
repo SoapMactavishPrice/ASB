@@ -44,6 +44,8 @@
     <aura:html tag="style">
         .modal-body.scrollable.slds-modal__content.slds-p-around--none{height: auto !important;}
         .col-stick{position: sticky !important; top: 0; z-index: 10;}
+        .summary-table-scroll{overflow-x: auto; overflow-y: hidden; width: 100%;}
+        .summary-table-scroll table{min-width: 1600px;}
         @media only screen and (max-width: 480px){
         .slds-modal__container {max-width: auto !important; width: auto !important;}
         .slds-modal__content{height: 100% !important; max-height: 100% !important;}
@@ -121,6 +123,7 @@
                         <div class="slds-border_top"></div>
                         <div class="slds-container">
                             <div class="slds-wrap slds-grid slds-m-around_x-small">
+                                <div class="summary-table-scroll">
                                 <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped" role="grid" style="table-layout: fixed; position: relative; background: #FAFAF9;">
                                     <thead>
                                         <tr style="font-weight: 900;">
@@ -525,6 +528,7 @@
 
                                     </tbody>
                                 </table>
+                                </div>
                             </div>
                         </div>
                     </article>

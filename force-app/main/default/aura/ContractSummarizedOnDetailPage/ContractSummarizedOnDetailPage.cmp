@@ -225,22 +225,22 @@
                                                 </td>
 
                                                 <!-- Unit TP — Base_Price__c -->
-                                                <td style="width: 130px; font-weight: 700; text-align: center !important;" class="textright">
+                                                <td style="width: 130px; font-weight: 700; text-align: right !important;" class="textright">
                                                     <lightning:formattedNumber value="{!exp.Base_Price_Line_Item__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                 </td>
 
                                                 <!-- Unit List Price — List_Price__c -->
-                                                <td style="width: 130px; font-weight: 700; text-align: center !important;">
+                                                <td style="width: 130px; font-weight: 700; text-align: right !important;">
                                                     <lightning:formattedNumber value="{!exp.List_Price__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                 </td>
 
                                                 <!-- Total TP — Total_Global_Price_Item__c -->
-                                                <td style="width: 130px; font-weight: 700; text-align: center !important;">
+                                                <td style="width: 130px; font-weight: 700; text-align: right !important;">
                                                     <lightning:formattedNumber value="{!exp.Total_Global_Price_Item__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                 </td>
 
                                                 <!-- Total List Price — Total_List_Price2__c -->
-                                                <td style="width: 130px; font-weight: 700; text-align: center !important;">
+                                                <td style="width: 130px; font-weight: 700; text-align: right !important;">
                                                     <lightning:formattedNumber value="{!exp.Total_List_Price3__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                 </td>
 
@@ -250,17 +250,17 @@
                                                 </td>
 
                                                 <!-- Total Discount in Value — Discount_Value__c -->
-                                                <th scope="row" style="width: 100px; font-weight: 700; text-align: center !important;">
+                                                <th scope="row" style="width: 100px; font-weight: 700; text-align: right !important;">
                                                     <lightning:formattedNumber value="{!exp.Discount_Value__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                 </th>
 
                                                 <!-- Unit Sales Price — Average_Sales_Price__c -->
-                                                <td style="width: 130px; font-weight: 700; text-align: center !important;">
+                                                <td style="width: 130px; font-weight: 700; text-align: right !important;">
                                                     <lightning:formattedNumber value="{!exp.Average_Sales_Price__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                 </td>
 
                                                 <!-- Total Sales Price — Sales_Price__c -->
-                                                <td style="width: 130px; font-weight: 700; text-align: center !important;">
+                                                <td style="width: 130px; font-weight: 700; text-align: right !important;">
                                                     <lightning:formattedNumber value="{!exp.Total_Sales_Price2__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                 </td>
 
@@ -301,22 +301,22 @@
                                                     </td>
 
                                                     <!-- Unit TP — Manual_Option_Base_Price__c -->
-                                                    <td style="width: 130px; text-align: center !important;">
+                                                    <td style="width: 130px; text-align: right !important;">
                                                         <lightning:formattedNumber value="{!QLO.Manual_Option_Base_Price__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </td>
 
                                                     <!-- Unit List Price — Manula_Option_List_Price__c -->
-                                                    <td style="width: 130px; text-align: center !important;">
+                                                    <td style="width: 130px; text-align: right !important;">
                                                         <lightning:formattedNumber value="{!QLO.Manual_Option_List_Price__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </td>
 
                                                     <!-- Total TP — Total_Transfer_Price__c -->
-                                                    <td style="width: 130px; text-align: center !important;">
+                                                    <td style="width: 130px; text-align: right !important;">
                                                         <lightning:formattedNumber value="{!QLO.Total_Transfer_Price__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </td>
 
                                                     <!-- Total List Price — Total_List_Price__c -->
-                                                    <td style="width: 130px; text-align: center !important;">
+                                                    <td style="width: 130px; text-align: right !important;">
                                                         <lightning:formattedNumber value="{!QLO.Total_List_Price__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </td>
 
@@ -326,17 +326,17 @@
                                                     </td>
 
                                                     <!-- Total Discount in Value — Discount_Amount__c -->
-                                                    <th scope="row" style="width: 150px; text-align: center !important;">
+                                                    <th scope="row" style="width: 150px; text-align: right !important;">
                                                         <lightning:formattedNumber value="{!QLO.Discount_Amount__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </th>
 
                                                     <!-- Unit Sales Price — Unit_Sales_Price__c -->
-                                                    <td style="width: 130px; text-align: center !important;">
+                                                    <td style="width: 130px; text-align: right !important;">
                                                         <lightning:formattedNumber value="{!QLO.Unit_Sales_Price__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </td>
 
                                                     <!-- Total Sales Price — Total_Sales_Price__c -->
-                                                    <td style="width: 130px; text-align: center !important;">
+                                                    <td style="width: 130px; text-align: right !important;">
                                                         <lightning:formattedNumber value="{!QLO.Total_Sales_Price__c}" style="currency" currencyCode="{!QLO.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </td>
 
@@ -377,12 +377,12 @@
                                                     </td>
 
                                                     <!-- Total TP -->
-                                                    <td style="width: 130px; font-weight: 700; text-align: center !important; background: #E8EEF5; color: #1F3A5F;;" class="textright">
+                                                    <td style="width: 130px; font-weight: 700; text-align: right !important; background: #E8EEF5; color: #1F3A5F;;" class="textright">
                                                         <lightning:formattedNumber value="{!exp.sub_totalTP__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </td>
 
                                                     <!-- Total List Price -->
-                                                    <td style="width: 130px; font-weight: 700; text-align: center !important; background: #E8EEF5; color: #1F3A5F;;" class="textright">
+                                                    <td style="width: 130px; font-weight: 700; text-align: right !important; background: #E8EEF5; color: #1F3A5F;;" class="textright">
                                                         <lightning:formattedNumber value="{!exp.sub_totalListPrice2__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </td>
 
@@ -390,7 +390,7 @@
                                                     <td style="width: 90px; font-weight: 700; text-align: center !important; background: #E8EEF5; color: #1F3A5F;;"></td>
 
                                                     <!-- Total Discount in Value -->
-                                                    <th scope="row" style="width: 100px; font-weight: 700; text-align: center !important; background: #E8EEF5; color: #1F3A5F;;">
+                                                    <th scope="row" style="width: 100px; font-weight: 700; text-align: right !important; background: #E8EEF5; color: #1F3A5F;;">
                                                         <lightning:formattedNumber value="{!exp.sub_totalDiscountValue__c}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </th>
 
@@ -400,7 +400,7 @@
                                                     </td>
 
                                                     <!-- Total Sales Price -->
-                                                    <td style="width: 130px; font-weight: 700; text-align: center !important; background: #E8EEF5; color: #1F3A5F;;">
+                                                    <td style="width: 130px; font-weight: 700; text-align: right !important; background: #E8EEF5; color: #1F3A5F;;">
                                                         <lightning:formattedNumber value="{!exp.sub_totalSalesPrice}" style="currency" currencyCode="{!exp.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                                     </td>
 
@@ -442,12 +442,12 @@
                                             </td>
 
                                             <!-- Total TP -->
-                                            <td style="width: 130px; font-weight: 700; text-align: center !important;background: #2F5597; color: #FFFFFF;" class="textright">
+                                            <td style="width: 130px; font-weight: 700; text-align: right !important;background: #2F5597; color: #FFFFFF;" class="textright">
                                                 <lightning:formattedNumber value="{!v.totalTP}" style="currency" currencyCode="{!v.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                             </td>
 
                                             <!-- Total List Price -->
-                                            <td style="width: 130px; font-weight: 700; text-align: center !important;background: #2F5597; color: #FFFFFF;" class="textright">
+                                            <td style="width: 130px; font-weight: 700; text-align: right !important;background: #2F5597; color: #FFFFFF;" class="textright">
                                                 <lightning:formattedNumber value="{!v.totalListPrice2}" style="currency" currencyCode="{!v.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                             </td>
 
@@ -455,7 +455,7 @@
                                             <td style="width: 90px; font-weight: 700; text-align: center !important;background: #2F5597; color: #FFFFFF;"></td>
 
                                             <!-- Total Discount in Value -->
-                                            <th scope="row" style="width: 100px; font-weight: 700; text-align: center !important;background: #2F5597; color: #FFFFFF;">
+                                            <th scope="row" style="width: 100px; font-weight: 700; text-align: right !important;background: #2F5597; color: #FFFFFF;">
                                                 <lightning:formattedNumber value="{!v.totalDiscountValue}" style="currency" currencyCode="{!v.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                             </th>
 
@@ -465,7 +465,7 @@
                                             </td>
 
                                             <!-- Total Sales Price -->
-                                            <td style="width: 130px; font-weight: 700; text-align: center !important;background: #2F5597; color: #FFFFFF;">
+                                            <td style="width: 130px; font-weight: 700; text-align: right !important;background: #2F5597; color: #FFFFFF;">
                                                 <lightning:formattedNumber value="{!v.totalSalesPrice}" style="currency" currencyCode="{!v.CurrencyIsoCode}" minimumFractionDigits="2" maximumFractionDigits="2"></lightning:formattedNumber>
                                             </td>
 

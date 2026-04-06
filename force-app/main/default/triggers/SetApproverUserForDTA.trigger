@@ -22,4 +22,6 @@ trigger SetApproverUserForDTA on Quote (before insert, before update) {
         }
         }
     }
+
+
 }

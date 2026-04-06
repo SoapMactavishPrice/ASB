@@ -969,14 +969,14 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
 
         for (const row of eligibleRows) {
             const totalDiscountInValue = parseFormattedNumber(row.totalDiscountInValue) || 0;
-            const totalSalesPrice = parseFormattedNumber(row.totalSalesPrice) || 0;
+            const totalListPrice = parseFormattedNumber(row.totalListPrice) || 0;
             const maxDiscountAllowed = parseFormattedNumber(row.maxDiscountAllowed);
 
-            if (maxDiscountAllowed === null || maxDiscountAllowed === undefined || totalSalesPrice <= 0) {
+            if (maxDiscountAllowed === null || maxDiscountAllowed === undefined || totalListPrice <= 0) {
                 continue;
             }
 
-            const totalDiscountPercentage = (totalDiscountInValue / totalSalesPrice) * 100;
+            const totalDiscountPercentage = (totalDiscountInValue / totalListPrice) * 100;
 
             if (totalDiscountPercentage > maxDiscountAllowed) {
                 return `You are not allowed to Provide More Discount than P-D3 = ${this.formatPercentValue(maxDiscountAllowed)}%`;

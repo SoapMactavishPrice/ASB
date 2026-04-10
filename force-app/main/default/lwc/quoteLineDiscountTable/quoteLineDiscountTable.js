@@ -79,6 +79,17 @@ function roundToWholeNumberAndFormatInteger(value) {
     return rounded === 0 ? null : formatNumberWithCommas(rounded.toFixed(0));
 }
 
+function roundUpToWholeNumber(value) {
+    if (value === null || value === undefined || value === '') {
+        return null;
+    }
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    if (isNaN(num)) {
+        return null;
+    }
+    return Math.ceil(num);
+}
+
 function calculatePercentage(percent, value) {
     if (percent && value) {
         return (percent / 100) * value;
@@ -721,14 +732,15 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
         row.salesPriceFormatted = roundToTwoDecimalsAndFormatInteger(salesPrice);
         
         const totalSalesPrice = salesPrice * totalQuantity;
-        row.totalSalesPrice = roundToTwoDecimals(totalSalesPrice);
-        row.totalSalesPriceFormatted = roundToTwoDecimalsAndFormatInteger(totalSalesPrice);
+        row.totalSalesPrice = roundToWholeNumber(totalSalesPrice);
+        row.totalSalesPriceFormatted = roundToWholeNumberAndFormatInteger(totalSalesPrice);
+        const roundedTotalSalesPrice = parseFormattedNumber(row.totalSalesPrice) || 0;
         
-        if (totalSalesPrice === 0) {
+        if (roundedTotalSalesPrice === 0) {
             row.salesMargin = '-';
         } else {
-            let margin = (totalSalesPrice - totalTransferPrice) / totalSalesPrice;
-            if (totalSalesPrice < 0) {
+            let margin = (roundedTotalSalesPrice - totalTransferPrice) / roundedTotalSalesPrice;
+            if (roundedTotalSalesPrice < 0) {
                 margin = -margin;
             }
             margin *= 100;
@@ -753,9 +765,7 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             row.totalDiscountInValue = roundToTwoDecimals(calculatedDiscount);
             row.totalDiscountInValueFormatted = roundToTwoDecimalsAndFormatInteger(calculatedDiscount);
 
-            // ─── CHANGED: update subtotal discount % text ──────────────────────────
             row.subtotalDiscountText = this.computeSubtotalDiscountText(calculatedDiscount, totalListPrice);
-            // ───────────────────────────────────────────────────────────────────────
 
             const lineItemIndex = this.tableData.findIndex(r => r.id === row.parentId && r.isLineItem);
             if (lineItemIndex !== -1) {
@@ -775,28 +785,77 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                 }
 
                 const allIndices = [lineItemIndex, ...optionIndices];
-                let remaining = desiredPriceSubtotal;
 
-                for (let j = 0; j < allIndices.length; j++) {
-                    const r = this.tableData[allIndices[j]];
+                // ── STEP 1: Floor each proportional price and track remainder ──────
+                allIndices.forEach(idx => {
+                    const r = this.tableData[idx];
                     r.discountPercent = null;
                     r.discountValue = null;
+                    const rowListPrice = parseFormattedNumber(r.totalListPrice) || 0;
+                    r._rawProportional = totalListPrice !== 0
+                        ? (rowListPrice / totalListPrice) * desiredPriceSubtotal
+                        : 0;
+                    r._flooredPrice = Math.floor(r._rawProportional);
+                    r._remainder = r._rawProportional - r._flooredPrice;
+                });
 
-                    if (j < allIndices.length - 1) {
-                        const rowListPrice = parseFormattedNumber(r.totalListPrice) || 0;
-                        const proportional = totalListPrice !== 0
-                            ? (rowListPrice / totalListPrice) * desiredPriceSubtotal
-                            : 0;
-                        r.desiredPrice = Math.round(proportional * 100) / 100;
-                        remaining = Math.round((remaining - r.desiredPrice) * 100) / 100;
-                    } else {
-                        r.desiredPrice = remaining;
-                    }
-                }
+                // ── STEP 2: Calculate shortfall ────────────────────────────────────
+                const flooredSum = allIndices.reduce((sum, idx) =>
+                    sum + this.tableData[idx]._flooredPrice, 0);
+                const shortfall = Math.round(desiredPriceSubtotal - flooredSum);
 
+                // ── STEP 3: Give +1 to top N entries by remainder ──────────────────
+                const sortedByRemainder = [...allIndices].sort((a, b) =>
+                    this.tableData[b]._remainder - this.tableData[a]._remainder
+                );
+                sortedByRemainder.forEach((idx, rank) => {
+                    const r = this.tableData[idx];
+                    r.desiredPrice = r._flooredPrice + (rank < shortfall ? 1 : 0);
+                    // Clean up temp properties
+                    delete r._rawProportional;
+                    delete r._flooredPrice;
+                    delete r._remainder;
+                });
+
+                // ── Recalculate discounts for all entries ──────────────────────────
                 for (const idx of allIndices) {
                     this.calculateDiscounts(idx);
                 }
+
+                // ── Reaggregate subtotal from distributed rows ─────────────────────
+                const distributedRows = this.tableData.filter(r =>
+                    r.srNo === row.srNo && (r.isLineItem || r.isOption)
+                );
+
+                let distributedDiscountInValue = 0;
+                let distributedTotalSalesPrice = 0;
+                distributedRows.forEach(r => {
+                    distributedDiscountInValue += parseFormattedNumber(r.totalDiscountInValue) || 0;
+                    distributedTotalSalesPrice += parseFormattedNumber(r.totalSalesPrice) || 0;
+                });
+
+                row.totalDiscountInValue = roundToTwoDecimals(distributedDiscountInValue);
+                row.totalDiscountInValueFormatted = roundToTwoDecimalsAndFormatInteger(distributedDiscountInValue);
+                row.subtotalDiscountText = this.computeSubtotalDiscountText(distributedDiscountInValue, totalListPrice);
+
+                const roundedSubtotalSalesPrice = roundUpToWholeNumber(distributedTotalSalesPrice) || 0;
+                row.totalSalesPrice = roundedSubtotalSalesPrice.toFixed(0);
+                row.totalSalesPriceFormatted = roundToWholeNumberAndFormatInteger(distributedTotalSalesPrice);
+
+                if (roundedSubtotalSalesPrice === 0) {
+                    row.salesMargin = '-';
+                } else {
+                    let margin = (roundedSubtotalSalesPrice - (parseFormattedNumber(row.totalTransferPrice) || 0)) / roundedSubtotalSalesPrice;
+                    if (roundedSubtotalSalesPrice < 0) {
+                        margin = -margin;
+                    }
+                    margin *= 100;
+                    row.salesMargin = roundToTwoDecimals(margin);
+                }
+
+                this.updateGrandTotal();
+                this.tableData = [...this.tableData];
+                return;
             }
         } else {
             // ── DPS CLEARED ───────────────────────────────────────────────────────────
@@ -833,22 +892,21 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             row.totalDiscountInValue = roundToTwoDecimals(totalDiscountInValue);
             row.totalDiscountInValueFormatted = roundToTwoDecimalsAndFormatInteger(totalDiscountInValue);
 
-            // ─── CHANGED: update subtotal discount % text ──────────────────────────
             row.subtotalDiscountText = this.computeSubtotalDiscountText(totalDiscountInValue, totalListPrice);
-            // ───────────────────────────────────────────────────────────────────────
         }
         
-        // Calculate totalSalesPrice and salesMargin for subtotal row
+        // ── Calculate totalSalesPrice and salesMargin for subtotal row ─────────────
         const totalTransferPrice = parseFormattedNumber(row.totalTransferPrice) || 0;
         const totalSalesPrice = totalListPrice - row.totalDiscountInValue;
-        row.totalSalesPrice = roundToTwoDecimals(totalSalesPrice);
-        row.totalSalesPriceFormatted = roundToTwoDecimalsAndFormatInteger(totalSalesPrice);
+        row.totalSalesPrice = roundToWholeNumber(totalSalesPrice);
+        row.totalSalesPriceFormatted = roundToWholeNumberAndFormatInteger(totalSalesPrice);
+        const roundedSubtotalSalesPrice = parseFormattedNumber(row.totalSalesPrice) || 0;
         
-        if (totalSalesPrice === 0) {
+        if (roundedSubtotalSalesPrice === 0) {
             row.salesMargin = '-';
         } else {
-            let margin = (totalSalesPrice - totalTransferPrice) / totalSalesPrice;
-            if (totalSalesPrice < 0) {
+            let margin = (roundedSubtotalSalesPrice - totalTransferPrice) / roundedSubtotalSalesPrice;
+            if (roundedSubtotalSalesPrice < 0) {
                 margin = -margin;
             }
             margin *= 100;
@@ -856,7 +914,6 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
         }
         
         this.updateGrandTotal();
-        
         this.tableData = [...this.tableData];
     }
     
@@ -889,14 +946,15 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             
             const subtotalRow = this.tableData[subtotalIndex];
             
-            subtotalRow.totalSalesPrice = roundToTwoDecimals(totalSalesPrice);
-            subtotalRow.totalSalesPriceFormatted = roundToTwoDecimalsAndFormatInteger(totalSalesPrice);
+            subtotalRow.totalSalesPrice = roundToWholeNumber(totalSalesPrice);
+            subtotalRow.totalSalesPriceFormatted = roundToWholeNumberAndFormatInteger(totalSalesPrice);
+            const roundedSubtotalSalesPrice = parseFormattedNumber(subtotalRow.totalSalesPrice) || 0;
             
-            if (totalSalesPrice === 0) {
+            if (roundedSubtotalSalesPrice === 0) {
                 subtotalRow.salesMargin = '-';
             } else {
-                let margin = (totalSalesPrice - totalTransferPrice) / totalSalesPrice;
-                if (totalSalesPrice < 0) {
+                let margin = (roundedSubtotalSalesPrice - totalTransferPrice) / roundedSubtotalSalesPrice;
+                if (roundedSubtotalSalesPrice < 0) {
                     margin = -margin;
                 }
                 margin *= 100;

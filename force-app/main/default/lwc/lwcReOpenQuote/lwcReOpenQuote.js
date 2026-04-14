@@ -31,6 +31,10 @@ export default class LwcReOpenQuote extends NavigationMixin(LightningElement) {
         return !this.isUserAuthorized;
     }
 
+    get isReopenYesDisabled() {
+        return this.isSaveDisabled || this.showSpinner;
+    }
+
     @wire(CurrentPageReference)
     getStateParameters(currentPageReference) {
         if (currentPageReference) {
@@ -97,7 +101,7 @@ export default class LwcReOpenQuote extends NavigationMixin(LightningElement) {
 
     // Handle Reopen Confirmation - Yes button
     handleReopenYes() {
-        this.showReopenConfirm = false;
+        this.showSpinner = true;
         this.saveProjects();
     }
 
@@ -266,7 +270,6 @@ checkAllAreAcanclled(){
 
         console.log('OUTPUT : validate',validate,'cancel -->',this.isCancel);
         if(validate){
-        this.showSpinner = true;
         this.isCancel = this.checkAllAreAcanclled();
         saveCanceledProject({ contractId: this.recordId, js: JSON.stringify(this.wrapList),isCancel :this.isCancel}).then(result => {
             this.showSpinner = false;
@@ -287,11 +290,15 @@ checkAllAreAcanclled(){
                     this.ShowToastMessage(key, result[key]);
                 }
             }
+        }).catch((error)=>{
+            this.showSpinner = false;
+            console.error(JSON.parse(JSON.stringify(error)));
+            this.ShowToastMessage('error', error?.body?.message);
         })
+        } else {
+            this.showSpinner = false;
         }
     }
-
-
 
     closeAction() {
         this.dispatchEvent(new CloseActionScreenEvent());

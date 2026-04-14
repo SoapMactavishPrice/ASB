@@ -1,12 +1,10 @@
 <template>
 
+    <template if:true={showSpinner}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+
     <lightning-quick-action-panel header='Re-Open Quote' if:true={isOpen}>
-
-
-
-        <template if:true={showSpinner}>
-            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
-        </template>
         <!-- <label if:true={allProject} style="font-size: medium;color:red">Note: Before Re-Open Quote Please Create
             Project</label> -->
         <table width="100%" id="customers">
@@ -190,7 +188,7 @@
                 variant="brand" 
                 label="Yes" 
                 onclick={handleReopenYes}
-                disabled={isSaveDisabled}
+                disabled={isReopenYesDisabled}
                 class="reopen-yes-btn">
             </lightning-button>
             <lightning-button 

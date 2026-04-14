@@ -242,7 +242,7 @@ public class QuoteCreationCMPController {
                         ADVANCE_PAYMENT__c,CITY__c,CLOSE_LOST_REASON__c,Contact__c,COUNTRY__c,COUNTRY_CODE__c,DATE__c,Designation__c,END_CUSTOMER_NAME__c,Mould_Delivery__c,
                         FUNCTION__c,INCO_TERMS__c,MFG_AT__c,POSTAL_CODE__c,PREPARED_BY__c,PROBABILITY__c,QUOTATION_ADDRESSED_TO__c,QUOTATION_CREATE__c,QU_REVISION_NUMBER__c,
                         /*REGION__c,*/SHIP_TO__c,SOLD_TO__c,STATE__c,SUBSIDARY__c,Quote_Number1__c,TYPE__c,VALIDITY__c,VALITY_DATE__c,Quote_Number__c,Pricebook2Id,Account.Global_Region__c,Account.Global_SubRegion__c,Text_After_Total__c,
-                        Q_PrintMachine__c,Q_PrintTiming__c,Q_PrintPayment__c,Q_PrintShipping__c,Q_PrintConclusion__c,Price_in_Word_Required__c,Expected_Month_of_Consolidated_Order__c
+                        Q_PrintMachine__c,Q_PrintTiming__c,Q_PrintPayment__c,Q_PrintShipping__c,Q_PrintConclusion__c,Price_in_Word_Required__c,Expected_Month_of_Consolidated_Order__c, Select_Agent__c, Payment_Terms__c
                         from Quote Where id =:parentQuoteId limit 1];
             
             String opportunityId = oppId;
@@ -311,6 +311,10 @@ public class QuoteCreationCMPController {
             QuoteClone.Expected_Month_of_Consolidated_Order__c = parentQuote.Expected_Month_of_Consolidated_Order__c;
             QuoteClone.SOLD_TO__c = soldTo;
             QuoteClone.SHIP_TO__c = shipTo;
+
+            QuoteClone.Select_Agent__c = parentQuote.Select_Agent__c;
+            QuoteClone.Payment_Terms__c = parentQuote.Payment_Terms__c;
+
             if(String.isNotBlank(pricebookId)) {
                 QuoteClone.Pricebook2Id = pricebookId;
             }
@@ -813,7 +817,7 @@ public class QuoteCreationCMPController {
                         ADVANCE_PAYMENT__c,CITY__c,CLOSE_LOST_REASON__c,Contact__c,COUNTRY__c,COUNTRY_CODE__c,DATE__c,Designation__c,END_CUSTOMER_NAME__c,Mould_Delivery__c,
                         FUNCTION__c,INCO_TERMS__c,MFG_AT__c,POSTAL_CODE__c,PREPARED_BY__c,PROBABILITY__c,QUOTATION_ADDRESSED_TO__c,QUOTATION_CREATE__c,QU_REVISION_NUMBER__c,
                         /*REGION__c,*/SHIP_TO__c,SOLD_TO__c,STATE__c,SUBSIDARY__c,Quote_Number1__c,TYPE__c,VALIDITY__c,VALITY_DATE__c,Quote_Number__c,Pricebook2Id,Account.Global_Region__c,Account.Global_SubRegion__c,Text_After_Total__c,
-                        Q_PrintMachine__c,Q_PrintTiming__c,Q_PrintPayment__c,Q_PrintShipping__c,Q_PrintConclusion__c,Price_in_Word_Required__c,Expected_Month_of_Consolidated_Order__c
+                        Q_PrintMachine__c,Q_PrintTiming__c,Q_PrintPayment__c,Q_PrintShipping__c,Q_PrintConclusion__c,Price_in_Word_Required__c,Expected_Month_of_Consolidated_Order__c, Select_Agent__c, Payment_Terms__c
                         from Quote Where id =:parentQuoteId limit 1];
             
             String opportunityId = oppId;
@@ -882,6 +886,10 @@ public class QuoteCreationCMPController {
             QuoteClone.Expected_Month_of_Consolidated_Order__c = parentQuote.Expected_Month_of_Consolidated_Order__c;
             QuoteClone.SOLD_TO__c = soldTo;
             QuoteClone.SHIP_TO__c = shipTo;
+
+            QuoteClone.Select_Agent__c = parentQuote.Select_Agent__c;
+            QuoteClone.Payment_Terms__c = parentQuote.Payment_Terms__c;
+
             if(String.isNotBlank(pricebookId)) {
                 QuoteClone.Pricebook2Id = pricebookId;
             }

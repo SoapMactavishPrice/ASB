@@ -256,7 +256,7 @@ public class CreatePaymentManual {
         Decimal TotalAllocation=0;
         Boolean doInsert = true;
         Contract thisContract = [SELECT Id, Name,CurrencyIsoCode, AccountID, Subsidiary__c FROM Contract WHERE Id = :contractId];
-        Fiscal_Year_Master__c thisFY = [SELECT Id, Name, Active__c FROM Fiscal_Year_Master__c WHERE Active__c = true];
+        Fiscal_Year_Master__c thisFY =[SELECT Id, Name FROM Fiscal_Year_Master__c WHERE Fiscal_Year_Start_Date__c <= TODAY AND Fiscal_Year_End_Date__c >= TODAY LIMIT 1];
         if(selectedRecordList != null){
             for(Contract_Line_Item__c Wrp1 : selectedRecordList){
                 system.debug('total amount CLI' +Wrp1.Total_List_Price__c);

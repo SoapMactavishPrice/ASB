@@ -28,7 +28,7 @@ trigger TrgOppotunity on Opportunity (After Update,Before Insert,After insert,Be
                 }
                 if(trigger.isBefore && trigger.isInsert){ 
                     //updated This logic to assign fy and Subsidiary
-                    Fiscal_Year_Master__c f=[select id,name from Fiscal_Year_Master__c where Active__c=true  AND Fiscal_Year_Start_Date__c <= TODAY AND Fiscal_Year_End_Date__c >= TODAY limit 1];
+                    Fiscal_Year_Master__c f =[SELECT Id, Name FROM Fiscal_Year_Master__c WHERE Fiscal_Year_Start_Date__c <= TODAY AND Fiscal_Year_End_Date__c >= TODAY LIMIT 1];
                     List<id>ids =new list<id>();
                     map<id,id> uMap=new map<id,id>();
                     Map<id,Unique_No__c> sMap=new Map<id,Unique_No__c>();

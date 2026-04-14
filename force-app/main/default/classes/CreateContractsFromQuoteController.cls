@@ -999,7 +999,7 @@ ContLO.Description__c = pro2.Description__c;
     {
         //updated This logic to assign fy and Subsidiary
         UserSetup us=new UserSetup();
-        Fiscal_Year_Master__c f=[select id,name from Fiscal_Year_Master__c where Active__c=true limit 1];
+        Fiscal_Year_Master__c f =[SELECT Id, Name FROM Fiscal_Year_Master__c WHERE Fiscal_Year_Start_Date__c <= TODAY AND Fiscal_Year_End_Date__c >= TODAY LIMIT 1];
         system.debug('f '+f);
         Map<id,Unique_No__c> sMap=new Map<id,Unique_No__c>();
         // Get Last Count

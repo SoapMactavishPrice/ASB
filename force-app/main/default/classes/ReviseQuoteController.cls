@@ -67,7 +67,7 @@ public class ReviseQuoteController {
         Date todaysDate = system.today();
         //Id stQuote = Schema.SObjectType.quote.getRecordTypeInfosByName().get('Blank Quote').getRecordTypeId();
        // Fiscal_Year_Master__c f=[select id,name,Active__c from Fiscal_Year_Master__c where Active__c=true limit 1]; //V1.1
-        Fiscal_Year_Master__c f=[select id,name from Fiscal_Year_Master__c where Active__c=true  AND Fiscal_Year_Start_Date__c <= TODAY AND Fiscal_Year_End_Date__c >= TODAY limit 1];
+        Fiscal_Year_Master__c f =[SELECT Id, Name FROM Fiscal_Year_Master__c WHERE Fiscal_Year_Start_Date__c <= TODAY AND Fiscal_Year_End_Date__c >= TODAY LIMIT 1];
         
         decimal exeRate = CommonData.getExchangeRate(objQuote.Opportunity.CurrencyISOCode);
         Quote QuoteClone  = objQuote.clone(false, false, false, false);

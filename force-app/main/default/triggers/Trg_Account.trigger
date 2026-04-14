@@ -34,7 +34,7 @@ trigger Trg_Account on Account (After Update,After insert,Before Insert,Before U
         map<id,PIN_Code_Master__c> addMap=new map<id,PIN_Code_Master__c>();
         
         
-        Fiscal_Year_Master__c f=[select id,name from Fiscal_Year_Master__c where Active__c=true  AND Fiscal_Year_Start_Date__c <= TODAY AND Fiscal_Year_End_Date__c >= TODAY limit 1]; 
+        Fiscal_Year_Master__c f =[SELECT Id, Name FROM Fiscal_Year_Master__c WHERE Fiscal_Year_Start_Date__c <= TODAY AND Fiscal_Year_End_Date__c >= TODAY LIMIT 1];
         User_Setup__c u=[Select id,name,Subsidiari__c from User_Setup__c where user__c=:userinfo.getUserId() limit 1];
         for(Account objAct : trigger.new){
           /*  if(objAct.Is_Converted__c){

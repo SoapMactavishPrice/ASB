@@ -1444,7 +1444,7 @@ public class QuoteCreationCMPController {
         //updated This logic to assign fy and Subsidiary
         UserSetup us=new UserSetup();
       //  Fiscal_Year_Master__c f=[select id,name from Fiscal_Year_Master__c where Active__c=true limit 1];
-       Fiscal_Year_Master__c f=[select id,name from Fiscal_Year_Master__c where Active__c=true  AND Fiscal_Year_Start_Date__c <= TODAY AND Fiscal_Year_End_Date__c >= TODAY limit 1];
+       Fiscal_Year_Master__c f =[SELECT Id, Name FROM Fiscal_Year_Master__c WHERE Fiscal_Year_Start_Date__c <= TODAY AND Fiscal_Year_End_Date__c >= TODAY LIMIT 1];
         Map<id,Unique_No__c> sMap=new Map<id,Unique_No__c>();
         // Get Last Count
         for(Unique_No__c u:[select id,name,Serial_No__c,Object_Name__c,Subsidiary__c,Fiscal_Year__c from Unique_No__c where Fiscal_Year__c=:f.id and

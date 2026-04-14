@@ -124,8 +124,7 @@ public with sharing class CloneQuoteCurrencyController {
         Opportunity_Group__c oppGroup = new Opportunity_Group__c();
         
         
-        Fiscal_Year_Master__c fy = [SELECT Id, Name FROM Fiscal_Year_Master__c 
-                                     WHERE Active__c = true LIMIT 1];
+        Fiscal_Year_Master__c fy =[SELECT Id, Name FROM Fiscal_Year_Master__c WHERE Fiscal_Year_Start_Date__c <= TODAY AND Fiscal_Year_End_Date__c >= TODAY LIMIT 1];
         
         Unique_No__c uniqueNo;
 

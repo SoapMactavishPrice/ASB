@@ -65,11 +65,10 @@ public class QuoteCreationCMPController {
         
         List<Quote> lstQt = new List<Quote>();
       
-        lstQt = [Select id,Name,region1__c,QuoteNumber,Additinal_Margin__c, QU_REVISION_NUMBER__c,AccountId, Account.Name ,Quote_Number__c, Pricebook2Id, Pricebook2.Name
-                 from quote where Subsidiary__c=:objoppty.Subsidiary__c AND 
-                 (Status ='CLOSE - SC CREATED' OR Status='RELEASED' OR Status='DISCARD/VOID' OR Status='CLOSE - REVISED' OR   Status='CANCELLED' OR   Status='CANCELLED AFTER PM' OR
-                  Status='CLOSE - LOST' ) and Quote_Number__c != null and QU_REVISION_NUMBER__c != null
-                order by Quote_Number__c desc  ,QU_REVISION_NUMBER__c desc];
+        lstQt = [SELECT Id, Name, region1__c, QuoteNumber, Additinal_Margin__c, QU_REVISION_NUMBER__c, AccountId, Account.Name, Quote_Number__c, Pricebook2Id, Pricebook2.Name
+                 FROM quote 
+                 WHERE Subsidiary__c=:objoppty.Subsidiary__c AND Status != null AND Status !='DISCARD/VOID' AND Quote_Number__c != null AND QU_REVISION_NUMBER__c != null
+                 ORDER BY Quote_Number__c DESC  ,QU_REVISION_NUMBER__c DESC];
         Decimal AddionalMargin = objoppty.Subsidiary__r.Additional_Margin__c;
             system.debug('lstQt'+lstQt.size());
         DataWrapper objDataWrapper  = new DataWrapper(objoppty, lstQt, 1, AddionalMargin, givePermission);

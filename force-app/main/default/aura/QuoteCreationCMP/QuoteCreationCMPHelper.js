@@ -313,7 +313,8 @@
                     "QuoteAdditionalMargin": addionalMargin,
                     "soldTo": soldTo,
                     "shipTo": shipTo,
-                    "pricebookId": selectedPricebook
+                    "pricebookId": selectedPricebook,
+                    "blankDiscountValues": false
                 });
                 console.log('callingCloned--!');
                 action.setCallback(this, function (response) {

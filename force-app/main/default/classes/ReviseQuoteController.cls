@@ -207,7 +207,6 @@ public class ReviseQuoteController {
                 cli.Project_Unique_No__c = pro1.Project_Unique_No__c;
                 if(pro1.Is_Manual__c == false){
                     system.debug('not manual');
-                    cli.UOM__c = pro1.Product__r.UOM__c;
                     if(pro1.Discount_Allowed_New__c!=null)
                         cli.Discount_Allowed_New__c = pro1.Discount_Allowed_New__c;
                     if(pro1.Discount_in_Value__c!=null)
@@ -339,6 +338,7 @@ public class ReviseQuoteController {
                     if(pro1.Quantity__c!=null){
                         cli.Quantity__c = pro1.Quantity__c;
                     }
+                    cli.UOM__c = pro1.UOM__c;
                     System.debug('cli==> '+cli);
                     lstContractItem.add(cli);
                     MapofQuoteContract.put(pro1.Id,cli);
@@ -453,6 +453,7 @@ public class ReviseQuoteController {
                     if(pro1.Quantity__c!=null){
                         cli.Quantity__c = pro1.Quantity__c;
                     }
+                    cli.UOM__c = pro1.UOM__c;
                     
                     
                     
@@ -506,7 +507,7 @@ public class ReviseQuoteController {
                     if(pro2.Serial_Number__c != null){
                         ContLO.Serial_Number__c	 = pro2.Serial_Number__c	;
                     }
-                    ContLO.UOM__c = pro2.Product__r.UOM__c;
+                    // ContLO.UOM__c = pro2.Product__r.UOM__c;
                     ContLO.Discount_Allowed_New__c = ContLO.Discount_Allowed_New__c;
                     if(pro2.Product__c !=null){
                         ContLO.Product__c = pro2.Product__c;

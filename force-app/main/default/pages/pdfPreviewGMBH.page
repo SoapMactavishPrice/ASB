@@ -445,7 +445,7 @@
                                     <div class="opt-head">{!qLine.Option_Header}</div>
                                 </apex:outputPanel>
                             </td>
-                            <td class="c">{!qLine.Quantity}</td>
+                            <td class="c">{!qLine.Quantity}&nbsp;{!qLine.UOM}</td>
                             <td class="r">{!qLine.totalValueString}</td>
                             <td class="r">{!qLine.Ceiling_Total_Sales_Pricestring}</td>
                         </tr>

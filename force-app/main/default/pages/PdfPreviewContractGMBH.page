@@ -266,7 +266,7 @@
                                 <div class="opt-head">{!cLine.Option_Header}</div>
                             </apex:outputPanel>
                         </td>
-                        <td class="c">{!cLine.Quantity}</td>
+                        <td class="c">{!cLine.Quantity}&nbsp;{!cLine.UOM}</td>
                         <td class="r">{!cLine.totalValueString}</td>
                         <td class="r">{!cLine.Ceiling_Total_Sales_Pricestring}</td>
                     </tr>

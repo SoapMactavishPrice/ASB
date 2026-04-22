@@ -380,7 +380,7 @@ public class ReOpenQuoteFromContract {
                     List<Quote_Line_Item_Custom__c> ObjQuoteLineItem = [Select id,Product_Description__c,Approval_Status__c,Class__c,Division__c,Discount_Allowed_New__c,Drawing_No__c,Expected_Customer_PO__c,Base_Price__c,BP_Ratio_Line_Item__c,Cavity__c,Total_Sales_Price__c,Level_Of_Ceiling__c,
                                                                         Expected_Delivery__c,Expected_Delivery_date__c,Expected_Drawing_Final__c,Advance_Percentage__c,Ceiling_Total_Sales_Price__c,CurrencyIsoCode,Product_Type__c,
                                                                         Mach_Mold_No__c,Product__c,Quantity__c,Quote__c,Discount_Allowed__c,Discount_Approval_Note__c,Is_Manual__c,Payment_Terms__c,Scope_of_mould__c,Product_Name__c,
-                                                                        Total_Base_Price_Options__c, List_Price__c,Discount__c,Sr_No__c,Is_Tax__c,Discount_in_Value__c,
+                                                                        Total_Base_Price_Options__c, List_Price__c,Discount__c,Sr_No__c,Is_Tax__c,Discount_in_Value__c, UOM__c,
                                                                         Product__r.id,Quote__r.Exchange_Rate__c,P_D1__c,P_D2__c,P_D3__c,P_M1__c,P_M2__c,P_M3__c,P_M4__c,Manual_Product_Code__c,
                                                                         Quote__r.Additinal_Margin__c,Product__r.ProductCode,Project_Unique_No__c, Desired_Price__c, Desired_Price_Subtotal__c,
                                                                         (Select id,Discount__c,Final_Price__c,Discount_in_Value__c,Discount_Allowed_New__c,Manual_Option__c,
@@ -434,6 +434,7 @@ public class ReOpenQuoteFromContract {
                         Quote_Line_Item_Custom__c cli = new Quote_Line_Item_Custom__c(); 
                         cli.CurrencyIsoCode=pro1.CurrencyIsoCode;
                         cli.Project_Unique_No__c = pro1.Project_Unique_No__c;
+                        cli.UOM__c = pro1.UOM__c;
                         if(pro1.Discount_Allowed_New__c!=null)
                             cli.Discount_Allowed_New__c = pro1.Discount_Allowed_New__c;
                         
@@ -462,9 +463,6 @@ public class ReOpenQuoteFromContract {
                         if(pro1.Level_Of_Ceiling__c!=null){
                             cli.Level_Of_Ceiling__c = pro1.Level_Of_Ceiling__c; 
                         }
-                        /*if(pro1.Discount__c!=null){
-cli.Discount__c = pro1.Discount__c; 
-}*/
                         if(pro1.Cavity__c !=null){ 
                             cli.Cavity__c = pro1.Cavity__c; 
                         }

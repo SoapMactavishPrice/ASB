@@ -342,7 +342,7 @@ QuoteLineTriggerHandler.updateQuoteDiscount(Trigger.OldMap,Trigger.New);
                 if(!varQLO.Is_Manual__c){
                     varQLO.Division__c = varQLO.Product__r.Division__c;
                     varQLO.Model__c = varQLO.Product__r.Model__c;
-                    varQLO.UOM__c = varQLO.Product__r.UOM__c;
+                    // varQLO.UOM__c = varQLO.Product__r.UOM__c;
                     //varQLO.Product_Description__c = varQLO.Product__r.Description;
                 }
                 /*else{

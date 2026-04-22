@@ -113,17 +113,33 @@
     ════════════════════════════════════════════════════════════════════ -->
     <div id="header" style="width: 674.5px;">
         <div id="header-inner">
-            <!-- Released contract → full header image; Draft → watermark image -->
             <apex:outputPanel rendered="{!showSaveContract}">
-                <apex:image value="{!contractTemplate.Header_Image__c}"
-                            styleClass="header-banner"/>
+                <table style="width:100%; border-collapse:collapse;">
+                    <tr>
+                        <td style="vertical-align:middle; text-align:left;">
+                            <apex:outputPanel rendered="{!NOT(ISBLANK(Contract.PDF_Title__c))}">
+                                <apex:outputField value="{!Contract.PDF_Title__c}"/>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!ISBLANK(Contract.PDF_Title__c)}">
+                                <span style="font-size:16pt; font-weight:600; color:#1a1a1a; letter-spacing:0.5px;">
+                                    SALES CONTRACT
+                                </span>
+                            </apex:outputPanel>
+                        </td>
+                        <td style="vertical-align:middle; text-align:right;">
+                            <apex:image value="{!contractTemplate.Header_Image__c}"
+                                        style="width:160px; height:auto;"/>
+                        </td>
+                    </tr>
+                </table>
+                <div style="border-top:1px solid #5f5f5f; margin-top:8px; margin-bottom:8px;"></div>
             </apex:outputPanel>
+
             <apex:outputPanel rendered="{!NOT(showSaveContract)}">
                 <apex:image value="{!contractTemplate.Draft_Image__c}"
                             style="width:200px;height:90px;position:relative;"/>
             </apex:outputPanel>
         </div>
-        <br/>
         <div style="font-size:15px; line-height:1;">
             <span style="color:#000000;">No:</span>
             <span style="color:#656565;">&nbsp;&nbsp;&nbsp;{!ContractNumber}</span><br/>

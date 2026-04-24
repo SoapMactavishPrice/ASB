@@ -279,9 +279,9 @@
                             <th scope="col">
                                 <div class="slds-truncate" title="QUANTITY">QUANTITY</div>
                             </th> 
-                            <th scope="col">
+                            <!-- <th scope="col">
                                 <div class="slds-truncate">IS TAXABLE</div>
-                            </th>
+                            </th> -->
                             <!-- <th scope="col">
                                 <div class="slds-truncate" title="SCOPE OF MOLD">SCOPE OF MOLD</div>
                             </th>
@@ -331,10 +331,10 @@
                                 <td>
                                     <lightning:input name="{!index}"  maxlength="10" label="" value="{!acc.Quantity__c}"  />
                                 </td> 
-                                <td>
+                                <!-- <td>
                                     <ui:inputCheckbox name="{!index}" change="{!c.checkboxSelectOnTaxable}" disabled="{!v.IsTaxableDisable}"/>
 
-                                </td> 
+                                </td>  -->
                                 <!-- <td>
                                     <lightning:input  name="{!index}" type="phone" maxlength="10" label="" value="{!acc.Scope_of_mould__c}"/>
                                 </td>

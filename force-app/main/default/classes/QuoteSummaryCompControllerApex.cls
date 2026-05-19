@@ -2,7 +2,11 @@ public class QuoteSummaryCompControllerApex {
     
     @AuraEnabled 
     public static Quote getQuoteDetail(String QuotationID){
-        Quote qt = [Select Id, Is_DTA_Quote__c, Sales_Margin__c, Status from Quote where Id =: QuotationID limit 1];
+        Quote qt = [Select Id, Is_DTA_Quote__c, Sales_Margin__c, Status, 
+                    Grand_Total_Quantity__c, Quote_Total_Base_Price__c, 
+                    Quote_Total_List_Price__c, Quote_Total_Discount_Value__c, 
+                    Quote_Totoal__c, CurrencyIsoCode 
+                    from Quote where Id =: QuotationID limit 1];
         return qt;
     }
     
@@ -44,13 +48,13 @@ public class QuoteSummaryCompControllerApex {
 
         String query = '';
         query += 'Select id, name, Advance_Percentage__c, CurrencyIsoCode, Sr_No__c, Application__c, Average_Discount_Value__c, Average_Sales_Price__c, Approval_Status__c, Cavity__c, Ceiling_Total_Sales_Price__c, Class_2__c, Class__c, Discount__c,' +
-                 'Discount_Allowed__c, Discount_Allowed_New__c, Discount_Approval_Note__c, Discount_Earlier__c, Division__c, Drawing_No__c, Expected_Customer_PO__c, Expected_Delivery__c,' +
-                 'Expected_Delivery_date__c, Expected_Drawing_Final__c, Base_Price__c, BP_Ratio_Line_Item__c, Is_Discount_Changes_Allow__c, Is_Manual__c,' +
-                 'Level_Of_Ceiling__c, Line_Item_Id__c, List_Price__c, Mach_Mold_No__c, MFG_AT__c, MFG__c, Model__c, Overall_Discount__c, Payment_Terms__c, Product__c,' +
-                 'Product_Code__c, Product_Name__c, Product_Type__c, Quantity__c, Quote__c, Quote_No__c, Sales_Price__c, Sales_price_Options__c, Product_Description__c,' +
-                 'Scope_of_mould__c, Total_Base_Price__c, Discount_in_Value_Percent__c, Total_Base_Price_Options__c, Total_List_Price__c, Total_List_Price_options__c, Total_Sales_Price__c,' +
-                 'UOM__c, User_Level__c, Zero_Cooling_2__c, Zero_Cooling__c, Sales_Margin_including_Options__c, Discount_Value__c, Manual_Product_Code__c, Discount_in_Value__c, Sales_Margin__c,' +
-                 'Total_Global_Price_Item__c, Total_List_Price2__c,' +
+         'Discount_Allowed__c, Discount_Allowed_New__c, Discount_Approval_Note__c, Discount_Earlier__c, Division__c, Drawing_No__c, Expected_Customer_PO__c, Expected_Delivery__c,' +
+         'Expected_Delivery_date__c, Expected_Drawing_Final__c, Base_Price__c, BP_Ratio_Line_Item__c, Is_Discount_Changes_Allow__c, Is_Manual__c,' +
+         'Level_Of_Ceiling__c, Line_Item_Id__c, List_Price__c, Mach_Mold_No__c, MFG_AT__c, MFG__c, Model__c, Overall_Discount__c, Payment_Terms__c, Product__c,' +
+         'Product_Code__c, Product_Name__c, Product_Type__c, Quantity__c, Quote__c, Quote_No__c, Sales_Price__c, Sales_price_Options__c, Product_Description__c,' +
+         'Scope_of_mould__c, Total_Base_Price__c, Discount_in_Value_Percent__c, Total_Base_Price_Options__c, Total_List_Price__c, Total_List_Price_options__c, Total_Sales_Price__c,' +
+         'UOM__c, User_Level__c, Zero_Cooling_2__c, Zero_Cooling__c, Sales_Margin_including_Options__c, Discount_Value__c, Manual_Product_Code__c, Discount_in_Value__c, Sales_Margin__c,' +
+         'Total_Global_Price_Item__c, Total_List_Price2__c, Total_Base_Price_including_Options__c, Total_Discount_Value_including_options__c, Total_Sales_Price_including_Options__c,' +
                  '(' +
                      'Select id, name, Discount__c, Discount_Allowed__c, Discount_in_Value_Percent__c, CurrencyIsoCode, Discount_Allowed_New__c, Serial_Number__c,' +
                      'Average_Discount_Value__c, Average_Sales_Price__c, Discount_Description__c, Sales_Margin__c, Discount_Earlier__c, Discount_in_Value__c,' +

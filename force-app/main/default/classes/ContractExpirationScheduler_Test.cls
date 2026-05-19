@@ -3,77 +3,64 @@ private class ContractExpirationScheduler_Test {
 
     @TestSetup
     static void setupData() {
-        // Create only essential records needed for the triggers
-        
-        // Create Fiscal Year
+        // Create Fiscal Year first
         Fiscal_Year_Master__c fy = new Fiscal_Year_Master__c(
             Name = 'FY',
             Active__c = true,
-            Fiscal_Year_Start_Date__c = Date.today().addDays(-10),
-            Fiscal_Year_End_Date__c = Date.today().addDays(10)
+            Fiscal_Year_Start_Date__c = Date.newInstance(2025, 1, 1),
+            Fiscal_Year_End_Date__c = Date.newInstance(2025, 12, 31)
         );
         insert fy;
 
+        // Create Subsidiary Master
         Subsidiari_Master__c sub = new Subsidiari_Master__c(
-            Name = 'ABC',
-            Permitted_Currency__c = 'USD',
+            Name = 'TST',
+            Permitted_Currency__c = 'USD;EUR',
             Permitted_Language__c = 'EN',
-            Office__c = 'Mumbai',
+            Office__c = 'Test Office',
             Discount_Level_1__c = 5,
             Discount_Level_2__c = 10,
             Discount_Level_3__c = 15
         );
         insert sub;
 
-        Global_Region__c greg = new Global_Region__c(Name='Asia');
+        // Create Global Region
+        Global_Region__c greg = new Global_Region__c(Name = 'Asia');
         insert greg;
 
+        // Create Global SubRegion
         Global_SubRegion__c reg = new Global_SubRegion__c(
-            Name='Southern Asia',
-            Region__c=greg.Id
+            Name = 'Southern Asia',
+            Region__c = greg.Id
         );
         insert reg;
 
+        // Create Country List (Country_List__c, not Country__c)
         Country_List__c country = new Country_List__c(
-            Name='India',
-            Sub_Region__c=reg.Id,
-            Region_Master__c=greg.Id
+            Name = 'India',
+            Sub_Region__c = reg.Id,
+            Region_Master__c = greg.Id
         );
         insert country;
 
-        State_List__c state = new State_List__c(
-            Name='Maharashtra',
-            Country__c=country.Id
+        // Create User_Setup__c for the running user (Required by Trg_Account trigger)
+        User_Setup__c userSetup = new User_Setup__c(
+            User__c = UserInfo.getUserId(),
+            Subsidiari__c = sub.Id,
+            Country__c = country.Id,
+            Signature_Image__c = 'test'
         );
-        insert state;
+        insert userSetup;
 
-        City_List__c city = new City_List__c(
-            Name='Mumbai',
-            State__c=state.Id
-        );
-        insert city;
-
-        PIN_Code_Master__c pin = new PIN_Code_Master__c(
-            Name='400001',
-            City__c=city.Id
-        );
-        insert pin;
-
-        User_Setup__c us = new User_Setup__c(
-            User__c=UserInfo.getUserId(),
-            Subsidiari__c=sub.Id,
-            Country__c=country.Id,
-            Signature_Image__c='test'
-        );
-        insert us;
-
-
-        // Create Account with minimal fields
+        // Create Account
         Account acc = new Account(
             Name = 'Test Account',
             CurrencyIsoCode = 'USD',
             Subsidiary__c = sub.Id,
-            ADDRESS_LINE_1__c = 'Test'
+            Is_Converted__c = true,
+            ADDRESS_LINE_1__c = 'Test Address',
+            BillingCountry = 'United States',
+            Billing_Country__c = country.Id
         );
         insert acc;
 
@@ -95,7 +82,7 @@ private class ContractExpirationScheduler_Test {
         );
         insert opp;
 
-        // Create Quote with minimal fields
+        // Create Quote
         Quote qt = new Quote(
             Name = 'Test Quote',
             OpportunityId = opp.Id,
@@ -105,64 +92,72 @@ private class ContractExpirationScheduler_Test {
         );
         insert qt;
 
-        // Create ONE Contract that expires in 3 days
-        Contract c1 = new Contract(
+        // Create Contract with valid status
+        Contract contract = new Contract(
             Name = 'Contract Expiring',
             AccountId = acc.Id,
             Opportunity__c = opp.Id,
             Quote__c = qt.Id,
-            Status = 'Released',  // Use 'Released' as required by scheduler
+            Status = 'Activated',
             Expiration_Date__c = Date.today().addDays(3),
             CurrencyIsoCode = 'USD',
             Subsidiary__c = sub.Id,
-            StartDate = Date.today(),
-            ContractTerm = 12
+            SUBSIDARY__c = sub.Id,
+            StartDate = Date.today().addDays(-30),
+            ContractTerm = 12,
+            OwnerId = UserInfo.getUserId(),
+            Revision_Number__c = '001',
+            Contact__c = con.Id,
+            DATE__c = Date.today(),
+            SOLD_TO__c = acc.Id,
+            SHIP_TO__c = acc.Id,
+            INCO_TERMS__c = 'FOB',
+            MFG_AT__c = 'Test MFG',
+            TYPE__c = 'Test Type',
+            END_CUSTOMER_NAME__c = 'Test End Customer',
+            ADVANCE_PAYMENT__c = '10',
+            PO_Number__c = 'PO123',
+            PO_Date__c = Date.today(),
+            Signed_SC_PO_receipt_date__c = Date.today(),
+            PO_No_from_customer__c = 'CustPO123'
         );
-        insert c1;
-
-        // Create ONE Contract that should NOT be processed (different status)
-        Contract c2 = new Contract(
-            Name = 'Contract Draft',
-            AccountId = acc.Id,
-            Opportunity__c = opp.Id,
-            Quote__c = qt.Id,
-            Status = 'Draft',
-            Expiration_Date__c = Date.today().addDays(3),
-            CurrencyIsoCode = 'USD',
-            Subsidiary__c = sub.Id,
-            StartDate = Date.today(),
-            ContractTerm = 12
-        );
-        insert c2;
+        insert contract;
     }
 
     @IsTest
     static void testSchedulerExecution() {
         Test.startTest();
 
-        System.schedule(
+        String jobId = System.schedule(
             'Test Contract Expiration Scheduler',
             '0 0 12 * * ?',
             new ContractExpirationScheduler()
         );
 
         Test.stopTest();
+        
+        System.assertNotEquals(null, jobId);
     }
 
     @IsTest
     static void testExecuteDirectly() {
         Test.startTest();
 
-        new ContractExpirationScheduler().execute(null);
+        ContractExpirationScheduler scheduler = new ContractExpirationScheduler();
+        scheduler.execute(null);
 
         Test.stopTest();
+        
+        List<Task> tasks = [SELECT Id, Subject, WhatId, Status, Priority FROM Task];
+        System.assertEquals(1, tasks.size());
+        System.assertEquals('High', tasks[0].Priority);
+        System.assertEquals('Open', tasks[0].Status);
     }
 
     @IsTest
     static void testExecuteDirectlyWithNoMatchingContracts() {
-        // Update the only matching contract to not match
         Contract c = [SELECT Id FROM Contract WHERE Name = 'Contract Expiring' LIMIT 1];
-        c.Expiration_Date__c = Date.today().addDays(5);
+        c.Status = 'Draft';
         update c;
 
         Test.startTest();
@@ -170,5 +165,24 @@ private class ContractExpirationScheduler_Test {
         new ContractExpirationScheduler().execute(null);
 
         Test.stopTest();
+        
+        List<Task> tasks = [SELECT Id FROM Task];
+        System.assertEquals(0, tasks.size());
+    }
+    
+    @IsTest
+    static void testExecuteDirectlyWithNoExpiringContracts() {
+        Contract c = [SELECT Id FROM Contract WHERE Name = 'Contract Expiring' LIMIT 1];
+        c.Expiration_Date__c = Date.today().addDays(20);
+        update c;
+
+        Test.startTest();
+
+        new ContractExpirationScheduler().execute(null);
+
+        Test.stopTest();
+        
+        List<Task> tasks = [SELECT Id FROM Task];
+        System.assertEquals(0, tasks.size());
     }
 }

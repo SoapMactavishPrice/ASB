@@ -1,6 +1,6 @@
 trigger SetApproverUserForDTA on Quote (before insert, before update) {
     
-    
+  /*  
  //   User kkAgrawalUser = [SELECT Id, Name FROM User WHERE Username = :Label.L1_User_UserName LIMIT 1];
     
    
@@ -23,5 +23,5 @@ trigger SetApproverUserForDTA on Quote (before insert, before update) {
         }
     }
 
-
+*/
 }

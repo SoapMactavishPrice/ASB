@@ -258,6 +258,7 @@ trigger Trg_ContractNew on Contract (before insert,before Update, after insert, 
                 Quote q = new Quote();
                 q.Id = qu.Id;
                 if(!test.isRunningTest()){
+                q.Skip_Status_Validation__c = True ;    
                 q.Status = 'CLOSE - LOST';
                 q.CLOSE_LOST_REASON__c ='OTHER';
                 }

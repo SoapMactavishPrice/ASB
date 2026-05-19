@@ -423,8 +423,8 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                 totalDiscountInValueFormatted: roundToTwoDecimalsAndFormatInteger(subtotalDiscountInValue),
                 salesPrice: '',
                 salesPriceFormatted: '',
-                totalSalesPrice: roundToWholeNumber(subtotalSalesPrice),
-                totalSalesPriceFormatted: roundToWholeNumberAndFormatInteger(subtotalSalesPrice),
+                totalSalesPrice: roundToTwoDecimals(subtotalSalesPrice),
+                totalSalesPriceFormatted: roundToTwoDecimalsAndFormatInteger(subtotalSalesPrice),
                 salesMargin: subtotalSalesMargin,
                 m1: '',
                 m2: '',
@@ -732,8 +732,8 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
         row.salesPriceFormatted = roundToTwoDecimalsAndFormatInteger(salesPrice);
         
         const totalSalesPrice = salesPrice * totalQuantity;
-        row.totalSalesPrice = roundToWholeNumber(totalSalesPrice);
-        row.totalSalesPriceFormatted = roundToWholeNumberAndFormatInteger(totalSalesPrice);
+        row.totalSalesPrice = roundToTwoDecimals(totalSalesPrice);
+        row.totalSalesPriceFormatted = roundToTwoDecimalsAndFormatInteger(totalSalesPrice);
         const roundedTotalSalesPrice = parseFormattedNumber(row.totalSalesPrice) || 0;
         
         if (roundedTotalSalesPrice === 0) {
@@ -838,9 +838,9 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
                 row.totalDiscountInValueFormatted = roundToTwoDecimalsAndFormatInteger(distributedDiscountInValue);
                 row.subtotalDiscountText = this.computeSubtotalDiscountText(distributedDiscountInValue, totalListPrice);
 
-                const roundedSubtotalSalesPrice = roundUpToWholeNumber(distributedTotalSalesPrice) || 0;
-                row.totalSalesPrice = roundedSubtotalSalesPrice.toFixed(0);
-                row.totalSalesPriceFormatted = roundToWholeNumberAndFormatInteger(distributedTotalSalesPrice);
+                const roundedSubtotalSalesPrice = parseFloat(roundToTwoDecimals(distributedTotalSalesPrice)) || 0;
+                row.totalSalesPrice = roundToTwoDecimals(distributedTotalSalesPrice);
+                row.totalSalesPriceFormatted = roundToTwoDecimalsAndFormatInteger(distributedTotalSalesPrice);
 
                 if (roundedSubtotalSalesPrice === 0) {
                     row.salesMargin = '-';
@@ -898,8 +898,8 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
         // ── Calculate totalSalesPrice and salesMargin for subtotal row ─────────────
         const totalTransferPrice = parseFormattedNumber(row.totalTransferPrice) || 0;
         const totalSalesPrice = totalListPrice - row.totalDiscountInValue;
-        row.totalSalesPrice = roundToWholeNumber(totalSalesPrice);
-        row.totalSalesPriceFormatted = roundToWholeNumberAndFormatInteger(totalSalesPrice);
+        row.totalSalesPrice = roundToTwoDecimals(totalSalesPrice);
+        row.totalSalesPriceFormatted = roundToTwoDecimalsAndFormatInteger(totalSalesPrice);
         const roundedSubtotalSalesPrice = parseFormattedNumber(row.totalSalesPrice) || 0;
         
         if (roundedSubtotalSalesPrice === 0) {
@@ -946,8 +946,8 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             
             const subtotalRow = this.tableData[subtotalIndex];
             
-            subtotalRow.totalSalesPrice = roundToWholeNumber(totalSalesPrice);
-            subtotalRow.totalSalesPriceFormatted = roundToWholeNumberAndFormatInteger(totalSalesPrice);
+            subtotalRow.totalSalesPrice = roundToTwoDecimals(totalSalesPrice);
+            subtotalRow.totalSalesPriceFormatted = roundToTwoDecimalsAndFormatInteger(totalSalesPrice);
             const roundedSubtotalSalesPrice = parseFormattedNumber(subtotalRow.totalSalesPrice) || 0;
             
             if (roundedSubtotalSalesPrice === 0) {

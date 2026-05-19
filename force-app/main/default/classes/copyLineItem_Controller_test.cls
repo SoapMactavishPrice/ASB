@@ -43,6 +43,7 @@ public static testMethod void unitTest1(){
         sub.Contract_Approval__c = 'Line Item level';
         sub.D1__c = 10;
         sub.M1__c = 10;
+    	sub.CurrencyIsoCode='INR';
         insert sub;
         
         Fiscal_Year_Master__c f = new Fiscal_Year_Master__c();
@@ -104,7 +105,7 @@ public static testMethod void unitTest1(){
         //pin.City__c = o.Id;
         insert pin; */
 
-        account acc=new account(name='test', CurrencyIsoCode='INR', ERP_ID__c='Test ERP');
+        account acc=new account(name='test', CurrencyIsoCode='INR', ERP_ID__c='Test ERP',Subsidiary__c = sub.Id,ADDRESS_LINE_1__c = 'Test1');
         insert acc;
         
         acc.Name = 'new update';
@@ -263,6 +264,7 @@ public static testMethod void unitTest1(){
         sub.Contract_Approval__c = 'Line Item level';
         sub.D1__c = 10;
         sub.M1__c = 10;
+        sub.CurrencyIsoCode='INR';
         insert sub;
         
         Fiscal_Year_Master__c f = new Fiscal_Year_Master__c();
@@ -324,7 +326,7 @@ public static testMethod void unitTest1(){
         //pin.City__c = o.Id;
         insert pin; */
 
-        account acc=new account(name='test', CurrencyIsoCode='INR', ERP_ID__c='Test ERP');
+        account acc=new account(name='test', CurrencyIsoCode='INR', ERP_ID__c='Test ERP',Subsidiary__c = sub.Id,ADDRESS_LINE_1__c = 'Test');
         insert acc;
         
         acc.Name = 'new update';

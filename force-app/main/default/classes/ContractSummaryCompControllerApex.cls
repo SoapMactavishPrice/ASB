@@ -16,9 +16,9 @@ public class ContractSummaryCompControllerApex {
         String query =
             'SELECT Id, Name, CurrencyIsoCode, Sr_No__c, Product2Id__r.Name, Product_Number__c, ' +
             'Base_Price_Line_Item__c, List_Price__c, Discount_in_Value_Percent__c, Discount_Value__c, ' +
-            'Average_Sales_Price__c, Quantity__c, Total_Sales_Price2__c, Sales_Margin_Percent__c, ' +
+            'Average_Sales_Price__c, Quantity__c, Total_Sales_Price2__c, Sales_Margin_Percent__c, Product_Name_2__c,' +
             'Sales_Margin_including_Options__c, Total_Global_Price_Item__c, Total_List_Price3__c, ' +
-            '(SELECT Id, Name, Product__r.Name, CurrencyIsoCode, Serial_Number__c, Product_Code__c, Quantity__c, ' +
+            '(SELECT Id, Name, Product__r.Name, CurrencyIsoCode, Serial_Number__c, Product_Code__c, Quantity__c, Manual_Product_Name_c__c,' +
             'Total_Quantity__c, Manual_Option_Base_Price__c, Manual_Option_List_Price__c, Total_Transfer_Price__c, ' +
             'Total_List_Price__c, Discount_in_Value_Percent__c, Discount_Amount__c, Unit_Sales_Price__c, ' +
             'Total_Sales_Price__c, Sales_Margin_New__c ' +

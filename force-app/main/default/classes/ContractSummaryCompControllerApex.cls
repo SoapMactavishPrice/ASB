@@ -3,7 +3,10 @@ public class ContractSummaryCompControllerApex {
     @AuraEnabled
     public static Contract getContractDetail(String ContractID) {
         return [
-            SELECT Id, Is_DTA_Contract__c, Sales_Margin_Percent__c
+            SELECT Id, Is_DTA_Contract__c, CurrencyIsoCode, Grand_Total_Item_Quantity__c,
+                   Total_Base_Price__c, Contract_Total_List_Price__c,
+                   Contract_Total_Discount_Value__c, Contract_Total_Sales_price__c,
+                   Sales_Margin_Percent__c
             FROM Contract
             WHERE Id = :ContractID
             LIMIT 1
@@ -18,6 +21,8 @@ public class ContractSummaryCompControllerApex {
             'Base_Price_Line_Item__c, List_Price__c, Discount_in_Value_Percent__c, Discount_Value__c, ' +
             'Average_Sales_Price__c, Quantity__c, Total_Sales_Price2__c, Sales_Margin_Percent__c, Product_Name_2__c,' +
             'Sales_Margin_including_Options__c, Total_Global_Price_Item__c, Total_List_Price3__c, ' +
+            'Total_Base_Price_including_Options__c, Total_List_Price__c, ' +
+            'Total_Discount_Value_Including_Options__c, Total_Sales_Price_including_Options__c, ' +
             '(SELECT Id, Name, Product__r.Name, CurrencyIsoCode, Serial_Number__c, Product_Code__c, Quantity__c, Manual_Product_Name_c__c,' +
             'Total_Quantity__c, Manual_Option_Base_Price__c, Manual_Option_List_Price__c, Total_Transfer_Price__c, ' +
             'Total_List_Price__c, Discount_in_Value_Percent__c, Discount_Amount__c, Unit_Sales_Price__c, ' +
@@ -33,7 +38,9 @@ public class ContractSummaryCompControllerApex {
     @AuraEnabled
     public static void exportCSV(String cId) {
         Contract ct = [
-            SELECT Id, Is_DTA_Contract__c, Sales_Margin_Percent__c
+            SELECT Id, Is_DTA_Contract__c, Grand_Total_Item_Quantity__c, Total_Base_Price__c,
+                   Contract_Total_List_Price__c, Contract_Total_Discount_Value__c,
+                   Contract_Total_Sales_price__c, Sales_Margin_Percent__c
             FROM Contract
             WHERE Id = :cId
             LIMIT 1
@@ -44,6 +51,8 @@ public class ContractSummaryCompControllerApex {
                    Base_Price_Line_Item__c, List_Price__c, Discount_in_Value_Percent__c, Discount_Value__c,
                    Average_Sales_Price__c, Quantity__c, Total_Sales_Price2__c, Sales_Margin_Percent__c,
                    Sales_Margin_including_Options__c, Total_Global_Price_Item__c, Total_List_Price3__c,
+                   Total_Base_Price_including_Options__c, Total_List_Price__c,
+                   Total_Discount_Value_Including_Options__c, Total_Sales_Price_including_Options__c,
                    ContractId__r.Contract_Number__c, ContractId__r.QU_Revise_Number__c,
                    (
                        SELECT Id, Name, Product__r.Name, CurrencyIsoCode, Serial_Number__c, Product_Code__c,
@@ -60,11 +69,11 @@ public class ContractSummaryCompControllerApex {
             ORDER BY Sr_No__c
         ];
 
-        Decimal totalQuantity = 0;
-        Decimal totalTP = 0;
-        Decimal totalListPrice2 = 0;
-        Decimal totalDiscountValue = 0;
-        Decimal totalSalesPrice = 0;
+        Decimal totalQuantity = ct.Grand_Total_Item_Quantity__c != null ? ct.Grand_Total_Item_Quantity__c : 0;
+        Decimal totalTP = ct.Total_Base_Price__c != null ? ct.Total_Base_Price__c : 0;
+        Decimal totalListPrice2 = ct.Contract_Total_List_Price__c != null ? ct.Contract_Total_List_Price__c : 0;
+        Decimal totalDiscountValue = ct.Contract_Total_Discount_Value__c != null ? ct.Contract_Total_Discount_Value__c : 0;
+        Decimal totalSalesPrice = ct.Contract_Total_Sales_price__c != null ? ct.Contract_Total_Sales_price__c : 0;
         Decimal salesMargin = ct.Sales_Margin_Percent__c != null ? ct.Sales_Margin_Percent__c : 0;
 
         String contractName = '';
@@ -89,10 +98,11 @@ public class ContractSummaryCompControllerApex {
 
         for (Contract_Line_Item__c cli : lstData) {
             Decimal subTotalQuantity = cli.Quantity__c != null ? cli.Quantity__c : 0;
-            Decimal subTotalTP = cli.Total_Global_Price_Item__c != null ? cli.Total_Global_Price_Item__c : 0;
-            Decimal subTotalListPrice2 = cli.Total_List_Price3__c != null ? cli.Total_List_Price3__c : 0;
-            Decimal subTotalDiscount = cli.Discount_Value__c != null ? cli.Discount_Value__c : 0;
-            Decimal subTotalSalesPrice = cli.Total_Sales_Price2__c != null ? cli.Total_Sales_Price2__c : 0;
+            Decimal subTotalTP = cli.Total_Base_Price_including_Options__c != null ? cli.Total_Base_Price_including_Options__c : 0;
+            Decimal subTotalListPrice2 = cli.Total_List_Price__c != null ? cli.Total_List_Price__c : 0;
+            Decimal subTotalDiscount = cli.Total_Discount_Value_Including_Options__c != null ? cli.Total_Discount_Value_Including_Options__c : 0;
+            Decimal subTotalSalesPrice = cli.Total_Sales_Price_including_Options__c != null ? cli.Total_Sales_Price_including_Options__c : 0;
+            Decimal subMargin = cli.Sales_Margin_including_Options__c != null ? cli.Sales_Margin_including_Options__c : 0;
 
             contractName = cli.ContractId__r != null && cli.ContractId__r.Contract_Number__c != null
                 ? cli.ContractId__r.Contract_Number__c
@@ -122,11 +132,6 @@ public class ContractSummaryCompControllerApex {
             tempExcelData.add('\n');
 
             for (Contract_Line_Option__c clo : cli.Contract_Line_Option__r) {
-                subTotalTP += clo.Total_Transfer_Price__c != null ? clo.Total_Transfer_Price__c : 0;
-                subTotalListPrice2 += clo.Total_List_Price__c != null ? clo.Total_List_Price__c : 0;
-                subTotalDiscount += clo.Discount_Amount__c != null ? clo.Discount_Amount__c : 0;
-                subTotalSalesPrice += clo.Total_Sales_Price__c != null ? clo.Total_Sales_Price__c : 0;
-
                 tempExcelData.add(' ,');
                 tempExcelData.add((clo.Serial_Number__c != null ? String.valueOf(clo.Serial_Number__c) : ' ') + ',');
                 tempExcelData.add((clo.Product__r != null && clo.Product__r.Name != null ? clo.Product__r.Name : ' ') + ',');
@@ -146,11 +151,6 @@ public class ContractSummaryCompControllerApex {
             }
 
             if (cli.Contract_Line_Option__r.size() > 0) {
-                Decimal subMargin = 0;
-                if (subTotalSalesPrice != 0) {
-                    subMargin = ((subTotalSalesPrice - subTotalTP) / subTotalSalesPrice) * 100;
-                }
-
                 tempExcelData.add(' ,');
                 tempExcelData.add(' ,');
                 tempExcelData.add('Sub Total,');
@@ -168,12 +168,6 @@ public class ContractSummaryCompControllerApex {
                 tempExcelData.add(subMargin.setScale(2) + '%,');
                 tempExcelData.add('\n');
             }
-
-            totalQuantity += subTotalQuantity;
-            totalTP += subTotalTP;
-            totalListPrice2 += subTotalListPrice2;
-            totalDiscountValue += subTotalDiscount;
-            totalSalesPrice += subTotalSalesPrice;
         }
 
         tempExcelData.add(' ,');

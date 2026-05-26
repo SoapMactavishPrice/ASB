@@ -10,8 +10,13 @@
             var Wrapperdata = response.getReturnValue();
             console.log('Wrapperdata', JSON.stringify(Wrapperdata));
 
-            let salesMargin = parseFloat(Wrapperdata.Sales_Margin_Percent__c).toFixed(2) || 0;
-            component.set("v.salesMargin", salesMargin);
+            component.set("v.totalQuantity", Wrapperdata.Grand_Total_Item_Quantity__c || 0);
+            component.set("v.totalTP", Wrapperdata.Total_Base_Price__c || 0);
+            component.set("v.totalListPrice2", Wrapperdata.Contract_Total_List_Price__c || 0);
+            component.set("v.totalDiscountValue", Wrapperdata.Contract_Total_Discount_Value__c || 0);
+            component.set("v.totalSalesPrice", Wrapperdata.Contract_Total_Sales_price__c || 0);
+            component.set("v.salesMargin", Wrapperdata.Sales_Margin_Percent__c || 0);
+            component.set("v.CurrencyIsoCode", Wrapperdata.CurrencyIsoCode);
             component.set("v.isDTA", !!Wrapperdata.Is_DTA_Contract__c);
         });
         $A.enqueueAction(action);
@@ -35,84 +40,9 @@
                     component.set("v.LineItemPresent", true);
                     component.set("v.LineItemNotPresent", false);
 
-                    let tempCurrencyIsoCode = null;
-
-                    let totalQuantity = 0;
-                    let totalTP = 0;
-                    let totalListPrice2 = 0;
-                    let totalDiscountValue = 0;
-                    let totalSalesPrice = 0;
-                    let totalUnitTP = 0;
-                    let totalUnitListPrice = 0;
-                    let totalUnitSalesPrice = 0;
-
                     Wrapperdata.forEach(item => {
-                        tempCurrencyIsoCode = item.CurrencyIsoCode;
-
-                        let subTotalQuantity = item.Quantity__c || 0;
-                        let subTotalTP = item.Total_Global_Price_Item__c || 0;
-                        let subTotalListPrice2 = item.Total_List_Price3__c || 0;
-                        let subTotalDiscountValue = item.Discount_Value__c || 0;
-                        let subTotalSalesPrice = item.Total_Sales_Price2__c || 0;
-
-                        let subUnitTP = item.Base_Price_Line_Item__c || 0;
-                        let subUnitListPrice = item.List_Price__c || 0;
-                        let subUnitSalesPrice = item.Average_Sales_Price__c || 0;
-
-                        if (item.Contract_Line_Option__r && item.Contract_Line_Option__r.length > 0) {
-                            item.Contract_Line_Option__r.forEach(qlo => {
-                                subTotalTP += qlo.Total_Transfer_Price__c || 0;
-                                subTotalListPrice2 += qlo.Total_List_Price__c || 0;
-                                subTotalDiscountValue += qlo.Discount_Amount__c || 0;
-                                subTotalSalesPrice += qlo.Total_Sales_Price__c || 0;
-
-                                subUnitTP += qlo.Manual_Option_Base_Price__c || 0;
-                                subUnitListPrice += qlo.Manual_Option_List_Price__c || 0;
-                                subUnitSalesPrice += qlo.Unit_Sales_Price__c || 0;
-                            });
-                        }
-
-                        item.sub_TotalQuantity__c = parseFloat(subTotalQuantity);
-                        item.sub_totalTP__c = parseFloat(subTotalTP).toFixed(2);
-                        item.sub_totalListPrice2__c = parseFloat(subTotalListPrice2).toFixed(2);
-                        item.sub_totalDiscountValue__c = parseFloat(subTotalDiscountValue).toFixed(2);
-                        item.sub_totalSalesPrice = Math.round(parseFloat(subTotalSalesPrice)).toFixed(0);
-                        item.sub_unitTP = parseFloat(subUnitTP).toFixed(2);
-                        item.sub_unitListPrice = parseFloat(subUnitListPrice).toFixed(2);
-                        item.sub_unitSalesPrice = parseFloat(subUnitSalesPrice).toFixed(2);
                         item.isLineItem = !!(item.Contract_Line_Option__r && item.Contract_Line_Option__r.length > 0);
-
-                        let subMargin = 0;
-                        if (subTotalSalesPrice !== 0) {
-                            subMargin = ((subTotalSalesPrice - subTotalTP) / subTotalSalesPrice) * 100;
-                        }
-                        item.subMargin = subMargin.toFixed(2);
-
-                        totalQuantity += subTotalQuantity;
-                        totalTP += subTotalTP;
-                        totalListPrice2 += subTotalListPrice2;
-                        totalDiscountValue += subTotalDiscountValue;
-                        totalSalesPrice += subTotalSalesPrice;
-                        totalUnitTP += subUnitTP;
-                        totalUnitListPrice += subUnitListPrice;
-                        totalUnitSalesPrice += subUnitSalesPrice;
                     });
-
-                    component.set("v.totalQuantity", parseFloat(totalQuantity));
-                    component.set("v.totalTP", parseFloat(totalTP).toFixed(2));
-                    component.set("v.totalListPrice2", parseFloat(totalListPrice2).toFixed(2));
-                    component.set("v.totalDiscountValue", parseFloat(totalDiscountValue).toFixed(2));
-                    component.set("v.totalSalesPrice", parseFloat(totalSalesPrice).toFixed(2));
-                    component.set("v.CurrencyIsoCode", tempCurrencyIsoCode);
-                    component.set("v.totalUnitTP", totalUnitTP.toFixed(2));
-                    component.set("v.totalUnitListPrice", totalUnitListPrice.toFixed(2));
-                    component.set("v.totalUnitSalesPrice", totalUnitSalesPrice.toFixed(2));
-
-                    let grandMargin = 0;
-                    if (totalSalesPrice !== 0) {
-                        grandMargin = ((totalSalesPrice - totalTP) / totalSalesPrice) * 100;
-                    }
-                    component.set("v.salesMargin", grandMargin.toFixed(2));
 
                     component.set("v.QliItems", Wrapperdata);
                     this.sortData(component, 'Sr_No__c', 'asc');

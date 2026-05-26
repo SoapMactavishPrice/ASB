@@ -251,6 +251,7 @@ checkAllAreAcanclled(){
    return this.wrapList.every(item => item.p_CancelType =='Cancelled');
 }
     saveProjects() {
+        this.showSpinner = true;
         let validate = true;
         for (let ele of this.wrapList) {  
             if(ele.p_projNum != '' && ele.p_projNum !=null && ele.p_projNum !=undefined){
@@ -270,31 +271,29 @@ checkAllAreAcanclled(){
 
         console.log('OUTPUT : validate',validate,'cancel -->',this.isCancel);
         if(validate){
-        this.isCancel = this.checkAllAreAcanclled();
-        saveCanceledProject({ contractId: this.recordId, js: JSON.stringify(this.wrapList),isCancel :this.isCancel}).then(result => {
-            this.showSpinner = false;
-            for (let key in result) {
-                if (key == 'Id') {
-                    this.ShowToastMessage('Success', 'Quote Reopened Successfully !');
-                    this[NavigationMixin.Navigate]({
-                        type: 'standard__recordPage',
-                        attributes: {
-                            recordId: result[key],
-                            objectApiName: 'Quote',
-                            actionName: 'view',
+            this.isCancel = this.checkAllAreAcanclled();
+            saveCanceledProject({ contractId: this.recordId, js: JSON.stringify(this.wrapList),isCancel :this.isCancel}).then(result => {
+                for (let key in result) {
+                    if (key == 'Id') {
+                        this.ShowToastMessage('Success', 'Quote Reopened Successfully !');
+                        this[NavigationMixin.Navigate]({
+                            type: 'standard__recordPage',
+                            attributes: {
+                                recordId: result[key],
+                                objectApiName: 'Quote',
+                                actionName: 'view',
 
-                        }
-                    });
-                    this.closeAction();
-                } else {
-                    this.ShowToastMessage(key, result[key]);
+                            }
+                        });
+                    } else {
+                        this.ShowToastMessage(key, result[key]);
+                    }
                 }
-            }
-        }).catch((error)=>{
-            this.showSpinner = false;
-            console.error(JSON.parse(JSON.stringify(error)));
-            this.ShowToastMessage('error', error?.body?.message);
-        })
+            }).catch((error)=>{
+                this.showSpinner = false;
+                console.error(JSON.parse(JSON.stringify(error)));
+                this.ShowToastMessage('error', error?.body?.message);
+            })
         } else {
             this.showSpinner = false;
         }

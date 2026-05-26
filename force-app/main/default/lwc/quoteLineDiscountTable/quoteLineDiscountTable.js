@@ -706,6 +706,12 @@ export default class QuoteLineTable extends NavigationMixin(LightningElement) {
             }
         }
     }
+
+    preventDecimalInput(event) {
+        if (event.key === '.' || event.key === ',') {
+            event.preventDefault();
+        }
+    }
     
     calculateDiscounts(rowIndex) {
         const row = this.tableData[rowIndex];

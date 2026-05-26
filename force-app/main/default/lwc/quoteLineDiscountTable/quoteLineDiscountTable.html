@@ -166,6 +166,7 @@
                                             data-id={row.id}
                                             data-field="desiredPriceSubtotal"
                                             onchange={handleInputChange}
+                                            onkeydown={preventDecimalInput}
                                             variant="label-hidden"
                                             class="input-field"
                                             disabled={row.disableDesiredPriceSubtotal}

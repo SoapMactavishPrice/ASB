@@ -208,11 +208,11 @@
 
                 <!-- data table start-->
                 <div class="slds-scrollable">
-                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped" role="grid">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-table_striped" role="grid">
                         <thead>
                             <tr class="slds-text-title_caps">
                                 <!--header checkbox for select all-->
-                                <th style="width:3.25rem;" class="slds-text-align_right">
+                                <th style="width:3.25rem; background-color: #a2cbed;" class="slds-text-align_right">
                                     <div class="slds-form-element">
                                         <div class="slds-form-element__control">
                                             <label class="slds-checkbox">
@@ -224,22 +224,22 @@
                                         </div>
                                     </div>
                                 </th>
-                                <th scope="col">
+                                <th scope="col" style="background-color: #a2cbed;">
                                     <div class="slds-truncate" title="Name" style="width:160px">Name</div>
                                 </th>
-                                <th scope="col">
-                                    <div class="slds-truncate" title="Unit Transfer Price">Unit Transfer Price&nbsp;({!v.currencyCode})</div>
+                                <th scope="col" style="background-color: #a2cbed;">
+                                    <div style="text-align: right;" class="slds-truncate" title="Transfer Price">Transfer Price&nbsp;({!v.currencyCode})</div>
                                 </th>
-                                <th scope="col">
-                                    <div class="slds-truncate" title="Family">List Price&nbsp;({!v.currencyCode})</div>
+                                <th scope="col" style="background-color: #a2cbed;">
+                                    <div style="text-align: right;" class="slds-truncate" title="Family">List Price&nbsp;({!v.currencyCode})</div>
                                 </th>
-                                <th scope="col">
+                                <th scope="col" style="background-color: #a2cbed;">
                                     <div class="slds-truncate" title="PriceBookEntry">Option Number</div>
                                 </th>
                                 <!-- <th scope="col">
                                     <div class="slds-truncate" title="PriceBookEntry">Cavity</div>
                                 </th> -->
-                                <th scope="col">
+                                <th scope="col" style="background-color: #a2cbed;">
                                     <div class="slds-truncate" title="PriceBookEntry">OP. Qty</div>
                                 </th>
                             </tr>
@@ -247,7 +247,7 @@
                         <tbody>
                             <aura:iteration items="{!v.PaginationList}" var="obj" indexVar="index">
                                 <tr>
-                                    <th scope="row" class="slds-text-align_right" style="width:3.25rem;">
+                                    <th scope="row" class="slds-text-align_right" style="width:5%;">
                                         <div class="slds-form-element">
                                             <div class="slds-form-element__control">
                                                 <label class="slds-checkbox"
@@ -260,23 +260,23 @@
                                             </div>
                                         </div>
                                     </th>
-                                    <th scope="row">
+                                    <th scope="row" style="width:40%;">
                                         <div class="slds-truncate" title="{!obj.objLead.Product2.Name}" style="">
                                             {!obj.objLead.Product2.Name}
                                         </div>
                                     </th>
-                                    <th scope="row">
+                                    <th scope="row" style="width:13%; text-align: right;">
                                         <lightning:formattedNumber value="{!obj.unitTransferPrice}" style="currency"
                                             currencyCode="{!v.currencyCode}" minimumFractionDigits="2"
                                             maximumFractionDigits="2"></lightning:formattedNumber>
                                     </th>
-                                    <th scope="row">
+                                    <th scope="row" style="width:13%; text-align: right;">
                                         <lightning:formattedNumber value="{!obj.objLead.List_Price__c}" style="currency"
                                             currencyCode="{!v.currencyCode}" minimumFractionDigits="2"
                                             maximumFractionDigits="2"></lightning:formattedNumber>
                                     </th>
                                     
-                                    <th scope="row">
+                                    <th scope="row" style="width:14%;">
                                         <div class="slds-truncate" title="{!obj.objLead.Product2.Option_No__c}">
                                             {!obj.objLead.Product2.Option_No__c}
                                         </div>
@@ -287,9 +287,8 @@
                                             {!obj.objLead.Product2.Number_Of_Cavity_Mould__c}
                                         </div>
                                     </th> -->
-                                    <th scope="row">
-                                        <div class="slds-truncate" title="{!obj.objLead.Quantity__c}"
-                                            style="width:80px">
+                                    <th scope="row" style="width:15%;">
+                                        <div class="slds-truncate" title="{!obj.objLead.Quantity__c}">
                                             <lightning:input id="text-input-id-2 " name="{!index}"
                                                 value="{!obj.objLead.Quantity__c}" placeholder="Quantity" />
                                         </div>

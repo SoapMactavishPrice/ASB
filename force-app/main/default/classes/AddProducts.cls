@@ -458,12 +458,14 @@ objQLI.Product_Type__c = qli.Product_Type__c;
         @AuraEnabled public integer serial_no;
         @AuraEnabled public PriceBookEntry objprod;
         @AuraEnabled public Integer quantity;
+        @AuraEnabled public Decimal unitTransferPrice {get; set;}
         
         public ProdListWrapper(boolean isChecked, integer serial_no, PriceBookEntry objprod, Integer quantity){
             this.isChecked = isChecked;
             this.serial_no = serial_no;
             this.objprod = objprod;
             this.quantity = quantity;
+            this.unitTransferPrice = objprod.Base_Price__c != null ? objprod.Base_Price__c : 0;
         }
         
     }

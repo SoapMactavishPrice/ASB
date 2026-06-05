@@ -281,7 +281,7 @@
 
                                                     <!-- Product Name -->
                                                     <th style="width: 170px; text-overflow: ellipsis; overflow: hidden;">
-                                                        <lightning:formattedUrl value="{!'/' + QLO.Id}" tooltip="{!QLO.Manual_Product_Name_c__c}" label="{!QLO.Manual_Product_Name_c__c}" target="_blank" />
+                                                        <lightning:formattedUrl value="{!'/' + QLO.Id}" tooltip="{!QLO.Option_Name__c}" label="{!QLO.Option_Name__c}" target="_blank" />
                                                     </th>
 
                                                     <!-- Product Code -->

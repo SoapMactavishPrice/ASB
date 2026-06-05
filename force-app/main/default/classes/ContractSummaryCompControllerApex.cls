@@ -26,7 +26,7 @@ public class ContractSummaryCompControllerApex {
             '(SELECT Id, Name, Product__r.Name, CurrencyIsoCode, Serial_Number__c, Product_Code__c, Quantity__c, Manual_Product_Name_c__c,' +
             'Total_Quantity__c, Manual_Option_Base_Price__c, Manual_Option_List_Price__c, Total_Transfer_Price__c, ' +
             'Total_List_Price__c, Discount_in_Value_Percent__c, Discount_Amount__c, Unit_Sales_Price__c, ' +
-            'Total_Sales_Price__c, Sales_Margin_New__c ' +
+            'Total_Sales_Price__c, Option_Name__c, Sales_Margin_New__c ' +
             'FROM Contract_Line_Option__r ORDER BY Serial_Number__c) ' +
             'FROM Contract_Line_Item__c ' +
             'WHERE ContractId__c = \'' + ContractID + '\' AND Quantity__c > :quantity ' +

@@ -1,4 +1,4 @@
-<apex:page standardController="Quote" extensions="SaveQuoteAsPdf" action="{!CreateQuote}" showHeader="false" sidebar="false" renderAs="pdf" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" docType="xhtml-1.0">
+<apex:page standardController="Quote" extensions="SaveQuoteAsPdf" showHeader="false" sidebar="false" renderAs="pdf" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" docType="xhtml-1.0">
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
     <style type="text/css">

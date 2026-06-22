@@ -54,7 +54,7 @@ public class SaveQuoteAsPdf {
     
     
     public SaveQuoteAsPdf(ApexPages.StandardController standardPageController) {
-        showSaveQuote= false;
+        showSaveQuote = false;
         getWithoutTaxGrandValue = 0;
         isTaxCounter = 0;
         isModalOpen = false;
@@ -62,47 +62,354 @@ public class SaveQuoteAsPdf {
         addDocs = new List<AdditionalDocWrapper>();
         prodLineList = new List<parentProductWrapper>();
         noteslist = new List<NotesAndAttcahmentDocWrapper>();
-        recordID =  ApexPages.CurrentPage().getparameters().get('Id');
-        if(recordID==null){
-            recordId='0Q0e1000000teKzCAI';
+        recordID = ApexPages.CurrentPage().getparameters().get('Id');
+        if(recordID == null){
+            recordId = '0Q0e1000000teKzCAI';
         }
 
-        System.debug('RecordId'+RecordId);
+        allAttachmentParentContains = [SELECT id, Name, Body, BodyLength, parentId, contentType
+                                    FROM Attachment WHERE parentId =: recordID 
+                                    ORDER BY CreatedDate DESC LIMIT 1];
 
-        // this.updateQuoteOptions();
-        
-        address = '';
-        allAttachmentParentContains=[select id,Name,Body,BodyLength,parentId,contentType
-                                     from attachment where parentId=:recordID order by CreatedDate DESC limit 1];       
-        system.debug('My Fetched Attachment'+allAttachmentParentContains);
-        qobj = [SELECT Id, Status,Is_DTA_Quote__c, Is_GMBH_Quote__c, Contact_Email__c, Freight__c,Advance_Percentage__c,Quote_No__c,Insurance__c, OwnerId, Subsidiary__r.Name FROM quote WHERE id =: recordID ];
-        QuoteNumber = qobj.Quote_No__c.substringAfter('>');
+        // Single dynamic query replacing both qobj and ObjQuote
+        Map<String, Schema.SObjectField> fieldMap = Quote.sObjectType.getDescribe().fields.getMap();
+        list<String> lstFieldNames = new List<String>(fieldMap.keySet());
+        ObjQuote = Database.query('SELECT ' + String.join(lstFieldNames, ',') + 
+                                ',CreatedBy.Name, CreatedBy.Email, CreatedBy.title,' +
+                                'Owner.Name, Owner.Email, Owner.title,' +
+                                'QUOTATION_ADDRESSED_TO__r.Name from Quote Where id=:RecordId limit 1');
+
+        // Set emailId from ObjQuote
+        emailId = ObjQuote.Contact_Email__c;
+
+        // Set QuoteNumber
+        QuoteNumber = ObjQuote.Quote_No__c.substringAfter('>');
         QuoteNumber = QuoteNumber.substringBefore('<');
-        emailId = qobj.Contact_Email__c;
-        //system.debug('object' +qobj);
-        if(qobj.Status == 'RELEASED' || qobj.Status == 'CLOSE - REVISED'|| 
-           qobj.Status == 'CLOSE - SC CREATED' || qobj.Status == 'DISCARD/VOID'|| qobj.Status == 'CLOSE - LOST' ){
-            showSaveQuote=true;
+
+        // Set showSaveQuote
+        if(ObjQuote.Status == 'RELEASED' || ObjQuote.Status == 'CLOSE - REVISED' ||
+        ObjQuote.Status == 'CLOSE - SC CREATED' || ObjQuote.Status == 'DISCARD/VOID' || 
+        ObjQuote.Status == 'CLOSE - LOST'){
+            showSaveQuote = true;
         }
-        //system.debug('showSaveQuote  >>  '+showSaveQuote +' Is_DTA_Quote__c '+ qobj.Is_DTA_Quote__c);
-        if(qobj.Insurance__c == 'By Seller')
+
+        // Set insurance and freight
+        if(ObjQuote.Insurance__c == 'By Seller')
             insurance = 'By Seller';
         else insurance = 'By Buyer';
-        
-        if(qobj.Freight__c == 'By Seller')
+
+        if(ObjQuote.Freight__c == 'By Seller')
             freight = 'By Seller';
         else freight = 'By Buyer';
-        
-        // Quote objQuote = (Quote)stdController.getRecord();
-        //    RecordId = objQuote.Id;
-        //    QlineItm = new List<QuoteLineItem>();
-        // CreateQuote2();
-        if (qobj.Subsidiary__r.Name == 'ASI') {
-            showOptionsModal = true;
+
+        // Set showOptionsModal
+        showOptionsModal = true;
+
+        // Check system admin
+        List<User> user = [SELECT Id FROM User WHERE Profile.Name = 'System Administrator' 
+                        AND Id =: Userinfo.getUserId() LIMIT 1];
+        if(user.size() > 0) {
+            isSystemAdmin = true;
         } else {
-            showOptionsModal = true;
+            isSystemAdmin = false;
         }
-    // show options modal on page load if there are options available
+
+        // Set toshowSaveButton
+        if(ObjQuote.Status == 'RELEASED' || ObjQuote.Status == 'UNDER NEGOTIATION - COOL' || 
+        ObjQuote.Status == 'UNDER NEGOTIATION - HOT' ||
+        ObjQuote.Status == 'WAITING FOR SC/DRG APPROVAL/CLARIFICATION' || 
+        ObjQuote.Status == 'CLOSE - REVISIED' || ObjQuote.Status == 'CLOSE - SC CREATED'){
+            toshowSaveButton = true;
+        } else {
+            toshowSaveButton = false;
+        }
+
+        // Set Q_PrintShipping__c
+        ObjQuote.Q_PrintShipping__c = String.isNotBlank(ObjQuote.Q_PrintShipping__c) ? 
+                                    ObjQuote.Q_PrintShipping__c.replace('CurrencyIsoCode', ObjQuote.CurrencyIsoCode) : 
+                                    ObjQuote.Q_PrintShipping__c;
+
+        // Set TodayDate_string
+        if(ObjQuote.CurrencyIsoCode != null && ObjQuote.Quote_Release_Date__c != null){
+            TodayDate_string = CurrencyFormatter.MapValues(ObjQuote.CurrencyIsoCode, date.valueOf(ObjQuote.Quote_Release_Date__c));
+        } else {
+            TodayDate_string = string.valueOf(ObjQuote.Quote_Release_Date__c);
+        }
+
+        // Generate barcode
+        String barcodeText = '';
+        if(string.isBlank(ObjQuote.Quote_Number1__c)){
+            barcodeText = ObjQuote.QuoteNumber;
+        } else if(string.isNotBlank(ObjQuote.Quote_Number1__c)){
+            barcodeText += ObjQuote.Quote_Number1__c;
+            if(ObjQuote.QU_REVISION_NUMBER__c == '000' || ObjQuote.QU_REVISION_NUMBER__c == ''){
+                barcodeText += '';
+            } else {
+                barcodeText += '-' + ObjQuote.QU_REVISION_NUMBER__c;
+            }
+        }
+        if(string.isNotBlank(barcodeText)){
+            barcode = 'https://barcode.tec-it.com/barcode.ashx?data=' + barcodeText + '&code=Code128&translate-esc=on';
+        }
+
+        // Build address
+        address = '';
+        if(string.isNotBlank(ObjQuote.ADDRESS_LINE_1__c)) address += ObjQuote.ADDRESS_LINE_1__c + '<br/>';
+        if(string.isNotBlank(ObjQuote.ADDRESS_LINE_2__c)) address += ObjQuote.ADDRESS_LINE_2__c + '<br/>';
+        if(string.isNotBlank(ObjQuote.ADDRESS_LINE_3__c)) address += ObjQuote.ADDRESS_LINE_3__c + '<br/>';
+        if(string.isNotBlank(ObjQuote.CityCustom__c)) address += ObjQuote.CityCustom__c;
+        if(string.isNotBlank(ObjQuote.StateCustom__c)) address += ', ' + ObjQuote.StateCustom__c;
+        if(string.isNotBlank(ObjQuote.POSTAL_CODE__c)) address += ', ' + ObjQuote.POSTAL_CODE__c;
+        if(string.isNotBlank(ObjQuote.CountryCustom__c)) address += ', ' + ObjQuote.CountryCustom__c;
+
+        TodayDate = System.today();
+
+        // Fetch related records
+        ObjUser = [SELECT id, name, email, title, MobilePhone FROM User 
+                WHERE Id =: ObjQuote.OwnerId LIMIT 1];
+
+        ObjUserSetup = [SELECT id, Signature_Image__c FROM User_Setup__c 
+                        WHERE User__c =: ObjQuote.OwnerId LIMIT 1];
+
+        ObjAccount = [SELECT id, name, Account_Business__c, Account_Type__c, sales_Address__c,
+                    ADDRESS_LINE_1__c, ADDRESS_LINE_2__c, ADDRESS_LINE_3__c, City__c, Country__c,
+                    Countries__c, Country_Code__c, Customer_Category__c, ERP_ID__c, External_ID__c,
+                    FY__c, Global_Customer__c, Global_Customer_ID__c, Global_Customer_Name__c,
+                    GSTIN_No__c, sales_Industry__c, sales_No_of_Employees__c, PAN__c, Legal_Name__c,
+                    Party_Group_Name__c, Pin_Code__c, Prepared_By__c, sales_Rating__c, SF_ID__c,
+                    State__c, States__c, Subsidary__c, TIN__c
+                    FROM Account WHERE id =: ObjQuote.AccountId];
+
+        // Fetch Quote Line Items
+        QlineItm = new List<Quote_Line_Item_Custom__c>();
+        QlineItm = [SELECT Product__c, Product__r.Name, List_Price__c, Is_Tax__c, Name, Quantity__c,
+                    Division__c, Is_Manual__c, Total_List_Price__c, Total_Sales_Price__c,
+                    Average_Sales_Price__c, Sales_Price__c, UOM__c, Ceiling_Total_Sales_Price__c,
+                    Product_Name__c, Line_Item_Id__c, Sr_No__c, Product_Code__c, Manual_Product_Code__c,
+                    Overall_Discount__c, Product_Description__c, Product_Type__c,
+                    (SELECT Id, Name, Product_Name__c, Manual_Product_Name__c, Discount__c, Final_Price__c,
+                    Manula_Option_List_Price__c, Description__c, Select_Option__c, Quantity__c,
+                    Final_Sales_Price__c, Pdf_Checked__c, Product__r.Name, Average_Sales_Price__c,
+                    Unit_Sales_Price__c, Total_Sales_Price__c, Name_Hide__c, Quantity_Item_Quantity__c
+                    FROM Quote_Line_Options__r ORDER BY Serial_Number__c)
+                    FROM Quote_Line_Item_Custom__c WHERE Quote__c =: RecordId AND Quantity__c >: 0
+                    ORDER BY Sr_No__c];
+
+        // Build prodLineList
+        prodLineList = new List<parentProductWrapper>();
+        getWithoutTaxGrandValue = 0;
+
+        for(Quote_Line_Item_Custom__c ql : QlineItm){
+            parentProductWrapper pli = new parentProductWrapper();
+            pli.Name = ql.Product_Name__c;
+            pli.Product_Name = ql.Product_Name__c;
+            pli.Product_Type = getPicklistLabel('Product_Type__c', ql.Product_Type__c);
+            pli.Position_Number = ql.Sr_No__c;
+            pli.isstartWith_a = false;
+            pli.isstartWith_Hash = false;
+            pli.Is_Tax = ql.Is_Tax__c;
+            if(ql.Is_Tax__c){
+                isTaxCounter = isTaxCounter + 1;
+            }
+
+            Decimal allOptTotalPrice = 0;
+            Decimal allOptUnitPrice = 0;
+            for(Quote_Line_Options__c qplAll : ql.Quote_Line_Options__r){
+                allOptTotalPrice += (qplAll.Total_Sales_Price__c != null ? qplAll.Total_Sales_Price__c : 0);
+                allOptUnitPrice += (qplAll.Unit_Sales_Price__c != null ? qplAll.Unit_Sales_Price__c : 0);
+            }
+
+            Decimal runtimeTotalSales = (ql.Sales_Price__c != null ? ql.Sales_Price__c : 0) + allOptTotalPrice;
+            Decimal runtimeUnitSales = (ql.Average_Sales_Price__c != null ? ql.Average_Sales_Price__c : 0) + allOptUnitPrice;
+
+            if(!ql.Is_Tax__c){
+                getWithoutTaxGrandValue += runtimeTotalSales;
+            }
+
+            if(ql.Is_Manual__c){
+                pli.Line_Item_Id = ql.Manual_Product_Code__c;
+            } else {
+                pli.Line_Item_Id = ql.Product_Code__c;
+            }
+
+            if(string.isNotBlank(ql.Product_Description__c)){
+                if(string.isNotBlank(ql.Product_Description__c) && 
+                (ql.Product_Description__c.contains('>@') || ql.Product_Description__c.startsWith('@'))){
+                    pli.isstartWith_a = true;
+                    pli.isstartWith_Hash = false;
+                    pli.totalValue = runtimeUnitSales;
+                } else if(string.isNotBlank(ql.Product_Description__c) && 
+                        (ql.Product_Description__c.contains('>#') || ql.Product_Description__c.startsWith('#'))){
+                    pli.isstartWith_Hash = true;
+                    pli.isstartWith_a = false;
+                    pli.Product_Description = ql.Product_Description__c.replace('#', '');
+                    pli.totalValue = runtimeTotalSales;
+                } else {
+                    pli.Product_Description = ql.Product_Description__c;
+                    pli.totalValue = runtimeUnitSales;
+                }
+            }
+
+            pli.Ceiling_Total_Sales_Price = runtimeTotalSales;
+            pli.Ceiling_Total_Sales_Pricestring = CurrencyFormatter.formatDouble(runtimeTotalSales, ObjQuote.CurrencyIsoCode);
+            pli.totalValueString = CurrencyFormatter.formatDouble(runtimeUnitSales, ObjQuote.CurrencyIsoCode);
+            pli.Quantity = Integer.valueOf(ql.Quantity__c);
+            pli.UOM = ql.UOM__c;
+            pli.childProd = new List<childProductWrapper>();
+            pli.Visible_Option_Count = 0;
+            pli.QuoteLineId = ql.Id;
+
+            Decimal checkedOptTotalPrice = 0;
+            Decimal checkedOptUnitPrice = 0;
+
+            for(Quote_Line_Options__c qpl : ql.Quote_Line_Options__r){
+                if(qpl.Pdf_Checked__c){
+                    checkedOptTotalPrice += (qpl.Total_Sales_Price__c != null ? qpl.Total_Sales_Price__c : 0);
+                    checkedOptUnitPrice += (qpl.Unit_Sales_Price__c != null ? qpl.Unit_Sales_Price__c : 0);
+                }
+                if(String.isBlank(qpl.Manual_Product_Name__c) && String.isBlank(qpl.Description__c)){
+                    continue;
+                }
+                if(String.isNotBlank(qpl.Manual_Product_Name__c) && qpl.Manual_Product_Name__c.startsWith('.')){
+                    continue;
+                }
+
+                childProductWrapper chl = new childProductWrapper();
+                chl.Manual_Product_Name = qpl.Manual_Product_Name__c;
+                chl.isstartWith_a = false;
+                chl.isstartWith_Hash = false;
+                chl.Name_Hide = qpl.Name_Hide__c;
+                chl.OptionId = qpl.Id;
+                chl.Pdf_Checked = (qpl.Pdf_Checked__c == true);
+                chl.Quantity = (qpl.Quantity_Item_Quantity__c == null) ? null : Integer.valueOf(qpl.Quantity_Item_Quantity__c);
+                chl.Sales_Price = (qpl.Total_Sales_Price__c == null) ? null : CurrencyFormatter.formatDouble(qpl.Total_Sales_Price__c, ObjQuote.CurrencyIsoCode);
+                chl.Manual_Option_List_Price = (qpl.Unit_Sales_Price__c == null) ? null : CurrencyFormatter.formatDouble(qpl.Unit_Sales_Price__c, ObjQuote.CurrencyIsoCode);
+
+                if(string.isNotBlank(qpl.Description__c)){
+                    if(qpl.Description__c.contains('<p>') || qpl.Description__c.contains('</p>')){
+                        qpl.Description__c = qpl.Description__c.replace('<p>', '<span>');
+                        qpl.Description__c = qpl.Description__c.replace('</p>', '</span>');
+                    }
+                    if(qpl.Description__c.contains('>@') || qpl.Description__c.startsWith('@')){
+                        chl.isstartWith_a = true;
+                        chl.isstartWith_Hash = false;
+                        chl.Description = qpl.Description__c;
+                        pli.isstartWith_a = true;
+                    } else if(string.isNotBlank(qpl.Description__c) && 
+                            (qpl.Description__c.contains('>#') || qpl.Description__c.startsWith('#'))){
+                        chl.isstartWith_Hash = true;
+                        chl.isstartWith_a = false;
+                        chl.Description = qpl.Description__c;
+                    } else {
+                        chl.Description = qpl.Description__c;
+                    }
+                }
+
+                if(qpl.Name_Hide__c != true){
+                    pli.Visible_Option_Count++;
+                }
+                pli.childProd.add(chl);
+            }
+
+            if(pli.Visible_Option_Count > 0){
+                pli.Option_Header = String.isNotBlank(pli.Product_Type) ? pli.Product_Type + ' Option' : 'Option';
+            }
+
+            if(!pli.isstartWith_a && !pli.isstartWith_Hash
+            && checkedOptTotalPrice > 0
+            && runtimeTotalSales != null
+            && runtimeUnitSales != null){
+                Decimal adjustedTotal = runtimeTotalSales - checkedOptTotalPrice;
+                Decimal adjustedUnit = runtimeUnitSales - checkedOptUnitPrice;
+                pli.Ceiling_Total_Sales_Pricestring = CurrencyFormatter.formatDouble(adjustedTotal, ObjQuote.CurrencyIsoCode);
+                pli.totalValueString = CurrencyFormatter.formatDouble(adjustedUnit, ObjQuote.CurrencyIsoCode);
+            }
+
+            prodLineList.add(pli);
+        }
+
+        getWithoutTaxGrandValuestring = CurrencyFormatter.formatDouble(getWithoutTaxGrandValue, ObjQuote.CurrencyIsoCode);
+
+        // Grand total and words
+        Grand_Total_c_string = CurrencyFormatter.formatDouble(ObjQuote.Grand_Total__c, ObjQuote.CurrencyIsoCode);
+        Long longTotalAmount = (Long) ObjQuote.Grand_Total__c;
+        if(ObjQuote.Price_in_Word_Required__c == true){
+            if(ObjQuote.CurrencyIsoCode == 'INR'){
+                no2words = (ConvertCurrencyToWords.convert(longTotalAmount)) + ' Rupees Only.';
+            } else {
+                no2words = numToWords.convert(Integer.valueOf(longTotalAmount), (ObjQuote.CurrencyIsoCode).toUpperCase());
+            }
+        } else {
+            no2words = '';
+        }
+
+        // Quote Template
+        terms = new List<Quote_Template_Line__c>();
+        gRemark = new List<Quote_Template_Line__c>();
+        gProvision = new List<Quote_Template_Line__c>();
+
+        if(ObjQuote.Quote_Template__c != null){
+            List<Quote_Template__c> quoteTemplateList = [SELECT id, Show_Ex_Works__c, Active__c, CurrencyIsoCode,
+                                                        Introduction__c, Label__c, Label_For_Colum_1__c, Label_For_Colum_2__c,
+                                                        Label_For_Colum_3__c, Label_For_Colum_4__c, Label_For_Colum_5__c,
+                                                        Label_for_Date__c, Label_for_Draft_Quote__c, Label_for_General_Provision__c,
+                                                        Label_for_General_Remarks__c, Label_for_Page_No__c, Label_for_Page_No_2__c,
+                                                        Label_for_Price_in_Word__c, Label_for_Product_table__c, Label_For_Ref_No__c,
+                                                        Label_For_TO__c, Language__c, Logo__c, OwnerId, Name, Salutation__c,
+                                                        Subsidiary__c, Subsidiary__r.Factory_Location__c, Subsidiary__r.Name__c,
+                                                        ISO_Code_Label__c, ISO_Code_Text__c, Company_Name_Label__c,
+                                                        Sales_Engineer_Label__c, Quotation_No_Label__c, Quotation_Date_Label__c,
+                                                        Cover_Page__c, ASB_Sign_Section2__c, ASB_Sign_Section3__c,
+                                                        ASB_Sign_Section4__c, ASB_Sign_Section5__c, Cover_Page_Required__c,
+                                                        Customer_Sign_Section2__c, Customer_Sign_Section3__c,
+                                                        Customer_Sign_Section4__c, Customer_Sign_Section5__c,
+                                                        Footer_Image__c, Header_Image__c, Section_2_Required__c,
+                                                        Section_4_Required__c, Section_5_Required__c, Footer_Image_Required__c,
+                                                        Footer_Text__c, Footer_Text_Required__c, S2_Introduction__c,
+                                                        S2_Title__c, S3_title__c, S4_Title__c, S5_Title__c,
+                                                        Draft_Image__c, Label_For_Quotation_No__c, Manufacture_Place__c
+                                                        FROM Quote_Template__c 
+                                                        WHERE ID =: ObjQuote.Quote_Template__c AND Active__c = true LIMIT 1];
+
+            if(!quoteTemplateList.isEmpty()){
+                quoteTemplate = quoteTemplateList[0];
+                terms = [SELECT id, Active__c, Content__c, Content_2__c, Is_Terms_Condition__c, Label__c, Name,
+                        Quote_Template__c, Sr_No__c,
+                        (SELECT id, name, Dynamic_Field__c, Field_To_Replace__c FROM Quote_Dynamic_Text__r WHERE Active__c = true)
+                        FROM Quote_Template_Line__c 
+                        WHERE Quote_Template__c =: quoteTemplate.id AND Active__c = true AND Is_Terms_Condition__c = true 
+                        ORDER BY Sr_No__c];
+
+                gRemark = [SELECT id, Active__c, Content__c, Content_2__c, Is_General_Remarks__c, Label__c, Name,
+                        Quote_Template__c, Sr_No__c,
+                        (SELECT id, name, Dynamic_Field__c, Field_To_Replace__c FROM Quote_Dynamic_Text__r WHERE Active__c = true)
+                        FROM Quote_Template_Line__c 
+                        WHERE Quote_Template__c =: quoteTemplate.id AND Active__c = true AND Is_General_Remarks__c = true 
+                        ORDER BY Sr_No__c];
+
+                gProvision = [SELECT id, Active__c, Content__c, Content_2__c, Is_General_Provision__c, Label__c, Name,
+                            Quote_Template__c, Sr_No__c,
+                            (SELECT id, name, Dynamic_Field__c, Field_To_Replace__c FROM Quote_Dynamic_Text__r WHERE Active__c = true)
+                            FROM Quote_Template_Line__c 
+                            WHERE Quote_Template__c =: quoteTemplate.id AND Active__c = true AND Is_General_Provision__c = true 
+                            ORDER BY Sr_No__c];
+
+                map<String, Object> amap = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(ObjQuote));
+
+                if(terms.size() > 0){
+                    terms = getDynamicValue(terms, amap);
+                }
+
+                for(Quote_Template_Line__c qtp : gRemark){
+                    if(qtp.Label__c == 'SCOPE OF SUPPLY'){
+                        qtp.Label__c = '<b>' + qtp.Label__c + '</b>';
+                    }
+                }
+
+                gRemark = getDynamicValue(gRemark, amap);
+                gProvision = getDynamicValue(gProvision, amap);
+            }
+        }
     }
     
     public void add(){
@@ -111,16 +418,22 @@ public class SaveQuoteAsPdf {
     
     public PageReference save() {
         Quote quo11= [SELECT Id, Name, Quote_No__c, Account.Name From Quote Where id=: recordID];
-        quoteNo = quo11.Quote_No__c;
+        quoteNo = quo11.Quote_No__c.substringAfter('>').substringBefore('<');
         accountName=quo11.Name;
         try{
             Attachment a;
             PageReference pdf;
-            pdf = Page.pdfPreview;
+            if(ObjQuote.Is_DTA_Quote__c){
+                pdf = Page.pdfPreviewDTA;
+            } else if(ObjQuote.Is_GMBH_Quote__c){
+                pdf = Page.pdfPreviewGMBH;
+            } else {
+                pdf = Page.pdfPreview;
+            }
             pdf.getParameters().put('id',recordID);
             Blob pdfBody;
             if(!test.isRunningTest()){
-                pdfBody = pdf.getContentAsPDF();
+                pdfBody = pdf.getContent();
             }
             else
             {
@@ -158,7 +471,7 @@ public class SaveQuoteAsPdf {
             //emailId = 'balram@finessedirect.com';
             Quote quo11 = [SELECT Id, Name, Quote_No__c From Quote Where id=: recordID];
             
-            quoteNo=quo11.Quote_No__c;
+            quoteNo = quo11.Quote_No__c.substringAfter('>').substringBefore('<');
             accountName=quo11.Name;
             
             Attachment a;
@@ -191,11 +504,17 @@ public class SaveQuoteAsPdf {
             }
             
             PageReference pdf;
-            pdf = Page.pdfPreview;
+            if(ObjQuote.Is_DTA_Quote__c){
+                pdf = Page.pdfPreviewDTA;
+            } else if(ObjQuote.Is_GMBH_Quote__c){
+                pdf = Page.pdfPreviewGMBH;
+            } else {
+                pdf = Page.pdfPreview;
+            }
             pdf.getParameters().put('id',recordID);
             Blob pdfBody;
             if(!test.isRunningTest()){
-                pdfBody = pdf.getContentAsPDF();
+                pdfBody = pdf.getContent();
             }
             else
             {
@@ -649,10 +968,10 @@ public class SaveQuoteAsPdf {
         //imageSignature = u.Signature_Image__c;
         isModalOpen = true;
         addDocs = new List<AdditionalDocWrapper>();
-        system.debug('qobj.OwnerId'+qobj.OwnerId);
-        system.debug('qobj.OwnerId'+u.Subsidiari__c);
+        system.debug('ObjQuote.OwnerId'+ObjQuote.OwnerId);
+        system.debug('ObjQuote.OwnerId'+u.Subsidiari__c);
         for(Additional_Document__c addDoc : [SELECT Id, Name FROM Additional_Document__c where Active__c = true
-                                             and ((OwnerId =: qobj.OwnerId and Is_User_Specific__c=true) or (Subsidiary__c=:u.Subsidiari__c))and Type__c = 'Quote']) {
+                                             and ((OwnerId =: ObjQuote.OwnerId and Is_User_Specific__c=true) or (Subsidiary__c=:u.Subsidiari__c))and Type__c = 'Quote']) {
                                                  addDocs.add(new AdditionalDocWrapper(addDoc));
                                              }
         system.debug('addDocs'+addDocs.size());

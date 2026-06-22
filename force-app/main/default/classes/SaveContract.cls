@@ -103,58 +103,54 @@ showSaveQuote=true;
     }
     
     public PageReference save() {
-        Contract quo11= [SELECT Id, Name, Contract_No_Rev_No__c, Account.Name From Contract Where id=: recordID];
-        contractNo = quo11.Contract_No_Rev_No__c;
-        accountName=quo11.Name;
+        Contract quo11 = [SELECT Id, Name, Contract_No_Rev_No__c, Account.Name, 
+                        Is_DTA_Contract__c, Is_GMBH_Contract__c From Contract Where id=: recordID];
+        contractNo = quo11.Contract_No_Rev_No__c.substringAfter('>').substringBefore('<');
+        accountName = quo11.Name;
         try{
-            Attachment a;
             PageReference pdf;
-            pdf = Page.PdfPreviewContractV2;
-            pdf.getParameters().put('id',recordID);
+            if(quo11.Is_DTA_Contract__c){
+                pdf = Page.PdfPreviewContractDTA;
+            } else if(quo11.Is_GMBH_Contract__c){
+                pdf = Page.PdfPreviewContractGMBH;
+            } else {
+                pdf = Page.PdfPreviewContractV2;
+            }
+            pdf.getParameters().put('id', recordID);
             Blob pdfBody;
             if(!test.isRunningTest()){
-                pdfBody = pdf.getContentAsPDF();
-            }
-            else
-            {
+                pdfBody = pdf.getContent();
+            } else {
                 pdfBody = blob.valueof('TEST');
             }
-            list<Attachment> at=[select id,name,body from Attachment where ParentId=:recordID];
-            system.debug('atttt'+at);
+            list<Attachment> at = [select id, name, body from Attachment where ParentId =: recordID];
             String name;
-            if(at.size()!=0)
-                name=accountName +'_V'+at.size()+'.pdf';
+            if(at.size() != 0)
+                name = accountName + '_V' + at.size() + '.pdf';
             else
-            {
-                name=accountName +'-'+ contractNo + '_V'+'.pdf'; // 'Quote Pdf.pdf';
-            }
+                name = accountName + '-' + contractNo + '_V' + '.pdf';
+            
             Attachment attach = new Attachment();
-            attach.ParentId =recordID;
+            attach.ParentId = recordID;
             attach.name = name;
-            attach.body = pdfBody ;
-            System.debug('tId '+recordID);
+            attach.body = pdfBody;
             INSERT attach;
-            system.debug('attach'+attach);
         }
         catch(exception e){
-            system.debug('SaveQuotePdf'+e);
+            system.debug('SaveContract: ' + e);
         }
         
-        PageReference pageRef = new PageReference('/'+recordID);
+        PageReference pageRef = new PageReference('/' + recordID);
         pageRef.setRedirect(true);
         return pageRef;
-        
     }
     
     public PageReference saveAndSendcall() {
         if(emailId != null){
-            //emailId = 'balram@finessedirect.com';
-            Contract quo11 = [SELECT Id, Name, Contract_No_Rev_No__c From Contract Where id=: recordID];
-            
-            contractNo=quo11.Contract_No_Rev_No__c;
-            accountName=quo11.Name;
-            
-            Attachment a;
+            Contract quo11 = [SELECT Id, Name, Contract_No_Rev_No__c, 
+                            Is_DTA_Contract__c, Is_GMBH_Contract__c From Contract Where id=: recordID];
+            contractNo = quo11.Contract_No_Rev_No__c.substringAfter('>').substringBefore('<');
+            accountName = quo11.Name;
             
             Set<Id> addDocIds = new Set<Id>();
             for(AdditionalDocWrapper addDoc : addDocs) {
@@ -162,11 +158,10 @@ showSaveQuote=true;
                     addDocIds.add(addDoc.addDoc.Id);
             }
             
-            
-            
             List<Id> docIds = new List<Id>();
-            if(addDocIds.size() > 0 ) {
-                for(ContentDocumentLink cdl : [select Id, ContentDocument.LatestPublishedVersionId from ContentDocumentLink where LinkedEntityId in: addDocIds]) {
+            if(addDocIds.size() > 0) {
+                for(ContentDocumentLink cdl : [select Id, ContentDocument.LatestPublishedVersionId 
+                                            from ContentDocumentLink where LinkedEntityId in: addDocIds]) {
                     docIds.add(cdl.ContentDocument.LatestPublishedVersionId);
                 }
             }
@@ -178,43 +173,43 @@ showSaveQuote=true;
                 }
             }
             List<Id> notesIds = new List<Id>();
-            system.debug('NoteId'+NoteId.size());
-            if(NoteId.size() > 0 ) {
-                for(ContentDocumentLink cdl : [select Id, ContentDocument.LatestPublishedVersionId from ContentDocumentLink where Id in: NoteId]) {
+            if(NoteId.size() > 0) {
+                for(ContentDocumentLink cdl : [select Id, ContentDocument.LatestPublishedVersionId 
+                                            from ContentDocumentLink where Id in: NoteId]) {
                     notesIds.add(cdl.ContentDocument.LatestPublishedVersionId);
                 }
             }
             
-            system.debug('NoteId'+notesIds.size());
-            
             PageReference pdf;
-            pdf = Page.PdfPreviewContractV2;
-            pdf.getParameters().put('id',recordID);
+            if(quo11.Is_DTA_Contract__c){
+                pdf = Page.PdfPreviewContractDTA;
+            } else if(quo11.Is_GMBH_Contract__c){
+                pdf = Page.PdfPreviewContractGMBH;
+            } else {
+                pdf = Page.PdfPreviewContractV2;
+            }
+            pdf.getParameters().put('id', recordID);
             Blob pdfBody;
             if(!test.isRunningTest()){
-                pdfBody = pdf.getContentAsPDF();
-            }
-            else
-            {
+                pdfBody = pdf.getContent();
+            } else {
                 pdfBody = blob.valueof('TEST');
             }
-            list<Attachment> at=[select id,name,body from Attachment where ParentId=:recordID];
+            
+            list<Attachment> at = [select id, name, body from Attachment where ParentId =: recordID];
             String name;
-            if(at.size()!=0)
-                name=accountName +'_V'+at.size()+'.pdf';
+            if(at.size() != 0)
+                name = accountName + '_V' + at.size() + '.pdf';
             else
-            {
-                name=accountName +'-'+ contractNo + '_V'+'.pdf'; // 'Quote Pdf.pdf';
-            }
+                name = accountName + '-' + contractNo + '_V' + '.pdf';
             
             Attachment attach = new Attachment();
-            attach.ParentId =recordID;
+            attach.ParentId = recordID;
             attach.name = name;
-            attach.body = pdfBody ;
-            System.debug('tId '+recordID);
+            attach.body = pdfBody;
             INSERT attach;
             
-            Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();     
+            Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
             email.setSubject(Subject);
             email.setToAddresses(new String[] {emailId});
             if(String.isNotBlank(CC_Addresses)){
@@ -225,7 +220,6 @@ showSaveQuote=true;
                         CCEmails.add(str);
                 }
                 email.setCcAddresses(new List<String>(CCEmails));
-                System.debug(CC_Addresses);
             }
             email.setHtmlBody(body);
             
@@ -237,18 +231,16 @@ showSaveQuote=true;
             if(docIds.size() > 0) {
                 email.setEntityAttachments(docIds);
             }
-            system.debug('notesIds'+notesIds.size());
             if(notesIds.size() > 0){
                 email.setEntityAttachments(notesIds);
             }
-            System.debug(emailId);
-            Messaging.SendEmailResult[] results = Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email }); 
+            Messaging.SendEmailResult[] results = Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email });
             
-            PageReference pageRef = new PageReference('/'+recordID);
+            PageReference pageRef = new PageReference('/' + recordID);
             pageRef.setRedirect(true);
             return pageRef;
-        }else{
-            ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error,'Please fill the sender\'s Email Id'));
+        } else {
+            ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error, 'Please fill the sender\'s Email Id'));
             return null;
         }
     }

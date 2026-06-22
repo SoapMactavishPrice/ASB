@@ -1,4 +1,4 @@
-<apex:page standardController="Quote" extensions="SaveQuoteAsPdf" renderAs="pdf" showHeader="false" action="{!CreateQuote}" standardStylesheets="false" >
+<apex:page standardController="Quote" extensions="SaveQuoteAsPdf" renderAs="pdf" showHeader="false" standardStylesheets="false" >
 <head>
         <title>{!ObjAccount.name} R{!ObjQuote.QU_REVISION_NUMBER__c}</title>
         <style type="text/css">

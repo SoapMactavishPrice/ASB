@@ -24,9 +24,9 @@
                             <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Copy: Item% To Options">Copy %</th>
                             <th class="slds-text-align_center wrap-text" style="width: 4%;" title="Clear All">Clear All</th>
                             <th class="slds-text-align_center wrap-text" style="width: 4%;" title="Discount %">Discount %</th>
-                            <th class="slds-text-align_center wrap-text" style="width: 6%;" title="Discount Value">Discount Value</th>
-                            <th class="slds-text-align_center wrap-text" style="width: 6%;" title="Desired Price">Desired Price</th>
-                            <th class="slds-text-align_center wrap-text" style="width: 6%;" title="Desired Price Subtotal">Desired Price Subtotal</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 7%;" title="Discount Value">Discount Value</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 7%;" title="Desired Price">Desired Price</th>
+                            <th class="slds-text-align_center wrap-text" style="width: 7%;" title="Desired Price Subtotal">Desired Price Subtotal</th>
                             <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Total Discount in Value">Total Discount in Value</th>
                             <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Unit Sales Price">Unit Sales Price</th>
                             <th class="slds-text-align_center wrap-text" style="width: 5%;" title="Total Sales Price">Total Sales Price</th>
@@ -129,6 +129,7 @@
                                         <template if:true={row.showDiscountInputs}>
                                             <lightning-input
                                                 type="number"
+                                                step="0.01"
                                                 value={row.discountValue}
                                                 data-id={row.id}
                                                 data-field="discountValue"

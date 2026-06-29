@@ -72,9 +72,9 @@ lightning-card {
 .slds-table th:nth-child(9) { width: 5%; }   /* Total List Price */
 .slds-table th:nth-child(10) { width: 5%; }  /* Copy: Item% To Options */
 .slds-table th:nth-child(11) { width: 5%; }  /* Discount % */
-.slds-table th:nth-child(12) { width: 5%; }  /* Discount Value */
-.slds-table th:nth-child(13) { width: 5%; }  /* Desired Price */
-.slds-table th:nth-child(14) { width: 5%; }  /* Desired Price Subtotal */
+.slds-table th:nth-child(12) { width: 7%; }  /* Discount Value */
+.slds-table th:nth-child(13) { width: 7%; }  /* Desired Price */
+.slds-table th:nth-child(14) { width: 7%; }  /* Desired Price Subtotal */
 .slds-table th:nth-child(15) { width: 5%; }  /* Total Discount in Value */
 .slds-table th:nth-child(16) { width: 5%; }  /* Unit Sales Price USD */
 .slds-table th:nth-child(17) { width: 5%; }  /* Total Sales Price */
@@ -100,9 +100,9 @@ lightning-card {
 .slds-table td:nth-child(9) { width: 5%; }
 .slds-table td:nth-child(10) { width: 5%; }
 .slds-table td:nth-child(11) { width: 5%; }
-.slds-table td:nth-child(12) { width: 5%; }
-.slds-table td:nth-child(13) { width: 5%; }
-.slds-table td:nth-child(14) { width: 5%; }
+.slds-table td:nth-child(12) { width: 7%; }
+.slds-table td:nth-child(13) { width: 7%; }
+.slds-table td:nth-child(14) { width: 7%; }
 .slds-table td:nth-child(15) { width: 5%; }
 .slds-table td:nth-child(16) { width: 5%; }
 .slds-table td:nth-child(17) { width: 5%; }

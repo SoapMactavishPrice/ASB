@@ -275,14 +275,21 @@ public with sharing class new_lwcProjectController {
                 }
                 if(ObjCont.Expiration_Date__c >= System.today())
                 {
+                    Integer neededCount = 0;
+                    for(Wrapper wrpCnt: wrpJs){
+                        if(wrpCnt.key != null && wrpCnt.isSelect){ neededCount++; }
+                    }
+                    List<String> projectNumbers = getQuoteNumberBulk(neededCount);
+                    Integer pnIdx = 0;
+
                     for(Wrapper wrp: wrpJs){
                         if(wrp.key !=null  && wrp.isSelect){
                             
                             
                             Contract_Line_Item__c ObjCli = exeMap.get(wrp.key);
                             ProjectManagement__c ObjPro = new ProjectManagement__c();
-                            UserSetup us=getQuoteNumber();
-                            ObjPro.Project_Number__c	= us.ContractNo;
+                            ObjPro.Project_Number__c	= projectNumbers[pnIdx];
+                            pnIdx++;
                             
                             
                             ObjPro.Expected_Sales_Month__c =  wrp.ExpectedSalesMonth;
@@ -651,6 +658,46 @@ for (Quote_Line_Item_Custom__c qle : lineItems) {
             us.FY=f.id;  
             us.Subsidiari=u.Subsidiari__c;
             return us;
+        }
+
+        public static List<String> getQuoteNumberBulk(Integer count) {
+            List<String> numbers = new List<String>();
+            if(count <= 0){ return numbers; }
+
+            Fiscal_Year_Master__c f =[SELECT Id, Name FROM Fiscal_Year_Master__c WHERE Fiscal_Year_Start_Date__c <= TODAY AND Fiscal_Year_End_Date__c >= TODAY LIMIT 1];
+
+            Map<id,Unique_No__c> sMap=new Map<id,Unique_No__c>();
+            for(Unique_No__c u:[select id,name,Serial_No__c,Object_Name__c,Subsidiary__c,Fiscal_Year__c from Unique_No__c where Fiscal_Year__c=:f.id and
+                                Object_Name__c='Project Management' For Update])
+            { sMap.put(u.Subsidiary__c,u); }
+
+            User_Setup__c u=[select id,name,User__c,Subsidiari__c,Subsidiari__r.name,Default_Language__c from User_Setup__c where User__c =: Userinfo.getUserId()];
+
+            Unique_No__c un;
+            Integer nextSerial;
+            if(sMap.containskey(u.Subsidiari__c)){
+                un = sMap.get(u.Subsidiari__c);
+                nextSerial = Integer.valueOf(un.Serial_No__c) + 1;
+            } else {
+                un = new Unique_No__c();
+                un.Object_Name__c='Project Management';
+                un.Subsidiary__c=u.Subsidiari__c;
+                un.Fiscal_Year__c=f.id;
+                nextSerial = 1;
+            }
+
+            for(Integer i=0; i<count; i++){
+                String temp='';
+                for(Integer j=6; j>String.valueof(nextSerial).length(); j--){ temp=temp+'0'; }
+                temp = temp + String.valueof(nextSerial);
+                numbers.add('PRJ'+u.Subsidiari__r.name+'-'+temp);
+                nextSerial++;
+            }
+
+            un.Serial_No__c = nextSerial - 1;
+            upsert un;
+
+            return numbers;
         }
         
         

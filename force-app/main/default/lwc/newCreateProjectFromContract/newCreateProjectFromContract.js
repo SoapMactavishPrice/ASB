@@ -265,11 +265,12 @@ export default class NewCreateProjectFromContract extends NavigationMixin(Lightn
             }
         }
 
+        this.showSpinner = true;
+
         // Delay to allow all toasts to render before submitting (optional)
         setTimeout(() => {
 
             if (varCheck) {
-                this.showSpinner = true;
 
                 SaveProjectDeatils({
                     ContractId: this.recordId,
@@ -294,11 +295,9 @@ export default class NewCreateProjectFromContract extends NavigationMixin(Lightn
                                 });
 
                                 this.goBackToRecord();
-                                this.showSpinner = false;
 
                             } else {
                                 // Show error toast if not "Success"
-                                this.showSpinner = false;
                                 this.ShowToastMessage(key, result[key]);
                             }
                         }

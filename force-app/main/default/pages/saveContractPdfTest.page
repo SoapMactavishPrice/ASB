@@ -208,9 +208,9 @@
                 <div style="padding: 5px" class="slds-scope">
                     <div style="padding: 5px">
                         <apex:inputText html-placeholder="Email ID" value="{!emailId}" styleClass="slds-input" disabled="true" />
-                        <apex:inputText html-placeholder="CC Addresses  (Comma Seperated)" value="{!CC_Addresses}" styleClass="slds-input" style="margin-top: 5px; margin-left: 0px" />
-                        <apex:inputText html-placeholder="Subject" value="{!subject}" styleClass="slds-input" style="margin-top: 5px; margin-bottom: 10px; margin-left: 0px" />
-                        <apex:inputTextarea richText="true" value="{!body}" styleClass="slds-input" />
+                        <apex:inputText html-placeholder="CC Addresses  (Comma Seperated)" value="{!CC_Addresses}" styleClass="slds-input" style="margin-top: 5px; margin-left: 0px" disabled="true" />
+                        <apex:inputText html-placeholder="Subject" value="{!subject}" styleClass="slds-input" style="margin-top: 5px; margin-bottom: 10px; margin-left: 0px" disabled="true" />
+                        <apex:inputTextarea richText="true" value="{!body}" styleClass="slds-input" disabled="true" />
                     </div>
                     <div style="padding: 5px"> 
                         <b>Additional Attached Files:</b> <br/>
@@ -219,10 +219,10 @@
                              </apex:repeat>
                         </div>
                     <div style="margin: 10px 5px; text-align: right" >
-                        <apex:commandbutton action="{!showModal}" rerender="popup, modal1" value="Attach Files" styleClass="slds-button slds-button_brand"></apex:commandbutton>
-                        <apex:commandButton action="{!save}" value="Save" styleClass="slds-button slds-button_brand"></apex:commandButton>
-                        <apex:commandButton action="{!saveAndSendcall}" value="Save And Send" styleClass="slds-button slds-button_brand"></apex:commandButton>
-                        <apex:commandButton action="{!Cancel}" value="Cancel" styleClass="slds-button slds-button_destructive"></apex:commandButton>
+                        <apex:commandbutton action="{!showModal}" rerender="popup, modal1" value="Attach Files" styleClass="slds-button slds-button_brand" disabled="true"></apex:commandbutton>
+                        <apex:commandButton action="{!save}" value="Save" styleClass="slds-button slds-button_brand" disabled="true"></apex:commandButton>
+                        <apex:commandButton action="{!saveAndSendcall}" value="Save And Send" styleClass="slds-button slds-button_brand" disabled="true"></apex:commandButton>
+                        <apex:commandButton action="{!Cancel}" value="Cancel" styleClass="slds-button slds-button_destructive" disabled="true"></apex:commandButton>
                     </div>
                 </div>
             </div>
